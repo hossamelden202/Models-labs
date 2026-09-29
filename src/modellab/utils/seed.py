@@ -8,3 +8,8 @@ def set_seed(seed: int) -> None:
         raise ValueError(f"seed must be in [0, 2**32), got {seed}")
     random.seed(seed)
     np.random.seed(seed)
+    try:
+        import torch
+    except ImportError:
+        return
+    torch.manual_seed(seed)
