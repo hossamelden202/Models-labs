@@ -1,0 +1,67 @@
+{
+  "batch_size": 16,
+  "class_names": [
+    "GORE",
+    "BLOOD",
+    "NEUTRAL"
+  ],
+  "dataset_id": "eval_subset",
+  "device": "cuda",
+  "evaluation_id": "dinov3_production",
+  "model": {
+    "class_names": [
+      "GORE",
+      "BLOOD",
+      "NEUTRAL"
+    ],
+    "factory": "/kaggle/working/modellab/experiments/dinov3_gore/dinov3_classifier.py:build_model",
+    "factory_kwargs": {
+      "backbone_path": "/kaggle/input/models/x1an9l1/facebookdinov3-vits16-pretrain-lvd1689m/transformers/default/1/facebook/dinov3-vits16-pretrain-lvd1689m",
+      "dropout": 0.1
+    },
+    "input_size": [
+      224,
+      224
+    ],
+    "mixed_precision": false,
+    "model_id": "dinov3-vits16-blood-gore-production",
+    "num_classes": 3,
+    "output_index": 0,
+    "output_key": null,
+    "path": "/kaggle/input/models/hossameldenmohamed/blood-gore-dinov3-model/pytorch/default/1/final_model.pt",
+    "single_logit_binary": false,
+    "source": "state_dict",
+    "state_dict_key": "model_state_dict",
+    "strip_prefix": null
+  },
+  "model_id": "dinov3-vits16-blood-gore-production",
+  "num_classes": 3,
+  "num_samples": 120,
+  "num_workers": 0,
+  "preprocessing": {
+    "center_crop": [
+      224,
+      224
+    ],
+    "color_mode": "RGB",
+    "interpolation": "bicubic",
+    "mean": [
+      0.485,
+      0.456,
+      0.406
+    ],
+    "resize": 256,
+    "std": [
+      0.229,
+      0.224,
+      0.225
+    ]
+  },
+  "seed": 42,
+  "timestamp": "2026-09-29T22:45:26.821292+00:00",
+  "versions": {
+    "modellab": "0.1.0",
+    "python": "3.12.13",
+    "torch": "2.10.0+cu128"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "columns": "predicted",
+  "labels": [
+    "GORE",
+    "BLOOD",
+    "NEUTRAL"
+  ],
+  "matrix": [
+    [
+      31,
+      3,
+      6
+    ],
+    [
+      24,
+      13,
+      3
+    ],
+    [
+      5,
+      4,
+      31
+    ]
+  ],
+  "rows": "true"
+}

@@ -1,0 +1,31 @@
+model:
+  model_id: dinov3-vits16-blood-gore-production
+  source: state_dict
+  num_classes: 3
+  path: /kaggle/input/models/hossameldenmohamed/blood-gore-dinov3-model/pytorch/default/1/final_model.pt
+  state_dict_key: model_state_dict
+  factory: /kaggle/working/modellab/experiments/dinov3_gore/dinov3_classifier.py:build_model
+  factory_kwargs:
+    backbone_path: /kaggle/input/models/x1an9l1/facebookdinov3-vits16-pretrain-lvd1689m/transformers/default/1/facebook/dinov3-vits16-pretrain-lvd1689m
+    dropout: 0.1
+  class_names:
+  - GORE
+  - BLOOD
+  - NEUTRAL
+  input_size:
+  - 224
+  - 224
+preprocess:
+  resize: 256
+  interpolation: bicubic
+  center_crop:
+  - 224
+  - 224
+  mean:
+  - 0.485
+  - 0.456
+  - 0.406
+  std:
+  - 0.229
+  - 0.224
+  - 0.225
