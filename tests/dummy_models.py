@@ -62,3 +62,11 @@ def raises_error():
 
 def not_a_model():
     return 5
+
+
+def identity_two_class(scale=10.0):
+    fc = nn.Linear(3, 2)
+    with torch.no_grad():
+        fc.weight.copy_(torch.tensor([[scale, 0.0, 0.0], [0.0, scale, 0.0]]))
+        fc.bias.zero_()
+    return nn.Sequential(nn.AdaptiveAvgPool2d(1), nn.Flatten(), fc)
