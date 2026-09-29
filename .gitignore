@@ -8,7 +8,6 @@ htmlcov/
 build/
 dist/
 .venv/
-.ipynb_checkpoints/
+
 /data/
-/models/
-/artifacts/
+
