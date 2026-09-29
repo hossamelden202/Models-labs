@@ -5,7 +5,12 @@ from modellab.core.results import EvaluationResult, Prediction
 
 
 def test_prediction_roundtrip():
-    p = Prediction(sample_id="a", predicted_class=1, confidence=0.75, class_probabilities=[0.25, 0.75])
+    p = Prediction(
+        sample_id="a",
+        predicted_class=1,
+        confidence=0.75,
+        class_probabilities=[0.25, 0.75],
+    )
     assert Prediction.model_validate_json(p.model_dump_json()) == p
     assert p.model_dump(mode="json")["predicted_class"] == 1
 
