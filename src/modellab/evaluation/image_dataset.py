@@ -89,6 +89,7 @@ class ImageClassificationDataset(DatasetAdapter):
         self._records = list(records)
         self._class_names = list(class_names)
         self._dataset_id = dataset_id
+        self.preprocess = preprocess
         self._color_mode = preprocess.color_mode if preprocess is not None else "RGB"
         self._transform = (
             build_transform(preprocess) if preprocess is not None else None
