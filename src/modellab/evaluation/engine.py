@@ -150,9 +150,11 @@ def run_evaluation(
     total = len(loader)
     every = max(1, total // 10)
     log.info(
-        "evaluating %d images, batch size %d, device %s", len(dataset), config.batch_size, model.device
+        "evaluating %d images, batch size %d, device %s",
+        len(dataset),
+        config.batch_size,
+        model.device,
     )
-
     out_dir.mkdir(parents=True)
     writer = None
     truths, predictions, probabilities = [], [], []

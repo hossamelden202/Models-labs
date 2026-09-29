@@ -55,12 +55,15 @@ def _cmd_doctor(args) -> int:
 def _read_mapping(path: Path) -> dict[str, Any]:
     if not path.is_file():
         raise ConfigurationError(f"file not found: {path}")
+
     try:
         data = yaml.safe_load(path.read_text(encoding="utf-8"))
     except (OSError, UnicodeDecodeError, yaml.YAMLError) as exc:
         raise ConfigurationError(f"cannot read {path}: {exc}") from exc
+
     if not isinstance(data, dict):
         raise ConfigurationError(f"{path}: top level must be a mapping")
+
     return data
 
 
@@ -69,15 +72,18 @@ def _load_model_file(path: Path):
     from modellab.evaluation.torch_model import TorchModelSpec
 
     raw = _read_mapping(path)
+
     if "model" not in raw or set(raw) - {"model", "preprocess"}:
         raise ConfigurationError(
             f"{path}: expected a 'model' section and an optional 'preprocess' section"
         )
+
     try:
         spec = TorchModelSpec.model_validate(raw["model"])
         preprocess = PreprocessConfig.model_validate(raw.get("preprocess") or {})
     except ValidationError as exc:
         raise ConfigurationError(f"invalid model file {path}: {exc}") from exc
+
     return spec, preprocess
 
 
@@ -92,12 +98,16 @@ def _cmd_evaluate(args) -> int:
         from modellab.evaluation.torch_model import TorchImageClassifier
     except ImportError as exc:
         raise ConfigurationError(
-            f"evaluation needs the vision dependencies, pip install -e '.[vision]' ({exc})"
+            "evaluation needs the vision dependencies, "
+            "pip install -e '.[vision]' "
+            f"({exc})"
         ) from exc
 
     try:
         eval_cfg = EvalConfig(
-            batch_size=args.batch_size, num_workers=args.num_workers, seed=cfg.project.seed
+            batch_size=args.batch_size,
+            num_workers=args.num_workers,
+            seed=cfg.project.seed,
         )
     except ValidationError as exc:
         raise ConfigurationError(f"invalid evaluation settings: {exc}") from exc
@@ -105,9 +115,12 @@ def _cmd_evaluate(args) -> int:
     spec, preprocess = _load_model_file(args.model)
 
     source = args.dataset
+
     if source.is_dir():
         dataset = ImageClassificationDataset.from_folder(
-            source, class_names=spec.class_names, preprocess=preprocess
+            source,
+            class_names=spec.class_names,
+            preprocess=preprocess,
         )
     elif source.suffix.lower() == ".csv":
         dataset = ImageClassificationDataset.from_csv(
@@ -119,57 +132,135 @@ def _cmd_evaluate(args) -> int:
             preprocess=preprocess,
         )
     else:
-        raise ConfigurationError(f"dataset must be an existing directory or a .csv file: {source}")
+        raise ConfigurationError(
+            "dataset must be an existing directory or a .csv file: "
+            f"{source}"
+        )
 
-    model = TorchImageClassifier(spec, device=args.device or cfg.runtime.device)
+    model = TorchImageClassifier(
+        spec,
+        device=args.device or cfg.runtime.device,
+    )
+
     store = ArtifactStore(args.output or cfg.paths.artifacts)
-    result = run_evaluation(model, dataset, store, eval_cfg, evaluation_id=args.evaluation_id)
+
+    result = run_evaluation(
+        model,
+        dataset,
+        store,
+        eval_cfg,
+        evaluation_id=args.evaluation_id,
+    )
 
     metrics = result.metrics
-    location = store.root / "evaluations" / result.configuration["evaluation_id"]
+    location = (
+        store.root
+        / "evaluations"
+        / result.configuration["evaluation_id"]
+    )
+
     print(f"evaluation: {location}")
     print(
-        f"samples: {metrics['num_samples']}  accuracy: {metrics['accuracy']:.4f}  "
-        f"macro_f1: {metrics['macro_f1']:.4f}  weighted_f1: {metrics['weighted_f1']:.4f}"
+        f"samples: {metrics['num_samples']}  "
+        f"accuracy: {metrics['accuracy']:.4f}  "
+        f"macro_f1: {metrics['macro_f1']:.4f}  "
+        f"weighted_f1: {metrics['weighted_f1']:.4f}"
     )
+
     return 0
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="modellab", description="Investigate why image classifiers fail."
+        prog="modellab",
+        description="Investigate why image classifiers fail.",
     )
+
     sub = parser.add_subparsers(dest="command", required=True)
 
-    version = sub.add_parser("version", help="print the installed version")
+    version = sub.add_parser(
+        "version",
+        help="print the installed version",
+    )
     version.set_defaults(func=_cmd_version)
 
-    doctor = sub.add_parser("doctor", help="check the environment and configuration")
-    doctor.add_argument("--config", type=Path, default=None, help="path to a YAML config")
+    doctor = sub.add_parser(
+        "doctor",
+        help="check the environment and configuration",
+    )
+    doctor.add_argument(
+        "--config",
+        type=Path,
+        default=None,
+        help="path to a YAML config",
+    )
     doctor.set_defaults(func=_cmd_doctor)
 
-    ev = sub.add_parser("evaluate", help="evaluate an image classifier on a labelled dataset")
+    ev = sub.add_parser(
+        "evaluate",
+        help="evaluate an image classifier on a labelled dataset",
+    )
+
     ev.add_argument(
         "--model",
         type=Path,
         required=True,
-        help="YAML file with a 'model' section and an optional 'preprocess' section",
+        help=(
+            "YAML file with a 'model' section and an optional "
+            "'preprocess' section"
+        ),
     )
+
     ev.add_argument(
         "--dataset",
         type=Path,
         required=True,
         help="directory with one folder per class, or a CSV file",
     )
-    ev.add_argument("--config", type=Path, default=None, help="path to a YAML config")
-    ev.add_argument("--output", type=Path, default=None, help="artifact directory")
-    ev.add_argument("--device", choices=["auto", "cpu", "cuda"], default=None)
-    ev.add_argument("--batch-size", type=int, default=32)
-    ev.add_argument("--num-workers", type=int, default=0)
-    ev.add_argument("--root", type=Path, default=None, help="image root for CSV datasets")
+
+    ev.add_argument(
+        "--config",
+        type=Path,
+        default=None,
+        help="path to a YAML config",
+    )
+
+    ev.add_argument(
+        "--output",
+        type=Path,
+        default=None,
+        help="artifact directory",
+    )
+
+    ev.add_argument(
+        "--device",
+        choices=["auto", "cpu", "cuda"],
+        default=None,
+    )
+
+    ev.add_argument(
+        "--batch-size",
+        type=int,
+        default=32,
+    )
+
+    ev.add_argument(
+        "--num-workers",
+        type=int,
+        default=0,
+    )
+
+    ev.add_argument(
+        "--root",
+        type=Path,
+        default=None,
+        help="image root for CSV datasets",
+    )
+
     ev.add_argument("--path-column", default="path")
     ev.add_argument("--label-column", default="label")
     ev.add_argument("--evaluation-id", default=None)
+
     ev.set_defaults(func=_cmd_evaluate)
 
     return parser
@@ -177,6 +268,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+
     try:
         return args.func(args)
     except ModelLabError as exc:
