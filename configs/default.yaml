@@ -1,0 +1,13 @@
+project:
+  name: modellab
+  seed: 42
+
+runtime:
+  device: auto
+  log_level: INFO
+
+paths:
+  data: ./data
+  models: ./models
+  artifacts: ./artifacts
+  experiments: ./experiments
