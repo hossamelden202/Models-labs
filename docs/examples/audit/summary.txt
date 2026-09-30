@@ -1,0 +1,75 @@
+ModelLab dataset audit
+dataset: synthetic-example    layout: split_class    fingerprint: 39018c75136ac894
+samples: 85  (ok 83, unreadable 2)
+excluded from scan: 3
+classes: BLOOD 17 (20.0%), EMPTY 0 (0.0%), GORE 17 (20.0%), NEUTRAL 51 (60.0%)
+splits: test 11, train 62, val 12
+findings: high 4, medium 5, low 5, info 4
+
+[HIGH] image_integrity.decode_failures: Undecodable images (count 1)
+    The file exists but could not be decoded.
+    examples: train/GORE/corrupt.png
+    splits: train
+[HIGH] image_integrity.truncated_images: Truncated images (count 1)
+    The decoder reported incomplete image data.
+    examples: val/BLOOD/truncated.jpg
+    splits: val
+[HIGH] label_integrity.conflicting_labels_identical_content: Identical file content with different labels (count 2)
+    Byte-identical files carry more than one label.
+    examples: train/GORE/g02.png, train/NEUTRAL/conflict_g2.png
+    splits: train
+[HIGH] leakage.exact_duplicate_leakage: Identical files in more than one split (count 2)
+    Byte-identical content is present in more than one split.
+    examples: test/BLOOD/leak_exact_b01.png, train/BLOOD/b01.png
+    splits: test, train
+[MEDIUM] distribution.class_imbalance: Class imbalance (count 3)
+    The largest class has 3.0 times as many samples as the smallest non-empty class.
+[MEDIUM] exact_duplicates.duplicate_groups: Byte-identical files (count 6)
+    Several distinct files have identical content.
+    examples: test/BLOOD/leak_exact_b01.png, train/BLOOD/b01.png, train/GORE/g00.png, train/GORE/g00_copy.png, train/GORE/g02.png, ...
+    splits: test, train
+[MEDIUM] label_integrity.class_missing_from_split: Classes absent from a split (count 3)
+    Some split and class combinations contain no samples.
+    splits: test, train, val
+[MEDIUM] label_integrity.empty_classes: Classes without samples (count 1)
+    These classes are declared or expected but contain no samples.
+[MEDIUM] leakage.near_duplicate_leakage: Near-duplicate images in more than one split (count 2)
+    Grouping uses a 64-bit difference hash. It links resized, re-encoded or lightly edited copies; similarity is not proof that two images share a source.
+    examples: train/NEUTRAL/n05.png, val/NEUTRAL/near_n05.png
+    splits: train, val
+[LOW] distribution.outliers_file_size: Outliers in file_size (count 3)
+    Values more than 4.0 robust z-scores from the median.
+    examples: train/BLOOD/wide.png, train/NEUTRAL/gray.png, val/GORE/rgba.png
+    splits: train, val
+[LOW] image_integrity.extreme_aspect_ratio: Extreme aspect ratios (count 1)
+    Longer side more than 4.0 times the shorter side.
+    examples: train/BLOOD/wide.png
+    splits: train
+[LOW] image_integrity.tiny_files: Very small files (count 1)
+    File size below 256 bytes.
+    examples: train/GORE/corrupt.png
+    splits: train
+[LOW] near_duplicates.near_duplicate_groups: Near-duplicate image groups (count 2)
+    Grouping uses a 64-bit difference hash. It links resized, re-encoded or lightly edited copies; similarity is not proof that two images share a source.
+    examples: train/NEUTRAL/n05.png, val/NEUTRAL/near_n05.png
+    splits: train, val
+[LOW] statistics.outliers_saturation: Outliers in saturation (count 1)
+    Values more than 4.0 robust z-scores from the median.
+    examples: train/NEUTRAL/gray.png
+    splits: train
+[INFO] image_integrity.excluded_non_image_files: Non-image files skipped during the directory scan (count 1)
+    These files were not treated as samples because of their extension.
+[INFO] image_integrity.mode_L: Images in L mode (count 1)
+    These images are stored in L mode, not 3-channel RGB.
+    examples: train/NEUTRAL/gray.png
+    splits: train
+[INFO] image_integrity.mode_RGBA: Images in RGBA mode (count 1)
+    These images are stored in RGBA mode, not 3-channel RGB.
+    examples: val/GORE/rgba.png
+    splits: val
+[INFO] leakage.filename_overlap: File names shared between splits (count 2)
+    The same file name appears in more than one split. A matching name is only a lead to inspect; it does not show that the images are related.
+    examples: test/NEUTRAL/scene_alpha_001.png, train/NEUTRAL/scene_alpha_001.png
+    splits: test, train
+
+Findings describe measured properties of the data. They do not by themselves establish the cause of any model behaviour.

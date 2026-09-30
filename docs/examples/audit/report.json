@@ -1,0 +1,983 @@
+{
+  "config": {
+    "class_names": null,
+    "compute_stats": true,
+    "filename_overlap_min_stem": 6,
+    "id_column": null,
+    "imbalance_ratio": 2.5,
+    "label_column": "label",
+    "label_name_column": null,
+    "layout": "auto",
+    "max_aspect_ratio": 4.0,
+    "max_bucket_size": 5000,
+    "max_evidence": 20,
+    "max_file_bytes": 52428800,
+    "max_listed_groups": 200,
+    "max_side": 10000,
+    "min_contrast": 0.01,
+    "min_file_bytes": 256,
+    "min_samples_for_outliers": 20,
+    "min_side": 16,
+    "min_split_size_for_gap": 20,
+    "near_duplicate_threshold": 4,
+    "outlier_z": 4.0,
+    "path_column": "path",
+    "severe_imbalance_ratio": 20.0,
+    "split_column": "split",
+    "split_proportion_gap": 0.15
+  },
+  "dataset_id": "synthetic-example",
+  "distribution": {
+    "class_counts": {
+      "BLOOD": 17,
+      "EMPTY": 0,
+      "GORE": 17,
+      "NEUTRAL": 51
+    },
+    "class_imbalance": {
+      "majority_class": "NEUTRAL",
+      "minority_class": "BLOOD",
+      "ratio": 3.0
+    },
+    "modes": {
+      "L": 1,
+      "RGB": 81,
+      "RGBA": 1
+    },
+    "outliers": {
+      "aspect_ratio": {
+        "num_flagged": 0,
+        "robust_stats": {
+          "mad": 0.0,
+          "median": 1.0
+        }
+      },
+      "file_size": {
+        "num_flagged": 3,
+        "robust_stats": {
+          "mad": 43.0,
+          "median": 7026.0
+        }
+      },
+      "height": {
+        "num_flagged": 0,
+        "robust_stats": {
+          "mad": 0.0,
+          "median": 64.0
+        }
+      },
+      "width": {
+        "num_flagged": 0,
+        "robust_stats": {
+          "mad": 0.0,
+          "median": 64.0
+        }
+      }
+    },
+    "split_class_proportions": {
+      "test": {
+        "BLOOD": 0.3636,
+        "EMPTY": 0.0,
+        "GORE": 0.2727,
+        "NEUTRAL": 0.3636
+      },
+      "train": {
+        "BLOOD": 0.1452,
+        "EMPTY": 0.0,
+        "GORE": 0.1613,
+        "NEUTRAL": 0.6935
+      },
+      "val": {
+        "BLOOD": 0.3333,
+        "EMPTY": 0.0,
+        "GORE": 0.3333,
+        "NEUTRAL": 0.3333
+      }
+    }
+  },
+  "exact_duplicates": {
+    "groups": [
+      {
+        "classes": [
+          "GORE",
+          "NEUTRAL"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_conflict": true,
+        "members_truncated": false,
+        "sample_ids": [
+          "train/GORE/g02.png",
+          "train/NEUTRAL/conflict_g2.png"
+        ],
+        "sha256": "1fc8fda15b66d40d7969abd1e1dcd75c1797b27f541e8f5418cee7efc49b3e0e",
+        "splits": [
+          "train"
+        ]
+      },
+      {
+        "classes": [
+          "GORE"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_conflict": false,
+        "members_truncated": false,
+        "sample_ids": [
+          "train/GORE/g00.png",
+          "train/GORE/g00_copy.png"
+        ],
+        "sha256": "2369c18af52d6ac602e3568843a83775f025a83a961ae941b23ea20139fec2b1",
+        "splits": [
+          "train"
+        ]
+      },
+      {
+        "classes": [
+          "BLOOD"
+        ],
+        "count": 2,
+        "cross_split": true,
+        "label_conflict": false,
+        "members_truncated": false,
+        "sample_ids": [
+          "test/BLOOD/leak_exact_b01.png",
+          "train/BLOOD/b01.png"
+        ],
+        "sha256": "e863adc19650a984b212153c7623d1aa00ac6c169fa48133119ccb6c34661bdf",
+        "splits": [
+          "test",
+          "train"
+        ]
+      }
+    ],
+    "groups_truncated": false,
+    "num_affected_samples": 6,
+    "num_cross_split_groups": 1,
+    "num_groups": 3,
+    "num_label_conflict_groups": 1,
+    "num_redundant_copies": 3
+  },
+  "findings": [
+    {
+      "affected_classes": [
+        "GORE"
+      ],
+      "affected_splits": [
+        "train"
+      ],
+      "category": "image_integrity",
+      "code": "decode_failures",
+      "count": 1,
+      "description": "The file exists but could not be decoded.",
+      "details": {
+        "error_types": {
+          "UnidentifiedImageError": 1
+        }
+      },
+      "evidence_truncated": false,
+      "finding_id": "image_integrity.decode_failures",
+      "sample_ids": [
+        "train/GORE/corrupt.png"
+      ],
+      "severity": "high",
+      "title": "Undecodable images"
+    },
+    {
+      "affected_classes": [
+        "BLOOD"
+      ],
+      "affected_splits": [
+        "val"
+      ],
+      "category": "image_integrity",
+      "code": "truncated_images",
+      "count": 1,
+      "description": "The decoder reported incomplete image data.",
+      "details": {
+        "error_types": {
+          "OSError": 1
+        }
+      },
+      "evidence_truncated": false,
+      "finding_id": "image_integrity.truncated_images",
+      "sample_ids": [
+        "val/BLOOD/truncated.jpg"
+      ],
+      "severity": "high",
+      "title": "Truncated images"
+    },
+    {
+      "affected_classes": [
+        "GORE",
+        "NEUTRAL"
+      ],
+      "affected_splits": [
+        "train"
+      ],
+      "category": "label_integrity",
+      "code": "conflicting_labels_identical_content",
+      "count": 2,
+      "description": "Byte-identical files carry more than one label.",
+      "details": {
+        "groups": [
+          {
+            "labels": [
+              "GORE",
+              "NEUTRAL"
+            ],
+            "sample_ids": [
+              "train/GORE/g02.png",
+              "train/NEUTRAL/conflict_g2.png"
+            ],
+            "sha256": "1fc8fda15b66d40d7969abd1e1dcd75c1797b27f541e8f5418cee7efc49b3e0e"
+          }
+        ],
+        "num_groups": 1
+      },
+      "evidence_truncated": false,
+      "finding_id": "label_integrity.conflicting_labels_identical_content",
+      "sample_ids": [
+        "train/GORE/g02.png",
+        "train/NEUTRAL/conflict_g2.png"
+      ],
+      "severity": "high",
+      "title": "Identical file content with different labels"
+    },
+    {
+      "affected_classes": [
+        "BLOOD"
+      ],
+      "affected_splits": [
+        "test",
+        "train"
+      ],
+      "category": "leakage",
+      "code": "exact_duplicate_leakage",
+      "count": 2,
+      "description": "Byte-identical content is present in more than one split.",
+      "details": {
+        "num_groups": 1
+      },
+      "evidence_truncated": false,
+      "finding_id": "leakage.exact_duplicate_leakage",
+      "sample_ids": [
+        "test/BLOOD/leak_exact_b01.png",
+        "train/BLOOD/b01.png"
+      ],
+      "severity": "high",
+      "title": "Identical files in more than one split"
+    },
+    {
+      "affected_classes": [
+        "BLOOD",
+        "NEUTRAL"
+      ],
+      "affected_splits": [],
+      "category": "distribution",
+      "code": "class_imbalance",
+      "count": 3,
+      "description": "The largest class has 3.0 times as many samples as the smallest non-empty class.",
+      "details": {
+        "counts": {
+          "BLOOD": 17,
+          "EMPTY": 0,
+          "GORE": 17,
+          "NEUTRAL": 51
+        },
+        "ratio": 3.0
+      },
+      "evidence_truncated": false,
+      "finding_id": "distribution.class_imbalance",
+      "sample_ids": [],
+      "severity": "medium",
+      "title": "Class imbalance"
+    },
+    {
+      "affected_classes": [
+        "BLOOD",
+        "GORE",
+        "NEUTRAL"
+      ],
+      "affected_splits": [
+        "test",
+        "train"
+      ],
+      "category": "exact_duplicates",
+      "code": "duplicate_groups",
+      "count": 6,
+      "description": "Several distinct files have identical content.",
+      "details": {
+        "num_groups": 3,
+        "num_redundant_copies": 3
+      },
+      "evidence_truncated": false,
+      "finding_id": "exact_duplicates.duplicate_groups",
+      "sample_ids": [
+        "test/BLOOD/leak_exact_b01.png",
+        "train/BLOOD/b01.png",
+        "train/GORE/g00.png",
+        "train/GORE/g00_copy.png",
+        "train/GORE/g02.png",
+        "train/NEUTRAL/conflict_g2.png"
+      ],
+      "severity": "medium",
+      "title": "Byte-identical files"
+    },
+    {
+      "affected_classes": [
+        "EMPTY"
+      ],
+      "affected_splits": [
+        "test",
+        "train",
+        "val"
+      ],
+      "category": "label_integrity",
+      "code": "class_missing_from_split",
+      "count": 3,
+      "description": "Some split and class combinations contain no samples.",
+      "details": {
+        "pairs": [
+          {
+            "class": "EMPTY",
+            "split": "test"
+          },
+          {
+            "class": "EMPTY",
+            "split": "train"
+          },
+          {
+            "class": "EMPTY",
+            "split": "val"
+          }
+        ]
+      },
+      "evidence_truncated": false,
+      "finding_id": "label_integrity.class_missing_from_split",
+      "sample_ids": [],
+      "severity": "medium",
+      "title": "Classes absent from a split"
+    },
+    {
+      "affected_classes": [
+        "EMPTY"
+      ],
+      "affected_splits": [],
+      "category": "label_integrity",
+      "code": "empty_classes",
+      "count": 1,
+      "description": "These classes are declared or expected but contain no samples.",
+      "details": {
+        "classes": [
+          "EMPTY"
+        ]
+      },
+      "evidence_truncated": false,
+      "finding_id": "label_integrity.empty_classes",
+      "sample_ids": [],
+      "severity": "medium",
+      "title": "Classes without samples"
+    },
+    {
+      "affected_classes": [
+        "NEUTRAL"
+      ],
+      "affected_splits": [
+        "train",
+        "val"
+      ],
+      "category": "leakage",
+      "code": "near_duplicate_leakage",
+      "count": 2,
+      "description": "Grouping uses a 64-bit difference hash. It links resized, re-encoded or lightly edited copies; similarity is not proof that two images share a source.",
+      "details": {
+        "num_groups": 1
+      },
+      "evidence_truncated": false,
+      "finding_id": "leakage.near_duplicate_leakage",
+      "sample_ids": [
+        "train/NEUTRAL/n05.png",
+        "val/NEUTRAL/near_n05.png"
+      ],
+      "severity": "medium",
+      "title": "Near-duplicate images in more than one split"
+    },
+    {
+      "affected_classes": [
+        "BLOOD",
+        "GORE",
+        "NEUTRAL"
+      ],
+      "affected_splits": [
+        "train",
+        "val"
+      ],
+      "category": "distribution",
+      "code": "outliers_file_size",
+      "count": 3,
+      "description": "Values more than 4.0 robust z-scores from the median.",
+      "details": {
+        "mad": 43.0,
+        "median": 7026.0
+      },
+      "evidence_truncated": false,
+      "finding_id": "distribution.outliers_file_size",
+      "sample_ids": [
+        "train/BLOOD/wide.png",
+        "train/NEUTRAL/gray.png",
+        "val/GORE/rgba.png"
+      ],
+      "severity": "low",
+      "title": "Outliers in file_size"
+    },
+    {
+      "affected_classes": [
+        "BLOOD"
+      ],
+      "affected_splits": [
+        "train"
+      ],
+      "category": "image_integrity",
+      "code": "extreme_aspect_ratio",
+      "count": 1,
+      "description": "Longer side more than 4.0 times the shorter side.",
+      "details": {},
+      "evidence_truncated": false,
+      "finding_id": "image_integrity.extreme_aspect_ratio",
+      "sample_ids": [
+        "train/BLOOD/wide.png"
+      ],
+      "severity": "low",
+      "title": "Extreme aspect ratios"
+    },
+    {
+      "affected_classes": [
+        "GORE"
+      ],
+      "affected_splits": [
+        "train"
+      ],
+      "category": "image_integrity",
+      "code": "tiny_files",
+      "count": 1,
+      "description": "File size below 256 bytes.",
+      "details": {},
+      "evidence_truncated": false,
+      "finding_id": "image_integrity.tiny_files",
+      "sample_ids": [
+        "train/GORE/corrupt.png"
+      ],
+      "severity": "low",
+      "title": "Very small files"
+    },
+    {
+      "affected_classes": [
+        "NEUTRAL"
+      ],
+      "affected_splits": [
+        "train",
+        "val"
+      ],
+      "category": "near_duplicates",
+      "code": "near_duplicate_groups",
+      "count": 2,
+      "description": "Grouping uses a 64-bit difference hash. It links resized, re-encoded or lightly edited copies; similarity is not proof that two images share a source.",
+      "details": {
+        "num_groups": 1
+      },
+      "evidence_truncated": false,
+      "finding_id": "near_duplicates.near_duplicate_groups",
+      "sample_ids": [
+        "train/NEUTRAL/n05.png",
+        "val/NEUTRAL/near_n05.png"
+      ],
+      "severity": "low",
+      "title": "Near-duplicate image groups"
+    },
+    {
+      "affected_classes": [
+        "NEUTRAL"
+      ],
+      "affected_splits": [
+        "train"
+      ],
+      "category": "statistics",
+      "code": "outliers_saturation",
+      "count": 1,
+      "description": "Values more than 4.0 robust z-scores from the median.",
+      "details": {
+        "mad": 0.009573,
+        "median": 0.398109
+      },
+      "evidence_truncated": false,
+      "finding_id": "statistics.outliers_saturation",
+      "sample_ids": [
+        "train/NEUTRAL/gray.png"
+      ],
+      "severity": "low",
+      "title": "Outliers in saturation"
+    },
+    {
+      "affected_classes": [],
+      "affected_splits": [],
+      "category": "image_integrity",
+      "code": "excluded_non_image_files",
+      "count": 1,
+      "description": "These files were not treated as samples because of their extension.",
+      "details": {
+        "examples": [
+          "train/GORE/notes.txt"
+        ],
+        "extensions": {
+          ".txt": 1
+        }
+      },
+      "evidence_truncated": false,
+      "finding_id": "image_integrity.excluded_non_image_files",
+      "sample_ids": [],
+      "severity": "info",
+      "title": "Non-image files skipped during the directory scan"
+    },
+    {
+      "affected_classes": [
+        "NEUTRAL"
+      ],
+      "affected_splits": [
+        "train"
+      ],
+      "category": "image_integrity",
+      "code": "mode_L",
+      "count": 1,
+      "description": "These images are stored in L mode, not 3-channel RGB.",
+      "details": {},
+      "evidence_truncated": false,
+      "finding_id": "image_integrity.mode_L",
+      "sample_ids": [
+        "train/NEUTRAL/gray.png"
+      ],
+      "severity": "info",
+      "title": "Images in L mode"
+    },
+    {
+      "affected_classes": [
+        "GORE"
+      ],
+      "affected_splits": [
+        "val"
+      ],
+      "category": "image_integrity",
+      "code": "mode_RGBA",
+      "count": 1,
+      "description": "These images are stored in RGBA mode, not 3-channel RGB.",
+      "details": {},
+      "evidence_truncated": false,
+      "finding_id": "image_integrity.mode_RGBA",
+      "sample_ids": [
+        "val/GORE/rgba.png"
+      ],
+      "severity": "info",
+      "title": "Images in RGBA mode"
+    },
+    {
+      "affected_classes": [
+        "NEUTRAL"
+      ],
+      "affected_splits": [
+        "test",
+        "train"
+      ],
+      "category": "leakage",
+      "code": "filename_overlap",
+      "count": 2,
+      "description": "The same file name appears in more than one split. A matching name is only a lead to inspect; it does not show that the images are related.",
+      "details": {
+        "num_groups": 1
+      },
+      "evidence_truncated": false,
+      "finding_id": "leakage.filename_overlap",
+      "sample_ids": [
+        "test/NEUTRAL/scene_alpha_001.png",
+        "train/NEUTRAL/scene_alpha_001.png"
+      ],
+      "severity": "info",
+      "title": "File names shared between splits"
+    }
+  ],
+  "fingerprint": "39018c75136ac894",
+  "image_integrity": {
+    "excluded_non_image_files": 1,
+    "extreme_aspect_ratio": 1,
+    "failures": {
+      "decode_failures": 1,
+      "truncated_images": 1
+    },
+    "format_extension_mismatch": 0,
+    "huge_files": 0,
+    "huge_images": 0,
+    "non_rgb_modes": {
+      "L": 1,
+      "RGBA": 1
+    },
+    "tiny_files": 1,
+    "tiny_images": 0,
+    "unsupported_extension": 0
+  },
+  "inventory": {
+    "by_status": {
+      "ok": 83,
+      "unreadable": 2
+    },
+    "classes": {
+      "BLOOD": {
+        "count": 17,
+        "percent": 20.0
+      },
+      "EMPTY": {
+        "count": 0,
+        "percent": 0.0
+      },
+      "GORE": {
+        "count": 17,
+        "percent": 20.0
+      },
+      "NEUTRAL": {
+        "count": 51,
+        "percent": 60.0
+      }
+    },
+    "dimensions": {
+      "aspect_ratio": {
+        "max": 10.0,
+        "mean": 1.108434,
+        "median": 1.0,
+        "min": 1.0,
+        "n": 83,
+        "p05": 1.0,
+        "p95": 1.0,
+        "std": 0.981909
+      },
+      "height": {
+        "max": 64.0,
+        "mean": 63.710843,
+        "median": 64.0,
+        "min": 40.0,
+        "n": 83,
+        "p05": 64.0,
+        "p95": 64.0,
+        "std": 2.618425
+      },
+      "most_common_sizes": [
+        {
+          "count": 82,
+          "size": "64x64"
+        },
+        {
+          "count": 1,
+          "size": "400x40"
+        }
+      ],
+      "width": {
+        "max": 400.0,
+        "mean": 68.048193,
+        "median": 64.0,
+        "min": 64.0,
+        "n": 83,
+        "p05": 64.0,
+        "p95": 64.0,
+        "std": 36.657945
+      }
+    },
+    "duplicate_paths": {
+      "num_groups": 0,
+      "paths": []
+    },
+    "extensions": {
+      ".jpg": 1,
+      ".png": 84
+    },
+    "file_size_bytes": {
+      "max": 15842.0,
+      "mean": 6924.611765,
+      "median": 7022.0,
+      "min": 19.0,
+      "n": 85,
+      "p05": 6891.4,
+      "p95": 7143.8,
+      "std": 1500.943963
+    },
+    "formats": {
+      "PNG": 83
+    },
+    "missing_files": 0,
+    "modes": {
+      "L": 1,
+      "RGB": 81,
+      "RGBA": 1
+    },
+    "splits": {
+      "test": {
+        "count": 11,
+        "percent": 12.9412
+      },
+      "train": {
+        "count": 62,
+        "percent": 72.9412
+      },
+      "val": {
+        "count": 12,
+        "percent": 14.1176
+      }
+    },
+    "total_samples": 85,
+    "unreadable_files": 2
+  },
+  "label_integrity": {
+    "classes_missing_from_splits": 3,
+    "conflicting_label_groups": 1,
+    "duplicate_sample_ids": 0,
+    "empty_classes": [
+      "EMPTY"
+    ],
+    "empty_splits": [],
+    "inconsistent_mapping": {
+      "label_to_names": {},
+      "name_to_labels": {}
+    },
+    "label_variants": {},
+    "missing_labels": 0,
+    "split_overlap": 0,
+    "unknown_labels": 0
+  },
+  "leakage": {
+    "applicable": true,
+    "exact_duplicate_cross_split_groups": 1,
+    "filename_overlap": {
+      "groups": [
+        {
+          "distinct_content_hashes": 2,
+          "sample_ids": [
+            "test/NEUTRAL/scene_alpha_001.png",
+            "train/NEUTRAL/scene_alpha_001.png"
+          ],
+          "splits": [
+            "test",
+            "train"
+          ],
+          "stem": "scene_alpha_001"
+        }
+      ],
+      "num_groups": 1
+    },
+    "label_conflict_groups": 1,
+    "near_duplicate_cross_split_groups": 1,
+    "note": "Leakage findings report shared content or names between splits. File-name matches are leads only and are not evidence of related images."
+  },
+  "near_duplicates": {
+    "groups": [
+      {
+        "classes": [
+          "NEUTRAL"
+        ],
+        "count": 2,
+        "cross_split": true,
+        "label_disagreement": false,
+        "max_link_distance": 0,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 0,
+        "sample_ids": [
+          "train/NEUTRAL/n05.png",
+          "val/NEUTRAL/near_n05.png"
+        ],
+        "splits": [
+          "train",
+          "val"
+        ]
+      }
+    ],
+    "groups_truncated": false,
+    "method": "dhash64",
+    "num_affected_samples": 2,
+    "num_candidate_pairs_checked": 6,
+    "num_cross_split_groups": 1,
+    "num_groups": 1,
+    "num_hashed": 83,
+    "num_links": 0,
+    "num_skipped_buckets": 0,
+    "num_unique_hashes": 79,
+    "threshold": 4
+  },
+  "scan": {
+    "declared_classes": [
+      "BLOOD",
+      "EMPTY",
+      "GORE",
+      "NEUTRAL"
+    ],
+    "declared_splits": [
+      "test",
+      "train",
+      "val"
+    ],
+    "errors_by_stage_and_type": {
+      "decode:OSError": 1,
+      "decode:UnidentifiedImageError": 1
+    },
+    "excluded_by_reason": {
+      "hidden_directory": 1,
+      "hidden_file": 1,
+      "unsupported_extension": 1
+    },
+    "excluded_total": 3,
+    "layout": "split_class",
+    "records_by_status": {
+      "ok": 83,
+      "unreadable": 2
+    },
+    "records_total": 85,
+    "records_with_warnings": 0,
+    "source_kind": "folder"
+  },
+  "schema_version": 1,
+  "statistics": {
+    "enabled": true,
+    "near_uniform_images": 0,
+    "num_measured": 83,
+    "outliers": {
+      "brightness": {
+        "num_flagged": 0,
+        "robust_stats": {
+          "mad": 0.006603,
+          "median": 0.432156
+        }
+      },
+      "contrast": {
+        "num_flagged": 0,
+        "robust_stats": {
+          "mad": 0.003425,
+          "median": 0.085788
+        }
+      },
+      "saturation": {
+        "num_flagged": 1,
+        "robust_stats": {
+          "mad": 0.009573,
+          "median": 0.398109
+        }
+      }
+    },
+    "overall": {
+      "brightness": {
+        "max": 0.453979,
+        "mean": 0.431758,
+        "median": 0.432156,
+        "min": 0.404552,
+        "n": 83,
+        "p05": 0.416563,
+        "p95": 0.445828,
+        "std": 0.009306
+      },
+      "contrast": {
+        "max": 0.097489,
+        "mean": 0.085836,
+        "median": 0.085788,
+        "min": 0.074616,
+        "n": 83,
+        "p05": 0.078262,
+        "p95": 0.094102,
+        "std": 0.004736
+      },
+      "saturation": {
+        "max": 0.430913,
+        "mean": 0.393134,
+        "median": 0.398109,
+        "min": 0.0,
+        "n": 83,
+        "p05": 0.376843,
+        "p95": 0.417522,
+        "std": 0.045343
+      }
+    },
+    "per_class": {
+      "BLOOD": {
+        "brightness": {
+          "mean": 0.436979,
+          "median": 0.436839,
+          "n": 16,
+          "std": 0.008806
+        },
+        "contrast": {
+          "mean": 0.086006,
+          "median": 0.086094,
+          "n": 16,
+          "std": 0.004142
+        },
+        "saturation": {
+          "mean": 0.394998,
+          "median": 0.395958,
+          "n": 16,
+          "std": 0.01217
+        }
+      },
+      "GORE": {
+        "brightness": {
+          "mean": 0.429075,
+          "median": 0.427562,
+          "n": 16,
+          "std": 0.008468
+        },
+        "contrast": {
+          "mean": 0.086004,
+          "median": 0.085315,
+          "n": 16,
+          "std": 0.00554
+        },
+        "saturation": {
+          "mean": 0.397222,
+          "median": 0.399126,
+          "n": 16,
+          "std": 0.015454
+        }
+      },
+      "NEUTRAL": {
+        "brightness": {
+          "mean": 0.430962,
+          "median": 0.431821,
+          "n": 51,
+          "std": 0.009092
+        },
+        "contrast": {
+          "mean": 0.08573,
+          "median": 0.086039,
+          "n": 51,
+          "std": 0.004633
+        },
+        "saturation": {
+          "mean": 0.391266,
+          "median": 0.398286,
+          "n": 51,
+          "std": 0.056699
+        }
+      }
+    }
+  },
+  "summary": {
+    "findings_by_category": {
+      "distribution": 2,
+      "exact_duplicates": 1,
+      "image_integrity": 7,
+      "label_integrity": 3,
+      "leakage": 3,
+      "near_duplicates": 1,
+      "statistics": 1
+    },
+    "findings_by_severity": {
+      "high": 4,
+      "info": 4,
+      "low": 5,
+      "medium": 5
+    },
+    "total_findings": 18
+  }
+}

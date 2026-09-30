@@ -135,6 +135,44 @@ def _cmd_evaluate(args) -> int:
     return 0
 
 
+def _cmd_audit(args) -> int:
+    cfg = load_config(args.config)
+    setup_logging(cfg.runtime.log_level)
+
+    try:
+        from modellab.audit import AuditConfig, run_audit, scan_csv, scan_folder
+        from modellab.core.results import ArtifactStore
+    except ImportError as exc:
+        raise ConfigurationError(
+            f"audit needs pillow, numpy, pandas and pyarrow ({exc})"
+        ) from exc
+
+    audit_cfg = AuditConfig()
+    if args.audit_config is not None:
+        try:
+            audit_cfg = AuditConfig.model_validate(_read_mapping(args.audit_config))
+        except ValidationError as exc:
+            raise ConfigurationError(f"invalid audit config {args.audit_config}: {exc}") from exc
+
+    source = args.dataset
+    if source.is_dir():
+        scan = scan_folder(source, audit_cfg, dataset_id=args.dataset_id)
+    elif source.suffix.lower() == ".csv":
+        scan = scan_csv(source, audit_cfg, root=args.root, dataset_id=args.dataset_id)
+    else:
+        raise ConfigurationError(f"dataset must be an existing directory or a .csv file: {source}")
+
+    store = ArtifactStore(args.output or cfg.paths.artifacts)
+    run = run_audit(scan, store, audit_cfg, audit_id=args.audit_id)
+    counts = run.report.summary["findings_by_severity"]
+    print(f"audit: {run.directory}")
+    print(
+        f"samples: {run.report.inventory['total_samples']}  "
+        + "  ".join(f"{k}: {counts.get(k, 0)}" for k in ("high", "medium", "low", "info"))
+    )
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="modellab", description="Investigate why image classifiers fail."
@@ -171,6 +209,16 @@ def build_parser() -> argparse.ArgumentParser:
     ev.add_argument("--label-column", default="label")
     ev.add_argument("--evaluation-id", default=None)
     ev.set_defaults(func=_cmd_evaluate)
+
+    au = sub.add_parser("audit", help="audit an image dataset without running a model")
+    au.add_argument("--dataset", type=Path, required=True, help="directory or CSV file")
+    au.add_argument("--audit-config", type=Path, default=None, help="YAML with audit settings")
+    au.add_argument("--config", type=Path, default=None, help="path to a YAML config")
+    au.add_argument("--output", type=Path, default=None, help="artifact directory")
+    au.add_argument("--root", type=Path, default=None, help="image root for CSV datasets")
+    au.add_argument("--audit-id", default=None)
+    au.add_argument("--dataset-id", default=None)
+    au.set_defaults(func=_cmd_audit)
 
     return parser
 

@@ -1,0 +1,14 @@
+[
+  {
+    "path": "train/.hidden",
+    "reason": "hidden_file"
+  },
+  {
+    "path": "train/GORE/.ipynb_checkpoints",
+    "reason": "hidden_directory"
+  },
+  {
+    "path": "train/GORE/notes.txt",
+    "reason": "unsupported_extension"
+  }
+]
