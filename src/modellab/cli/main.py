@@ -173,6 +173,37 @@ def _cmd_audit(args) -> int:
     return 0
 
 
+def _cmd_analyze(args) -> int:
+    cfg = load_config(args.config)
+    setup_logging(cfg.runtime.log_level)
+    try:
+        from modellab.analysis import FailureConfig, analyze_failures, load_audit, load_evaluation
+        from modellab.core.results import ArtifactStore
+    except ImportError as exc:
+        raise ConfigurationError(f"analysis needs numpy, pandas, scipy and scikit-learn ({exc})") from exc
+
+    failure_cfg = FailureConfig()
+    if args.analysis_config is not None:
+        try:
+            failure_cfg = FailureConfig.model_validate(_read_mapping(args.analysis_config))
+        except ValidationError as exc:
+            raise ConfigurationError(f"invalid analysis config {args.analysis_config}: {exc}") from exc
+
+    store = ArtifactStore(args.output or cfg.paths.artifacts)
+    predictions, class_names, _ = load_evaluation(store.root, args.evaluation)
+    records = report = None
+    if args.audit:
+        records, report = load_audit(store.root, args.audit)
+    result = analyze_failures(
+        predictions, class_names, failure_cfg, audit_records=records, audit_report=report,
+        store=store, analysis_id=args.analysis_id, evaluation_id=args.evaluation, audit_id=args.audit,
+    )
+    print(f"analysis: {result.directory}")
+    print(f"samples: {len(result.samples)}  errors: {result.report['overall']['n_errors']}  "
+          f"tested slices: {result.report['slices']['info']['num_tested']}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="modellab", description="Investigate why image classifiers fail."
@@ -219,6 +250,15 @@ def build_parser() -> argparse.ArgumentParser:
     au.add_argument("--audit-id", default=None)
     au.add_argument("--dataset-id", default=None)
     au.set_defaults(func=_cmd_audit)
+
+    an = sub.add_parser("analyze", help="mine failures and slices from a stored evaluation")
+    an.add_argument("--evaluation", required=True, help="evaluation id under <output>/evaluations")
+    an.add_argument("--audit", default=None, help="optional audit id under <output>/audits")
+    an.add_argument("--analysis-config", type=Path, default=None, help="YAML with analysis settings")
+    an.add_argument("--config", type=Path, default=None, help="path to a YAML config")
+    an.add_argument("--output", type=Path, default=None, help="artifact directory")
+    an.add_argument("--analysis-id", default=None)
+    an.set_defaults(func=_cmd_analyze)
 
     return parser
 

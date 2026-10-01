@@ -21,6 +21,7 @@ vision = [
     "torchvision",
     "pandas",
     "scikit-learn",
+    "scipy",
     "pillow",
     "pyarrow",
 ]
