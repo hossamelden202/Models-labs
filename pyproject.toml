@@ -25,6 +25,13 @@ vision = [
     "pillow",
     "pyarrow",
 ]
+server = [
+    "fastapi",
+    "uvicorn",
+    "python-multipart",
+    "httpx",
+    "requests",
+]
 dev = [
     "pytest",
     "pytest-cov",

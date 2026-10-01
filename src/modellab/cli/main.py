@@ -204,6 +204,19 @@ def _cmd_analyze(args) -> int:
     return 0
 
 
+def _cmd_serve(args) -> int:
+    try:
+        from modellab.server import ServerSettings, serve
+    except ImportError as exc:
+        raise ConfigurationError(f"serve needs fastapi, uvicorn and python-multipart ({exc})") from exc
+    settings = ServerSettings(
+        workspace=args.workspace, token=args.token, max_workers=args.workers,
+        allow_local_paths=not args.no_local_paths,
+    )
+    serve(settings, host=args.host, port=args.port)
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="modellab", description="Investigate why image classifiers fail."
@@ -259,6 +272,15 @@ def build_parser() -> argparse.ArgumentParser:
     an.add_argument("--output", type=Path, default=None, help="artifact directory")
     an.add_argument("--analysis-id", default=None)
     an.set_defaults(func=_cmd_analyze)
+
+    sv = sub.add_parser("serve", help="run the developer API server")
+    sv.add_argument("--workspace", type=Path, default=Path("workspace"))
+    sv.add_argument("--host", default="127.0.0.1")
+    sv.add_argument("--port", type=int, default=8000)
+    sv.add_argument("--token", default=None, help="require this bearer token")
+    sv.add_argument("--workers", type=int, default=1, help="concurrent jobs")
+    sv.add_argument("--no-local-paths", action="store_true", help="forbid registering server paths")
+    sv.set_defaults(func=_cmd_serve)
 
     return parser
 
