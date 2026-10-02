@@ -26,7 +26,8 @@ from modellab.utils import get_logger, setup_logging
 log = get_logger("server")
 SINGULAR = {
     "evaluations": "evaluation", "audits": "audit", "failure_analyses": "analysis",
-    "experiments": "experiment family",
+    "experiments": "experiment family", "hypotheses": "hypothesis run",
+    "investigations": "investigation", "repairs": "repair",
 }
 
 
@@ -663,6 +664,9 @@ def create_app(settings: ServerSettings) -> FastAPI:
             return PlainTextResponse(target.read_text())
         return FileResponse(target, filename=target.name)
 
+    from modellab.server.pipeline_routes import add_pipeline_routes
+
+    add_pipeline_routes(api, ws, jobs, cache, store, enqueue, art, read)
     app.include_router(api)
     return app
 

@@ -217,6 +217,83 @@ def _cmd_serve(args) -> int:
     return 0
 
 
+def _build_dataset(args, spec, preprocess):
+    from modellab.audit import scan_csv, scan_folder
+    from modellab.evaluation.image_dataset import ImageClassificationDataset
+
+    source = args.dataset
+    if source.is_dir():
+        dataset = ImageClassificationDataset.from_folder(source, class_names=spec.class_names, preprocess=preprocess)
+
+        def scan(audit_cfg):
+            return scan_folder(source, audit_cfg, dataset_id=dataset.dataset_id)
+    elif source.suffix.lower() == ".csv":
+        dataset = ImageClassificationDataset.from_csv(
+            source, root=args.root, class_names=spec.class_names, preprocess=preprocess
+        )
+
+        def scan(audit_cfg):
+            return scan_csv(source, audit_cfg, root=args.root, dataset_id=dataset.dataset_id)
+    else:
+        raise ConfigurationError(f"dataset must be an existing directory or a .csv file: {source}")
+    return dataset, scan
+
+
+def _cmd_investigate(args) -> int:
+    cfg = load_config(args.config)
+    setup_logging(cfg.runtime.log_level)
+    try:
+        from modellab.core.results import ArtifactStore
+        from modellab.evaluation.torch_model import TorchImageClassifier
+        from modellab.investigation import InvestigationConfig, run_investigation
+    except ImportError as exc:
+        raise ConfigurationError(f"investigate needs the vision dependencies ({exc})") from exc
+
+    inv_cfg = InvestigationConfig()
+    if args.investigation_config is not None:
+        try:
+            inv_cfg = InvestigationConfig.model_validate(_read_mapping(args.investigation_config))
+        except ValidationError as exc:
+            raise ConfigurationError(f"invalid investigation config: {exc}") from exc
+    spec, preprocess = _load_model_file(args.model)
+    dataset, scan = _build_dataset(args, spec, preprocess)
+    model = TorchImageClassifier(spec, device=args.device or cfg.runtime.device)
+    store = ArtifactStore(args.output or cfg.paths.artifacts)
+    run = run_investigation(store, args.id, inv_cfg, model, dataset, scan_fn=scan)
+    print(f"investigation: {run.directory}")
+    for c in run.record["conclusions"]:
+        print(f"{c['failure_id']}: {c['status']}" + (f" - {c['mechanism']}" if c["mechanism"] else ""))
+    return 0
+
+
+def _cmd_repair(args) -> int:
+    cfg = load_config(args.config)
+    setup_logging(cfg.runtime.log_level)
+    try:
+        from modellab.core.results import ArtifactStore
+        from modellab.evaluation.torch_model import TorchImageClassifier
+        from modellab.repair import RepairConfig, run_repair
+    except ImportError as exc:
+        raise ConfigurationError(f"repair needs the vision dependencies ({exc})") from exc
+
+    repair_cfg = RepairConfig()
+    if args.repair_config is not None:
+        try:
+            repair_cfg = RepairConfig.model_validate(_read_mapping(args.repair_config))
+        except ValidationError as exc:
+            raise ConfigurationError(f"invalid repair config: {exc}") from exc
+    model = dataset = None
+    if args.model is not None and args.dataset is not None:
+        spec, preprocess = _load_model_file(args.model)
+        dataset, _ = _build_dataset(args, spec, preprocess)
+        model = TorchImageClassifier(spec, device=args.device or cfg.runtime.device)
+    store = ArtifactStore(args.output or cfg.paths.artifacts)
+    run = run_repair(store, args.id, args.investigation, repair_cfg, model, dataset)
+    print(f"repair: {run.directory}")
+    print(f"decision: {run.results['decision']}  {run.results['summary']}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="modellab", description="Investigate why image classifiers fail."
@@ -281,6 +358,29 @@ def build_parser() -> argparse.ArgumentParser:
     sv.add_argument("--workers", type=int, default=1, help="concurrent jobs")
     sv.add_argument("--no-local-paths", action="store_true", help="forbid registering server paths")
     sv.set_defaults(func=_cmd_serve)
+
+    iv = sub.add_parser("investigate", help="run the full investigation workflow")
+    iv.add_argument("--model", type=Path, required=True)
+    iv.add_argument("--dataset", type=Path, required=True)
+    iv.add_argument("--id", required=True, help="investigation id")
+    iv.add_argument("--investigation-config", type=Path, default=None)
+    iv.add_argument("--config", type=Path, default=None)
+    iv.add_argument("--output", type=Path, default=None)
+    iv.add_argument("--device", choices=["auto", "cpu", "cuda"], default=None)
+    iv.add_argument("--root", type=Path, default=None, help="image root for CSV datasets")
+    iv.set_defaults(func=_cmd_investigate)
+
+    rp = sub.add_parser("repair", help="evaluate targeted repairs for a finished investigation")
+    rp.add_argument("--investigation", required=True)
+    rp.add_argument("--id", required=True, help="repair id")
+    rp.add_argument("--model", type=Path, default=None)
+    rp.add_argument("--dataset", type=Path, default=None)
+    rp.add_argument("--repair-config", type=Path, default=None)
+    rp.add_argument("--config", type=Path, default=None)
+    rp.add_argument("--output", type=Path, default=None)
+    rp.add_argument("--device", choices=["auto", "cpu", "cuda"], default=None)
+    rp.add_argument("--root", type=Path, default=None)
+    rp.set_defaults(func=_cmd_repair)
 
     return parser
 
