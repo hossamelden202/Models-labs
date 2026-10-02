@@ -70,3 +70,11 @@ def identity_two_class(scale=10.0):
         fc.weight.copy_(torch.tensor([[scale, 0.0, 0.0], [0.0, scale, 0.0]]))
         fc.bias.zero_()
     return nn.Sequential(nn.AdaptiveAvgPool2d(1), nn.Flatten(), fc)
+
+
+def dark_sensitive_classifier(scale=30.0, bias=0.24):
+    fc = nn.Linear(3, 3)
+    with torch.no_grad():
+        fc.weight.copy_(torch.eye(3) * scale)
+        fc.bias.copy_(torch.tensor([0.0, 0.0, bias * scale]))
+    return nn.Sequential(nn.AdaptiveAvgPool2d(1), nn.Flatten(), fc)
