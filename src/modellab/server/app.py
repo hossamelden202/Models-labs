@@ -667,6 +667,9 @@ def create_app(settings: ServerSettings) -> FastAPI:
     from modellab.server.pipeline_routes import add_pipeline_routes
 
     add_pipeline_routes(api, ws, jobs, cache, store, enqueue, art, read)
+    from modellab.server.model_routes import add_model_routes
+
+    add_model_routes(api, ws, settings, cache, require_local)
     app.include_router(api)
     return app
 

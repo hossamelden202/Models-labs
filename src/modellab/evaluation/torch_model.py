@@ -7,12 +7,13 @@ from typing import Any, Literal
 
 import numpy as np
 import torch
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_serializer, model_validator
 
 from modellab.core.datasets import DatasetSample
 from modellab.core.errors import ConfigurationError, EvaluationError, ModelLoadError
 from modellab.core.models import ModelAdapter, ModelMetadata
 from modellab.core.results import Prediction
+from modellab.loading.diagnostics import check_and_load
 from modellab.utils import get_logger
 
 log = get_logger("model")
@@ -35,6 +36,8 @@ class TorchModelSpec(BaseModel):
     output_index: int = Field(0, ge=0)
     single_logit_binary: bool = False
     mixed_precision: bool = False
+    architecture: str | None = None
+    architecture_config: dict[str, Any] | None = None
 
     @model_validator(mode="after")
     def _check(self):
@@ -44,7 +47,16 @@ class TorchModelSpec(BaseModel):
             raise ValueError(f"source '{self.source}' requires path")
         if not uses_path and self.path is not None:
             raise ValueError("source 'factory' does not take a path")
-        if uses_factory and not self.factory:
+        if self.architecture is not None and self.factory:
+            raise ValueError("use either architecture or factory, not both")
+        if self.architecture is None and self.architecture_config is not None:
+            raise ValueError("architecture_config needs architecture")
+        if self.architecture is not None:
+            if self.source != "state_dict":
+                raise ValueError("architecture only applies to source 'state_dict'")
+            if self.factory_kwargs:
+                raise ValueError("factory_kwargs do not apply to a registered architecture")
+        elif uses_factory and not self.factory:
             raise ValueError(f"source '{self.source}' requires factory")
         if not uses_factory and (self.factory or self.factory_kwargs):
             raise ValueError(f"source '{self.source}' does not take factory or factory_kwargs")
@@ -55,6 +67,14 @@ class TorchModelSpec(BaseModel):
         if self.single_logit_binary and self.num_classes != 2:
             raise ValueError("single_logit_binary requires num_classes == 2")
         return self
+
+    @model_serializer(mode="wrap")
+    def _omit_unset_architecture(self, handler):
+        data = handler(self)
+        for key in ("architecture", "architecture_config"):
+            if data.get(key) is None:
+                data.pop(key, None)
+        return data
 
 
 def resolve_device(name: str = "auto") -> torch.device:
@@ -131,8 +151,24 @@ def _build_from_factory(spec: TorchModelSpec) -> torch.nn.Module:
     return _require_module(model)
 
 
+def _build_registered(spec: TorchModelSpec) -> torch.nn.Module:
+    from modellab.loading.architectures import build_architecture
+
+    return _require_module(build_architecture(spec.architecture, spec.architecture_config, spec.num_classes))
+
+
+def _read_state(path: Path):
+    if path.suffix.lower() == ".safetensors":
+        try:
+            from safetensors.torch import load_file
+        except ImportError as exc:
+            raise ModelLoadError("reading .safetensors files needs the safetensors package") from exc
+        return load_file(str(path))
+    return torch.load(path, map_location="cpu", weights_only=True)
+
+
 def _apply_state_dict(model: torch.nn.Module, spec: TorchModelSpec) -> None:
-    state = torch.load(_existing(spec.path), map_location="cpu", weights_only=True)
+    state = _read_state(_existing(spec.path))
     if spec.state_dict_key is not None:
         if not isinstance(state, Mapping) or spec.state_dict_key not in state:
             raise ModelLoadError(f"checkpoint has no key '{spec.state_dict_key}'")
@@ -144,7 +180,7 @@ def _apply_state_dict(model: torch.nn.Module, spec: TorchModelSpec) -> None:
         state = {
             (k[len(prefix) :] if k.startswith(prefix) else k): v for k, v in state.items()
         }
-    model.load_state_dict(state, strict=True)
+    check_and_load(model, state, spec.model_id)
 
 
 def _load_model(spec: TorchModelSpec) -> torch.nn.Module:
@@ -156,7 +192,7 @@ def _load_model(spec: TorchModelSpec) -> torch.nn.Module:
             log.warning("unpickling a full model from %s, only do this for files you trust", path)
             model = _require_module(torch.load(path, map_location="cpu", weights_only=False))
         elif spec.source == "state_dict":
-            model = _build_from_factory(spec)
+            model = _build_registered(spec) if spec.architecture else _build_from_factory(spec)
             _apply_state_dict(model, spec)
         else:
             model = _build_from_factory(spec)
@@ -194,10 +230,10 @@ def _shape(value: Any) -> Any:
 
 
 class TorchImageClassifier(ModelAdapter):
-    def __init__(self, spec: TorchModelSpec, device: str = "auto"):
+    def __init__(self, spec: TorchModelSpec, device: str = "auto", module: torch.nn.Module | None = None):
         self.spec = spec
         self.device = resolve_device(device)
-        self.model = _load_model(spec).to(self.device).eval()
+        self.model = (module if module is not None else _load_model(spec)).to(self.device).eval()
         for param in self.model.parameters():
             param.requires_grad_(False)
 
@@ -213,7 +249,11 @@ class TorchImageClassifier(ModelAdapter):
             class_names=self.spec.class_names,
             device=str(self.device),
             input_size=self.spec.input_size,
-            details={"source": self.spec.source, "mixed_precision": self._amp},
+            details={
+                "source": self.spec.source,
+                "mixed_precision": self._amp,
+                **({"architecture": self.spec.architecture} if self.spec.architecture else {}),
+            },
         )
 
     def _logits(self, output: Any, batch_size: int) -> torch.Tensor:

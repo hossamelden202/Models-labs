@@ -212,6 +212,7 @@ def _cmd_serve(args) -> int:
     settings = ServerSettings(
         workspace=args.workspace, token=args.token, max_workers=args.workers,
         allow_local_paths=not args.no_local_paths,
+        allow_custom_code=not args.no_custom_code, allow_pickle=not args.no_pickle,
     )
     serve(settings, host=args.host, port=args.port)
     return 0
@@ -294,6 +295,15 @@ def _cmd_repair(args) -> int:
     return 0
 
 
+def _cmd_inspect_model(args) -> int:
+    import json
+
+    from modellab.loading.artifact import inspect_artifact
+
+    print(json.dumps(inspect_artifact(args.file).model_dump(mode="json"), indent=2))
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="modellab", description="Investigate why image classifiers fail."
@@ -357,7 +367,13 @@ def build_parser() -> argparse.ArgumentParser:
     sv.add_argument("--token", default=None, help="require this bearer token")
     sv.add_argument("--workers", type=int, default=1, help="concurrent jobs")
     sv.add_argument("--no-local-paths", action="store_true", help="forbid registering server paths")
+    sv.add_argument("--no-custom-code", action="store_true", help="forbid custom factories")
+    sv.add_argument("--no-pickle", action="store_true", help="forbid loading pickled models")
     sv.set_defaults(func=_cmd_serve)
+
+    im = sub.add_parser("inspect-model", help="show what a model file contains, without executing it")
+    im.add_argument("file", type=Path)
+    im.set_defaults(func=_cmd_inspect_model)
 
     iv = sub.add_parser("investigate", help="run the full investigation workflow")
     iv.add_argument("--model", type=Path, required=True)

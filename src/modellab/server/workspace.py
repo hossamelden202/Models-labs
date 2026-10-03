@@ -97,7 +97,8 @@ class Workspace:
         self.jobs_dir = self.root / "jobs"
         self.artifacts_dir = self.root / "artifacts"
         self.tmp_dir = self.root / "tmp"
-        for directory in (self.models_dir, self.datasets_dir, self.jobs_dir, self.artifacts_dir, self.tmp_dir):
+        self.stage_dir = self.root / "model_artifacts"
+        for directory in (self.models_dir, self.datasets_dir, self.jobs_dir, self.artifacts_dir, self.tmp_dir, self.stage_dir):
             directory.mkdir(parents=True, exist_ok=True)
 
     @staticmethod
@@ -122,6 +123,9 @@ class Workspace:
 
     def get_dataset(self, id_: str) -> dict:
         return self._get(self.datasets_dir, id_, "dataset")
+
+    def get_staged(self, id_: str) -> dict:
+        return self._get(self.stage_dir, id_, "artifact")
 
     def list_records(self, base: Path, what: str) -> list[dict]:
         return [self.read_json(p) for p in sorted(base.glob(f"*/{what}.json"))]
