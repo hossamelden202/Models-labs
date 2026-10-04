@@ -1,0 +1,58 @@
+from __future__ import annotations
+
+from .base import (
+    ArchitectureBuildContext,
+    ArchitectureProvider,
+)
+
+
+class RegisteredProvider(ArchitectureProvider):
+    """
+    Adapter over ModelLab's existing architecture registry.
+
+    Existing architectures remain untouched:
+        sequential
+        torchvision
+        timm
+    """
+
+    provider_id = "registered"
+    display_name = "ModelLab Registered Architectures"
+
+    def can_handle(
+        self,
+        *,
+        architecture,
+        source,
+        artifact,
+        context=None,
+    ) -> bool:
+
+        if source is not None and source.source_type != "registered":
+            return False
+
+        if architecture is None:
+            return False
+
+        from modellab.loading import architectures
+
+        try:
+            architectures.get_architecture(architecture)
+            return True
+        except Exception:
+            return False
+
+    def build(self, context: ArchitectureBuildContext):
+
+        from modellab.loading.architectures import build_architecture
+
+        if context.architecture is None:
+            raise ValueError(
+                "registered architecture requires an architecture name"
+            )
+
+        return build_architecture(
+            context.architecture,
+            context.config,
+            context.num_classes,
+        )

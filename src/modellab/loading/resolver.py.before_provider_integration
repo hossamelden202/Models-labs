@@ -25,9 +25,6 @@ from modellab.loading.diagnostics import (
     tensor_shapes,
 )
 
-from modellab.loading.providers.base import ArchitectureBuildContext, ArchitectureSource
-from modellab.loading.providers.orchestrator import resolve_provider
-
 
 class ModelRequest(BaseModel):
     model_config = ConfigDict(extra="forbid", protected_namespaces=())
@@ -49,7 +46,6 @@ class ModelRequest(BaseModel):
     # These are deliberately separate from `architecture`.
     architecture_source: str | None = None
     architecture_path: str | None = None
-    architecture_identifier: str | None = None
     factory: str | None = None
     factory_kwargs: dict[str, Any] = Field(default_factory=dict)
     state_dict_key: str | None = None
@@ -88,7 +84,7 @@ class Candidate(BaseModel):
 
 class Resolution(BaseModel):
     status: Literal["ready", "needs_input", "invalid"]
-    route: Literal["self_contained", "registered_architecture", "provider_architecture", "custom_factory"] | None = None
+    route: Literal["self_contained", "registered_architecture", "custom_factory"] | None = None
     artifact: ArtifactInfo | None = None
     spec: dict[str, Any] | None = None
     resolved: dict[str, Any] = Field(default_factory=dict)
@@ -136,7 +132,6 @@ class _Resolver:
         self.state_key = None
         self.strip = req.strip_prefix
         self.fields: dict[str, Any] = {}
-        self.provider_resolution: dict[str, Any] | None = None
         self._state_cache = None
 
     def err(self, text):
@@ -469,327 +464,56 @@ class _Resolver:
         if module is not None:
             self._validate(module)
 
-
-    def _resolve_provider_architecture(self) -> bool:
-        """
-        Resolve an architecture through the generic provider layer.
-
-        Provider architecture identifiers remain separate from
-        ModelLab registered architecture identifiers.
-        """
-
-        r = self.req
-
-        if r.architecture:
-            return False
-
-        source_type = r.architecture_source
-        source_path = r.architecture_path
-        source_identifier = r.architecture_identifier
-
-        if (
-            not source_type
-            and not source_path
-            and not source_identifier
-        ):
-            return False
-
-        if source_path and not source_type:
-            source_type = "local"
-
-        if source_identifier and not source_type:
-            source_type = "huggingface"
-
-        source = ArchitectureSource(
-            source_type=source_type or "registered",
-            identifier=source_identifier,
-            path=source_path,
-        )
-
-        try:
-            result = resolve_provider(
-                architecture=None,
-                source=source,
-                artifact=self.path,
-                context={
-                    "request": r,
-                    "resolver": self,
-                },
-            )
-        except Exception as exc:
-            self.err(
-                "architecture provider resolution failed: "
-                f"{exc}"
-            )
-            return True
-
-        if result.status == "resolved":
-            architecture = result.architecture
-
-            if not architecture:
-                self.err(
-                    "architecture provider resolved successfully "
-                    "but returned no architecture"
-                )
-                return True
-
-            provider_source = result.source or source
-
-            self.provider_resolution = {
-                "provider_id": result.provider_id,
-                "architecture": architecture,
-                "confidence": result.confidence,
-                "reason": result.reason,
-                "source": {
-                    "source_type": provider_source.source_type,
-                    "identifier": provider_source.identifier,
-                    "path": provider_source.path,
-                    "config": dict(
-                        provider_source.config
-                    ),
-                },
-                "config": dict(result.config or {}),
-            }
-
-            self.infer(
-                "architecture",
-                architecture,
-                (
-                    "architecture provider "
-                    f"'{result.provider_id}'"
-                ),
-            )
-
-            return True
-
-        if result.status == "ambiguous":
-            self.need(
-                "architecture",
-                (
-                    "multiple architecture providers produced "
-                    "equally strong candidates; choose the "
-                    "architecture explicitly"
-                ),
-                options=[
-                    candidate.architecture
-                    for candidate in result.candidates
-                ],
-            )
-            return True
-
-        if result.status == "needs_input":
-            self.need(
-                "architecture",
-                result.reason,
-                options=[
-                    candidate.architecture
-                    for candidate in result.candidates
-                ] or None,
-            )
-            return True
-
-        if result.status == "error":
-            message = result.reason
-
-            if result.errors:
-                message += ": " + "; ".join(
-                    result.errors
-                )
-
-            self.err(message)
-            return True
-
-        self.err(
-            "architecture provider returned unknown status: "
-            f"{result.status}"
-        )
-        return True
-
     def _route_state_dict(self):
         r, info = self.req, self.info
-
         if not info.state_dicts:
-            self.err(
-                "no state dict (a mapping of tensors) was found "
-                "in this checkpoint"
-            )
+            self.err("no state dict (a mapping of tensors) was found in this checkpoint")
             return
-
         keys = [s.key_path for s in info.state_dicts]
         key = r.state_dict_key
-
         if key is None:
             if len(keys) == 1:
                 key = keys[0]
-
                 if key is not None:
-                    self.infer(
-                        "state_dict_key",
-                        key,
-                        "the only state dict in the checkpoint",
-                    )
+                    self.infer("state_dict_key", key, "the only state dict in the checkpoint")
             else:
-                self.need(
-                    "state_dict_key",
-                    (
-                        "the checkpoint contains several state dicts; "
-                        "choose one"
-                    ),
-                    options=keys,
-                )
+                self.need("state_dict_key", "the checkpoint contains several state dicts; choose one", options=keys)
                 return
-
         elif key not in keys:
-            self.err(
-                f"state_dict_key '{key}' is not in the checkpoint, "
-                f"available: {keys}"
-            )
+            self.err(f"state_dict_key '{key}' is not in the checkpoint, available: {keys}")
             return
-
         self.state_key = key
-
-        self.summary = next(
-            s for s in info.state_dicts
-            if s.key_path == key
-        )
-
+        self.summary = next(s for s in info.state_dicts if s.key_path == key)
         if r.factory:
             if r.architecture or r.architecture_config:
-                self.err(
-                    "use either a factory or a registered architecture, "
-                    "not both"
-                )
+                self.err("use either a factory or a registered architecture, not both")
                 return
-
             self._route_factory()
             return
-
-        if (
-            r.architecture_config is not None
-            and not r.architecture
-        ):
-            self.err(
-                "architecture_config needs architecture"
+        if r.architecture_config is not None and not r.architecture:
+            self.err("architecture_config needs architecture")
+            return
+        if r.architecture_path and not r.architecture:
+            self.need(
+                "architecture",
+                (
+                    "an architecture_path was supplied, but the architecture "
+                    "identifier is missing; choose the architecture that "
+                    "the path provides"
+                ),
+                options=arch.available_names(),
             )
             return
-
-        # Provider architectures are resolved independently
-        # from ModelLab's registered architecture registry.
-        if (
-            r.architecture_source
-            or r.architecture_path
-            or r.architecture_identifier
-        ):
-            handled = self._resolve_provider_architecture()
-
-            if self.provider_resolution is not None:
-                self._route_provider()
-                return
-
-            if handled:
-                return
 
         if r.architecture:
             self._route_architecture(r.architecture)
             return
-
         self._probe()
-
         self.need(
             "architecture",
-            (
-                "this checkpoint holds weights only; choose the "
-                "network structure, or provide a custom factory"
-            ),
-            options=[
-                "auto",
-                *arch.available_names(),
-            ],
+            "this checkpoint holds weights only; choose the network structure, or provide a custom factory",
+            options=["auto", *arch.available_names()],
         )
-
-    def _route_provider(self):
-        """Route a provider-backed architecture."""
-
-        if self.provider_resolution is None:
-            if not self._resolve_provider_architecture():
-                self.err(
-                    "provider architecture routing was requested "
-                    "but provider resolution is unavailable"
-                )
-                return
-
-        provider = self.provider_resolution
-
-        if provider is None:
-            self.err(
-                "provider architecture resolution produced no result"
-            )
-            return
-
-        self.route = "provider_architecture"
-
-        if self.num_classes is None:
-            self._need_classes()
-            return
-
-        provider_source = provider.get("source") or {}
-
-        if not self._code_allowed():
-            return
-
-        factory = self.req.factory
-        if not factory:
-            self.need(
-                "factory",
-                (
-                    "this provider architecture requires a "
-                    "factory for model construction"
-                ),
-            )
-            return
-
-        if not self._code_allowed():
-            return
-
-        factory = self.req.factory
-
-        if not factory:
-            self.need(
-                "factory",
-                (
-                    "this provider architecture requires a "
-                    "factory for model construction"
-                ),
-            )
-            return
-
-        self.fields = {
-            "source": "state_dict",
-            "path": self.path,
-            "state_dict_key": self.state_key,
-            "strip_prefix": self.strip,
-            "factory": factory,
-            "factory_kwargs": dict(self.req.factory_kwargs),
-            "provider_id": provider.get("provider_id"),
-            "provider_architecture": provider.get(
-                "architecture"
-            ),
-            "provider_source_type": provider_source.get(
-                "source_type"
-            ),
-            "provider_identifier": provider_source.get(
-                "identifier"
-            ),
-            "provider_path": provider_source.get(
-                "path"
-            ),
-            "provider_config": dict(
-                provider.get("config") or {}
-            ),
-        }
-
-
-        self._finish_state(meta=False)
 
     def _route_factory(self):
         self.route = "custom_factory"

@@ -14,3 +14,4 @@ venv/
 env/
 .env/
 .mypy_cache/
+workspace/model_artifacts/

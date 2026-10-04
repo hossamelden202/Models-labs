@@ -1,0 +1,119 @@
+from __future__ import annotations
+
+from .base import ArchitectureProvider
+
+
+_PROVIDERS: dict[str, ArchitectureProvider] = {}
+
+
+def register_provider(
+    provider: ArchitectureProvider,
+    *,
+    replace: bool = False,
+) -> ArchitectureProvider:
+    provider_id = provider.provider_id
+
+    if not provider_id:
+        raise ValueError("architecture provider_id cannot be empty")
+
+    if provider_id in _PROVIDERS and not replace:
+        raise ValueError(
+            f"architecture provider already registered: {provider_id}"
+        )
+
+    _PROVIDERS[provider_id] = provider
+    return provider
+
+
+def unregister_provider(provider_id: str) -> None:
+    _PROVIDERS.pop(provider_id, None)
+
+
+def get_provider(provider_id: str) -> ArchitectureProvider:
+    try:
+        return _PROVIDERS[provider_id]
+    except KeyError as exc:
+        raise KeyError(
+            f"unknown architecture provider {provider_id!r}; "
+            f"registered: {sorted(_PROVIDERS)}"
+        ) from exc
+
+
+def list_providers() -> list[str]:
+    return sorted(_PROVIDERS)
+
+
+def providers() -> list[ArchitectureProvider]:
+    return list(_PROVIDERS.values())
+
+
+def find_providers(
+    *,
+    architecture: str | None,
+    source,
+    artifact,
+    context: dict | None = None,
+) -> list[ArchitectureProvider]:
+    result = []
+
+    for provider in _PROVIDERS.values():
+        try:
+            if provider.can_handle(
+                architecture=architecture,
+                source=source,
+                artifact=artifact,
+                context=context,
+            ):
+                result.append(provider)
+        except Exception:
+            # Provider discovery must never break the global resolver.
+            continue
+
+    return result
+
+
+def collect_candidates(
+    *,
+    artifact,
+    context: dict | None = None,
+):
+    result = []
+
+    for provider in _PROVIDERS.values():
+        try:
+            result.extend(
+                provider.candidates(
+                    artifact=artifact,
+                    context=context,
+                )
+            )
+        except Exception:
+            continue
+
+    result.sort(
+        key=lambda candidate: candidate.confidence,
+        reverse=True,
+    )
+
+    return result
+
+
+def register_defaults() -> None:
+    if _PROVIDERS:
+        return
+
+    from .factory import FactoryProvider
+    from .local import LocalProvider
+    from .registered import RegisteredProvider
+    from .self_contained import SelfContainedProvider
+
+    for provider in (
+        SelfContainedProvider(),
+        RegisteredProvider(),
+        FactoryProvider(),
+        LocalProvider(),
+    ):
+        register_provider(provider)
+
+
+register_defaults()

@@ -12,6 +12,7 @@ from modellab.loading import (
     inspect_artifact,
     resolve_model,
 )
+from modellab.runtimes.bridge import resolve_model_with_runtime
 from modellab.server.errors import ApiError
 from modellab.server.workspace import Workspace
 
@@ -387,16 +388,7 @@ def inspect_model_artifact(
     workspace = _workspace(request)
     path = _artifact_path(workspace, artifact_id)
 
-    result = inspect_artifact(
-        path,
-        allow_pickle=bool(
-            getattr(
-                getattr(request.app.state, "settings", None),
-                "allow_pickle",
-                False,
-            )
-        ),
-    )
+    result = inspect_artifact(path)
 
     return JSONResponse(
         content=_jsonable(result),
@@ -458,14 +450,29 @@ def resolve_model_endpoint(
 
     settings = _settings(request)
 
-    resolution = resolve_model(
+    runtime_resolution = resolve_model_with_runtime(
         body,
         settings=settings,
         factory_file=factory_file,
+        repo_root=Path(__file__).resolve().parents[2],
     )
+    resolution = runtime_resolution.resolution
+
+    response = _jsonable(resolution)
+
+    if isinstance(response, dict):
+        runtime = _jsonable(runtime_resolution)
+
+        response["runtime"] = {
+            "required": runtime.get("runtime_required"),
+            "status": runtime.get("runtime_status"),
+            "provisioned": bool(runtime.get("runtime_provisioned")),
+            "environment": runtime.get("runtime_environment"),
+            "error": runtime.get("runtime_error"),
+        }
 
     return JSONResponse(
-        content=_jsonable(resolution),
+        content=response,
     )
 
 
@@ -502,11 +509,13 @@ def model_from_artifact(
             message="An artifact or artifact_id is required.",
         )
 
-    resolution = resolve_model(
+    runtime_resolution = resolve_model_with_runtime(
         body,
         settings=settings,
         factory_file=factory_file,
+        repo_root=Path(__file__).resolve().parents[2],
     )
+    resolution = runtime_resolution.resolution
 
     # -------------------------------------------------------------
     # Resolution errors are returned unchanged to the caller.
@@ -667,16 +676,7 @@ def inspect_model_path(
             message=f"Artifact does not exist: {path}",
         )
 
-    result = inspect_artifact(
-        path,
-        allow_pickle=bool(
-            getattr(
-                getattr(request.app.state, "settings", None),
-                "allow_pickle",
-                False,
-            )
-        ),
-    )
+    result = inspect_artifact(path)
 
     return JSONResponse(
         content=_jsonable(result),
