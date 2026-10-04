@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Annotated, Any
 
-from fastapi import APIRouter, File, Form, UploadFile
+from fastapi import APIRouter, File, Form, Request, UploadFile
 from fastapi.responses import JSONResponse
 
 from modellab.loading import (
@@ -26,8 +26,7 @@ def _workspace(request: Any) -> Workspace:
     workspace = getattr(request.app.state, "workspace", None)
     if workspace is None:
         raise ApiError(
-            status_code=500,
-            code="workspace_not_configured",
+            status=500,
             message="Server workspace is not configured.",
         )
     return workspace
@@ -79,12 +78,28 @@ def _jsonable(value: Any) -> Any:
 
 
 def _artifact_path(workspace: Workspace, artifact_id: str) -> Path:
-    path = workspace.get_staged(artifact_id)
+    record = workspace.get_staged(artifact_id)
 
-    if path is None:
+    if not record:
         raise ApiError(
-            status_code=404,
-            code="artifact_not_found",
+            status=404,
+            message=f"Model artifact '{artifact_id}' was not found.",
+        )
+
+    # Staged artifact records store the actual model path.
+    artifact_path = record.get("path")
+
+    if not artifact_path:
+        raise ApiError(
+            status=500,
+            message=f"Model artifact '{artifact_id}' has no stored path.",
+        )
+
+    path = Path(artifact_path)
+
+    if not path.is_file():
+        raise ApiError(
+            status=404,
             message=f"Model artifact '{artifact_id}' was not found.",
         )
 
@@ -96,123 +111,277 @@ def list_architectures() -> JSONResponse:
     from modellab.loading.architectures import list_architectures as _list
 
     return JSONResponse(
-        content={
-            "architectures": _jsonable(_list()),
-        }
+        content=_jsonable(_list()),
     )
 
 
 @router.post("/model-artifacts")
 async def upload_model_artifact(
-    request: Any,
+    request: Request,
     artifact: Annotated[UploadFile | None, File()] = None,
     factory_file: Annotated[UploadFile | None, File()] = None,
     local_path: Annotated[str | None, Form()] = None,
+    artifact_id: Annotated[str | None, Form()] = None,
 ) -> JSONResponse:
     workspace = _workspace(request)
+    settings = _settings(request)
 
     if artifact is None and factory_file is None and not local_path:
         raise ApiError(
-            status_code=400,
-            code="missing_artifact",
+            status=422,
             message=(
                 "Provide an uploaded artifact, factory file, "
                 "or local_path."
             ),
         )
 
+    public_id = (
+        artifact_id.strip()
+        if artifact_id and artifact_id.strip()
+        else None
+    )
+
+    # ---------------------------------------------------------
+    # Validate artifact ID
+    # ---------------------------------------------------------
+    if public_id is not None:
+        if (
+            public_id in {".", ".."}
+            or Path(public_id).name != public_id
+            or not public_id
+        ):
+            raise ApiError(
+                status=400,
+                message="artifact_id must be a simple file-safe identifier.",
+            )
+
+    # ---------------------------------------------------------
+    # Determine source filename
+    # ---------------------------------------------------------
     if artifact is not None:
-        filename = Path(artifact.filename or "model_artifact").name
-        destination = workspace.stage_dir / filename
-        destination.parent.mkdir(parents=True, exist_ok=True)
-
-        data = await artifact.read()
-        destination.write_bytes(data)
-
-        return JSONResponse(
-            status_code=201,
-            content={
-                "artifact_id": filename,
-                "path": str(destination),
-                "size": len(data),
-            },
-        )
-
-    if factory_file is not None:
+        filename = Path(
+            artifact.filename or "model_artifact"
+        ).name
+    elif local_path:
+        filename = Path(local_path).expanduser().name
+    else:
         filename = Path(
             factory_file.filename or "model_factory.py"
         ).name
 
-        destination = workspace.stage_dir / filename
-        destination.parent.mkdir(parents=True, exist_ok=True)
+    if public_id is None:
+        public_id = filename
 
-        data = await factory_file.read()
-        destination.write_bytes(data)
+    # ---------------------------------------------------------
+    # One staged artifact = one directory:
+    #
+    # model_artifacts/
+    #   ck1/
+    #     artifact.json
+    #     model.pt
+    #
+    # Factory artifacts additionally contain:
+    #
+    #   fk/
+    #     artifact.json
+    #     model.pt
+    #     factory.py
+    # ---------------------------------------------------------
+    folder = workspace.stage_dir / public_id
+
+    if folder.exists():
+        raise ApiError(
+            status=409,
+            message=f"Model artifact '{public_id}' already exists.",
+        )
+
+    folder.mkdir(parents=True, exist_ok=False)
+
+    try:
+        # -----------------------------------------------------
+        # Uploaded model artifact
+        # -----------------------------------------------------
+        if artifact is not None:
+            model_filename = filename
+            model_path = folder / model_filename
+            data = await artifact.read()
+            model_path.write_bytes(data)
+
+            inspection = inspect_artifact(model_path)
+
+            # Optional factory accompanying the model artifact.
+            factory_path = None
+
+            if factory_file is not None:
+                factory_filename = Path(
+                    factory_file.filename or "model_factory.py"
+                ).name
+                factory_path = folder / factory_filename
+                factory_data = await factory_file.read()
+                factory_path.write_bytes(factory_data)
+
+            record = {
+                "artifact_id": public_id,
+                "kind": "uploaded",
+                "file_name": model_filename,
+                "path": str(model_path),
+                "size": len(data),
+            }
+
+            if factory_path is not None:
+                record["factory_file"] = str(factory_path)
+
+            workspace.write_json(
+                folder / "artifact.json",
+                record,
+            )
+
+            return JSONResponse(
+                status_code=201,
+                content={
+                    "artifact_id": public_id,
+                    "artifact": {
+                        k: v
+                        for k, v in record.items()
+                        if k != "path"
+                    },
+                    "inspection": _jsonable(inspection),
+                },
+            )
+
+        # -----------------------------------------------------
+        # Factory-only upload
+        # -----------------------------------------------------
+        if factory_file is not None:
+            factory_filename = Path(
+                factory_file.filename or "model_factory.py"
+            ).name
+
+            factory_path = folder / factory_filename
+            factory_data = await factory_file.read()
+            factory_path.write_bytes(factory_data)
+
+            record = {
+                "artifact_id": public_id,
+                "kind": "factory",
+                "file_name": factory_filename,
+                "path": str(factory_path),
+                "factory_file": str(factory_path),
+                "size": len(factory_data),
+            }
+
+            workspace.write_json(
+                folder / "artifact.json",
+                record,
+            )
+
+            return JSONResponse(
+                status_code=201,
+                content={
+                    "artifact_id": public_id,
+                    "artifact": {
+                        k: v
+                        for k, v in record.items()
+                        if k != "path"
+                    },
+                    "inspection": None,
+                },
+            )
+
+        # -----------------------------------------------------
+        # Server-local path
+        # -----------------------------------------------------
+        source = Path(local_path).expanduser()
+
+        server_settings = getattr(request.app.state, "settings", None)
+
+        if not bool(
+            getattr(server_settings, "allow_local_paths", False)
+        ):
+            raise ApiError(
+                status=403,
+                message="local model paths are disabled on this server",
+            )
+
+        if not source.exists():
+            raise ApiError(
+                status=404,
+                message=f"Local model path does not exist: {source}",
+            )
+
+        if not source.is_file():
+            raise ApiError(
+                status=400,
+                message=f"Local model path is not a file: {source}",
+            )
+
+        model_path = folder / source.name
+        data = source.read_bytes()
+        model_path.write_bytes(data)
+
+        inspection = inspect_artifact(model_path)
+
+        record = {
+            "artifact_id": public_id,
+            "kind": "local",
+            "file_name": source.name,
+            "path": str(model_path),
+            "size": len(data),
+        }
+
+        workspace.write_json(
+            folder / "artifact.json",
+            record,
+        )
 
         return JSONResponse(
             status_code=201,
             content={
-                "artifact_id": filename,
-                "path": str(destination),
-                "size": len(data),
+                "artifact_id": public_id,
+                "artifact": {
+                    k: v
+                    for k, v in record.items()
+                    if k != "path"
+                },
+                "inspection": _jsonable(inspection),
             },
         )
 
-    source = Path(local_path).expanduser()
-
-    if not source.exists():
-        raise ApiError(
-            status_code=404,
-            code="local_path_not_found",
-            message=f"Local model path does not exist: {source}",
-        )
-
-    if not source.is_file():
-        raise ApiError(
-            status_code=400,
-            code="local_path_not_file",
-            message=f"Local model path is not a file: {source}",
-        )
-
-    return JSONResponse(
-        status_code=201,
-        content={
-            "artifact_id": source.name,
-            "path": str(source),
-            "size": source.stat().st_size,
-        },
-    )
+    except BaseException:
+        import shutil
+        shutil.rmtree(folder, ignore_errors=True)
+        raise
 
 
 @router.get("/model-artifacts")
-def list_model_artifacts(request: Any) -> JSONResponse:
+def list_model_artifacts(request: Request) -> JSONResponse:
     workspace = _workspace(request)
 
-    root = workspace.stage_dir
-    root.mkdir(parents=True, exist_ok=True)
+    records = workspace.list_records(
+        workspace.stage_dir,
+        "artifact",
+    )
 
-    artifacts = []
+    # Never expose filesystem paths in the public artifact listing.
+    public_records = []
 
-    for path in sorted(root.iterdir()):
-        if path.is_file():
-            artifacts.append(
-                {
-                    "artifact_id": path.name,
-                    "path": str(path),
-                    "size": path.stat().st_size,
-                }
-            )
+    for record in records:
+        public_records.append(
+            {
+                k: v
+                for k, v in record.items()
+                if k != "path"
+            }
+        )
 
     return JSONResponse(
-        content={
-            "artifacts": artifacts,
-        }
+        content=_jsonable(public_records),
     )
 
 
 @router.get("/model-artifacts/{artifact_id}")
 def inspect_model_artifact(
-    request: Any,
+    request: Request,
     artifact_id: str,
 ) -> JSONResponse:
     workspace = _workspace(request)
@@ -236,14 +405,24 @@ def inspect_model_artifact(
 
 @router.delete("/model-artifacts/{artifact_id}")
 def delete_model_artifact(
-    request: Any,
+    request: Request,
     artifact_id: str,
 ) -> JSONResponse:
     workspace = _workspace(request)
-    path = _artifact_path(workspace, artifact_id)
 
-    if path.is_file():
-        path.unlink()
+    # Validate that the record exists.
+    workspace.get_staged(artifact_id)
+
+    folder = workspace.stage_dir / artifact_id
+
+    if not folder.is_dir():
+        raise ApiError(
+            status=404,
+            message=f"Model artifact '{artifact_id}' was not found.",
+        )
+
+    import shutil
+    shutil.rmtree(folder)
 
     return JSONResponse(
         content={
@@ -255,23 +434,34 @@ def delete_model_artifact(
 
 @router.post("/models/resolve")
 def resolve_model_endpoint(
-    request: Any,
+    request: Request,
     body: ResolveBody,
 ) -> JSONResponse:
     workspace = _workspace(request)
+
+    factory_file = None
 
     if body.artifact_id:
         artifact_path = _artifact_path(
             workspace,
             body.artifact_id,
         )
+
         body.artifact = str(artifact_path)
+
+        record = workspace.get_staged(body.artifact_id)
+
+        stored_factory = record.get("factory_file")
+
+        if stored_factory:
+            factory_file = stored_factory
 
     settings = _settings(request)
 
     resolution = resolve_model(
         body,
         settings=settings,
+        factory_file=factory_file,
     )
 
     return JSONResponse(
@@ -281,10 +471,16 @@ def resolve_model_endpoint(
 
 @router.post("/models/from-artifact")
 def model_from_artifact(
-    request: Any,
+    request: Request,
     body: ResolveBody,
 ) -> JSONResponse:
+    from datetime import datetime, timezone
+    import shutil
+
     workspace = _workspace(request)
+    settings = _settings(request)
+
+    factory_file = None
 
     if not body.artifact and body.artifact_id:
         body.artifact = str(
@@ -294,34 +490,172 @@ def model_from_artifact(
             )
         )
 
+        record = workspace.get_staged(body.artifact_id)
+        stored_factory = record.get("factory_file")
+
+        if stored_factory:
+            factory_file = stored_factory
+
     if not body.artifact:
         raise ApiError(
-            status_code=400,
-            code="missing_artifact",
+            status=400,
             message="An artifact or artifact_id is required.",
         )
-
-    settings = _settings(request)
 
     resolution = resolve_model(
         body,
         settings=settings,
+        factory_file=factory_file,
     )
 
+    # -------------------------------------------------------------
+    # Resolution errors are returned unchanged to the caller.
+    # -------------------------------------------------------------
+    if getattr(resolution, "status", None) == "invalid":
+        return JSONResponse(
+            status_code=422,
+            content={
+                "detail": {
+                    "resolution": _jsonable(resolution),
+                }
+            },
+        )
+
+    if getattr(resolution, "status", None) != "ready":
+        return JSONResponse(
+            status_code=422,
+            content={
+                "detail": {
+                    "resolution": _jsonable(resolution),
+                }
+            },
+        )
+
+    model_id = body.model_id
+
+    if not model_id:
+        raise ApiError(
+            status=422,
+            message="model_id is required.",
+        )
+
+    # -------------------------------------------------------------
+    # Prevent overwriting an existing model.
+    # -------------------------------------------------------------
+    try:
+        workspace.get_model(model_id)
+    except ApiError as exc:
+        if getattr(exc, "status", None) != 404:
+            raise
+    else:
+        raise ApiError(
+            status=409,
+            message=f"Model '{model_id}' already exists.",
+        )
+
+    model_dir = workspace.models_dir / model_id
+    model_dir.mkdir(parents=True, exist_ok=False)
+
+    try:
+        # ---------------------------------------------------------
+        # Materialize model weights into models/<model_id>/.
+        # ---------------------------------------------------------
+        source_path = Path(body.artifact)
+
+        if not source_path.is_file():
+            raise ApiError(
+                status=404,
+                message=f"Resolved model artifact does not exist: {source_path}",
+            )
+
+        model_path = model_dir / source_path.name
+        shutil.copy2(source_path, model_path)
+
+        # ---------------------------------------------------------
+        # Materialize factory sidecar when used.
+        # ---------------------------------------------------------
+        materialized_factory = None
+
+        if factory_file:
+            factory_source = Path(factory_file)
+
+            if not factory_source.is_file():
+                raise ApiError(
+                    status=404,
+                    message=f"Resolved factory file does not exist: {factory_source}",
+                )
+
+            factory_destination = model_dir / factory_source.name
+            shutil.copy2(factory_source, factory_destination)
+            materialized_factory = factory_destination
+
+        # ---------------------------------------------------------
+        # Build the self-contained model specification.
+        # ---------------------------------------------------------
+        spec = _jsonable(resolution.spec)
+
+        if isinstance(spec, dict):
+            spec["path"] = str(model_path)
+
+            if materialized_factory is not None:
+                factory_ref = spec.get("factory")
+
+                if factory_ref:
+                    factory_ref = str(factory_ref)
+
+                    if ":" in factory_ref:
+                        callable_name = factory_ref.rsplit(":", 1)[1]
+                        spec["factory"] = (
+                            f"{materialized_factory}:{callable_name}"
+                        )
+                    else:
+                        spec["factory"] = str(materialized_factory)
+
+        # ---------------------------------------------------------
+        # Preserve resolver metadata required by downstream systems.
+        #
+        # In particular, the evaluation worker expects preprocess
+        # to be present on the persisted model record.
+        # ---------------------------------------------------------
+        preprocess = _jsonable(
+            getattr(resolution, "preprocess", {})
+        )
+
+        created_at = datetime.now(timezone.utc).isoformat()
+
+        model_record = {
+            "model_id": model_id,
+            "source": "resolved",
+            "created_at": created_at,
+            "spec": spec,
+            "preprocess": preprocess,
+            "resolution": _jsonable(resolution),
+        }
+
+        workspace.write_json(
+            model_dir / "model.json",
+            model_record,
+        )
+
+    except BaseException:
+        shutil.rmtree(model_dir, ignore_errors=True)
+        raise
+
     return JSONResponse(
-        content=_jsonable(resolution),
+        status_code=201,
+        content=_jsonable(model_record),
     )
+
 
 
 @router.post("/models/inspect")
 def inspect_model_path(
-    request: Any,
+    request: Request,
     body: ResolveBody,
 ) -> JSONResponse:
     if not body.artifact:
         raise ApiError(
-            status_code=400,
-            code="missing_artifact",
+            status=400,
             message="An artifact path is required.",
         )
 
@@ -329,8 +663,7 @@ def inspect_model_path(
 
     if not path.exists():
         raise ApiError(
-            status_code=404,
-            code="artifact_not_found",
+            status=404,
             message=f"Artifact does not exist: {path}",
         )
 

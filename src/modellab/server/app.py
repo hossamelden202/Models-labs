@@ -150,6 +150,7 @@ def create_app(settings: ServerSettings) -> FastAPI:
 
     app = FastAPI(title="ModelLab developer API", version=modellab.__version__, lifespan=lifespan)
     app.state.settings = settings
+    app.state.workspace = ws
     app.add_middleware(
         CORSMiddleware, allow_origins=list(settings.cors_origins), allow_methods=["*"], allow_headers=["*"]
     )

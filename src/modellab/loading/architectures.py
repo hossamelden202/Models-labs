@@ -137,6 +137,11 @@ def describe_architectures() -> list[dict]:
     ]
 
 
+def list_architectures() -> list[dict]:
+    """Return the architecture registry in the shape expected by the server API."""
+    return describe_architectures()
+
+
 def probe_all(shapes: dict, num_classes: int | None, seconds: float = 20.0, models: list | None = None) -> list[dict]:
     deadline = time.monotonic() + seconds
     out = []

@@ -8,6 +8,9 @@ htmlcov/
 build/
 dist/
 .venv/
-
+venv/
 /data/
 
+env/
+.env/
+.mypy_cache/

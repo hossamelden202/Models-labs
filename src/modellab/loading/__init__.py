@@ -10,6 +10,7 @@ _EXPORTS = {
     "ArchitectureDef": "modellab.loading.architectures",
     "register_architecture": "modellab.loading.architectures",
     "describe_architectures": "modellab.loading.architectures",
+    "list_architectures": "modellab.loading.architectures",
     "build_architecture": "modellab.loading.architectures",
     "CheckpointMismatchError": "modellab.loading.diagnostics",
 }

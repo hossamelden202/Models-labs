@@ -9,7 +9,17 @@ import torch
 from pydantic import BaseModel, Field
 
 MAX_ITEMS = 200
-Format = Literal["torchscript", "torch_archive", "safetensors", "onnx", "pickle_object", "unknown", "missing"]
+Format = Literal[
+    "torchscript",
+    "torch_archive",
+    "safetensors",
+    "onnx",
+    "tensorflow_savedmodel",
+    "keras",
+    "pickle_object",
+    "unknown",
+    "missing",
+]
 
 
 class StateDictSummary(BaseModel):
@@ -45,10 +55,18 @@ def _looks_safetensors(path: Path, head: bytes) -> bool:
 
 
 def sniff_format(path: Path) -> str:
-    if not path.is_file():
+    if not path.exists():
         return "missing"
+    if path.is_dir():
+        if (path / "saved_model.pb").is_file():
+            return "tensorflow_savedmodel"
+        if (path / "keras_metadata.pb").is_file() or path.suffix.lower() == ".keras":
+            return "keras"
+        return "unknown"
     if path.suffix.lower() == ".onnx":
         return "onnx"
+    if path.suffix.lower() == ".keras":
+        return "keras"
     with open(path, "rb") as handle:
         head = handle.read(16)
     if path.suffix.lower() == ".safetensors" or _looks_safetensors(path, head):
@@ -172,6 +190,19 @@ def _triple(value):
     return None
 
 
+def _shape_num_classes(value):
+    if isinstance(value, (list, tuple)):
+        dims = [int(v) for v in value if isinstance(v, (int, float)) and not isinstance(v, bool)]
+        if len(dims) >= 2 and dims[-1] > 0:
+            return dims[-1]
+    if isinstance(value, dict):
+        for candidate in value.values():
+            parsed = _shape_num_classes(candidate)
+            if parsed is not None:
+                return parsed
+    return None
+
+
 def extract_hints(meta: dict) -> list[dict]:
     lowered = {k.lower(): (k, v) for k, v in meta.items()}
     rules = [
@@ -179,6 +210,7 @@ def extract_hints(meta: dict) -> list[dict]:
         ("class_names", ("class_to_id", "class_to_idx", "label2id"), _names_from_mapping),
         ("num_classes", ("num_classes", "n_classes", "nb_classes"),
          lambda v: v if isinstance(v, int) and not isinstance(v, bool) and v > 0 else None),
+        ("num_classes", ("output_shape", "shape", "output_size"), _shape_num_classes),
         ("input_size", ("image_size", "input_size", "img_size", "imgsz"), _size_from),
         ("preprocess.mean", ("image_mean", "mean"), _triple),
         ("preprocess.std", ("image_std", "std"), _triple),
@@ -203,7 +235,7 @@ def inspect_artifact(path) -> ArtifactInfo:
     info = ArtifactInfo(file_name=path.name, size_bytes=path.stat().st_size if path.is_file() else 0, format=fmt)
     if fmt in ("missing", "onnx", "unknown"):
         return info
-    if fmt == "torchscript":
+    if fmt in {"torchscript", "tensorflow_savedmodel", "keras"}:
         info.self_contained = True
         return info
     try:
