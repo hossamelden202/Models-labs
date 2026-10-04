@@ -1,3 +1,4 @@
+from modellab.evaluation.torch_model import _load_model
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal
@@ -889,9 +890,14 @@ class _Resolver:
     def _build_spec(self) -> bool:
         r = self.req
         base = {
-            "model_id": r.model_id or "pending", "num_classes": self.num_classes, "class_names": self.names,
-            "input_size": self.input_size, "output_key": r.output_key, "output_index": r.output_index,
-            "single_logit_binary": r.single_logit_binary, "mixed_precision": r.mixed_precision,
+            "model_id": r.model_id or "pending",
+            "num_classes": self.num_classes,
+            "class_names": self.names,
+            "input_size": self.input_size,
+            "output_key": r.output_key,
+            "output_index": r.output_index,
+            "single_logit_binary": r.single_logit_binary,
+            "mixed_precision": r.mixed_precision,
         }
         try:
             self.spec = TorchModelSpec.model_validate({**base, **self.fields})
@@ -983,32 +989,167 @@ class _Resolver:
     def _validate(self, module):
         if not self.req.validate_load:
             self.validation = {"skipped": True}
-            self.warnings.append("the model was not loaded; weights and the forward pass were not verified")
+            self.warnings.append(
+                "the model was not loaded; weights and the forward pass were not verified"
+            )
             return
-        try:
-            clf = TorchImageClassifier(self.spec, device="cpu", module=module)
-        except CheckpointMismatchError as exc:
-            self.diagnostics = exc.diagnostics
-            self.err(str(exc))
-            return
-        except ModelLabError as exc:
-            self.err(str(exc))
-            return
+
+        if module is None:
+            try:
+                module = _load_model(self.spec)
+            except ModelLabError as exc:
+                self.err(f"could not load model for validation: {exc}")
+                return
+
+        # Self-contained Ultralytics checkpoints are actual detection
+        # modules rather than image classifiers. Detect that before
+        # constructing TorchImageClassifier, because a YOLO output has
+        # shape (batch, 4 + classes, candidates), not (batch, classes).
+        if (
+            self.spec.task == "classification"
+            and type(module).__module__.lower().startswith("ultralytics.")
+        ):
+            from modellab.evaluation.torch_model import _is_ultralytics_detector
+
+            if _is_ultralytics_detector(module):
+                self.spec.task = "detection"
+                self.infer(
+                    "task",
+                    "detection",
+                    "loaded Ultralytics DetectionModel",
+                )
+
         checks = [{"check": "model_loaded", "passed": True}]
         size = self._dummy_size()
+
         if size is None:
-            self.warnings.append("the forward pass was not verified: give input_size (or a center_crop in preprocess) to check the output shape")
+            self.warnings.append(
+                "the forward pass was not verified: give input_size "
+                "(or a center_crop in preprocess) to check the output shape"
+            )
         else:
             shape = (1, self._channels(), size[0], size[1])
+            dummy = torch.zeros(*shape)
+
             try:
-                probs = clf.predict_probabilities(torch.zeros(*shape))
+                if self.spec.task == "detection":
+                    # Ultralytics DetectionModel checkpoints contain
+                    # authoritative detection metadata. Reconcile the
+                    # request with the loaded model before validating the
+                    # raw detection output.
+                    model_num_classes = getattr(module, "nc", None)
+
+                    if isinstance(model_num_classes, torch.Tensor):
+                        if model_num_classes.numel() == 1:
+                            model_num_classes = int(
+                                model_num_classes.detach().cpu().item()
+                            )
+                        else:
+                            model_num_classes = None
+                    elif isinstance(model_num_classes, int):
+                        model_num_classes = int(model_num_classes)
+                    else:
+                        model_num_classes = None
+
+                    if (
+                        model_num_classes is not None
+                        and model_num_classes > 0
+                    ):
+                        requested_num_classes = self.spec.num_classes
+
+                        if model_num_classes != requested_num_classes:
+                            self.infer(
+                                "num_classes",
+                                model_num_classes,
+                                (
+                                    "loaded Ultralytics "
+                                    "DetectionModel.nc "
+                                    f"(request specified "
+                                    f"{requested_num_classes})"
+                                ),
+                            )
+
+                        self.spec.num_classes = model_num_classes
+
+                    model_names = getattr(module, "names", None)
+
+                    if isinstance(model_names, dict):
+                        ordered_names = [
+                            str(model_names[index])
+                            for index in range(self.spec.num_classes)
+                            if index in model_names
+                        ]
+
+                        if len(ordered_names) == self.spec.num_classes:
+                            if self.spec.class_names != ordered_names:
+                                self.infer(
+                                    "class_names",
+                                    ordered_names,
+                                    (
+                                        "loaded Ultralytics "
+                                        "DetectionModel.names"
+                                    ),
+                                )
+
+                            self.spec.class_names = ordered_names
+
+                    with torch.no_grad():
+                        output = module.float().eval()(dummy)
+
+                    from modellab.evaluation.torch_model import (
+                        _extract_detection_output,
+                    )
+
+                    detections = _extract_detection_output(
+                        output,
+                        self.spec.num_classes,
+                    )
+
+                    checks.append(
+                        {
+                            "check": "forward_pass",
+                            "passed": True,
+                            "task": "detection",
+                            "input_shape": list(shape),
+                            "output_shape": list(detections.shape),
+                            "output_classes": self.spec.num_classes,
+                        }
+                    )
+                else:
+                    clf = TorchImageClassifier(
+                        self.spec,
+                        device="cpu",
+                        module=module,
+                    )
+                    probs = clf.predict_probabilities(dummy)
+
+                    if (
+                        tuple(probs.shape) != (1, self.spec.num_classes)
+                        or abs(float(probs.sum()) - 1.0) > 1e-3
+                    ):
+                        self.err(
+                            f"forward pass returned {tuple(probs.shape)}, "
+                            f"expected (1, {self.spec.num_classes})"
+                        )
+                        return
+
+                    checks.append(
+                        {
+                            "check": "forward_pass",
+                            "passed": True,
+                            "task": "classification",
+                            "input_shape": list(shape),
+                            "output_classes": int(probs.shape[1]),
+                        }
+                    )
+
             except ModelLabError as exc:
                 self.err(f"forward pass failed: {exc}")
                 return
-            if tuple(probs.shape) != (1, self.spec.num_classes) or abs(float(probs.sum()) - 1.0) > 1e-3:
-                self.err(f"forward pass returned {tuple(probs.shape)}, expected (1, {self.spec.num_classes})")
+            except Exception as exc:
+                self.err(f"forward pass failed: {exc}")
                 return
-            checks.append({"check": "forward_pass", "passed": True, "input_shape": list(shape), "output_classes": int(probs.shape[1])})
+
         self.validation = {"checks": checks}
 
 

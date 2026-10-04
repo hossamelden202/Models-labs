@@ -111,22 +111,59 @@ def detect_runtime_requirement(
 
 
 def _request_to_dict(req: ModelRequest) -> dict[str, Any]:
+    """
+    Serialize only the public ModelRequest contract.
+
+    Server/API subclasses such as ResolveBody may contain transport
+    fields such as ``artifact_id``. Those fields belong to the server
+    layer and must never cross into the controlled runtime.
+
+    The controlled runtime reconstructs a strict ModelRequest with
+    extra="forbid", so serialization must be based on ModelRequest's
+    fields rather than the concrete subclass's fields.
+    """
+
     if hasattr(req, "model_dump"):
-        return req.model_dump(mode="json")
+        raw = req.model_dump(mode="json")
+    elif hasattr(req, "dict"):
+        raw = req.dict()
+    else:
+        raw = {}
 
-    if hasattr(req, "dict"):
-        return req.dict()
+        for key, value in vars(req).items():
+            if key.startswith("_"):
+                continue
 
-    result: dict[str, Any] = {}
+            if isinstance(value, Path):
+                value = str(value)
 
-    for key, value in vars(req).items():
-        if key.startswith("_"):
-            continue
+            raw[key] = value
 
-        if isinstance(value, Path):
-            value = str(value)
+    # --------------------------------------------------------
+    # IMPORTANT:
+    #
+    # req may be ResolveBody (a ModelRequest subclass).
+    # Therefore req.model_dump() can contain fields that are
+    # NOT part of ModelRequest itself.
+    #
+    # Keep only fields declared by the actual ModelRequest
+    # contract.
+    # --------------------------------------------------------
 
-        result[key] = value
+    model_fields = getattr(ModelRequest, "model_fields", None)
+
+    if model_fields is not None:
+        allowed_fields = set(model_fields.keys())
+    else:
+        # Pydantic v1 compatibility.
+        allowed_fields_map = getattr(ModelRequest, "__fields__", {})
+        allowed_fields = set(allowed_fields_map.keys())
+
+    result = {
+        key: value
+        for key, value in raw.items()
+        if key in allowed_fields
+    }
 
     return result
 

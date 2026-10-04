@@ -1,0 +1,22 @@
+{
+  "created_at": "2026-10-04T21:32:09.237037+00:00",
+  "csv": null,
+  "dataset_id": "demo_dataset",
+  "kind": "folder",
+  "label_column": "label",
+  "path_column": "path",
+  "root": "/kaggle/input/datasets/hossameldenmohamed/test-model-lab",
+  "source": "local",
+  "summary": {
+    "classes": {
+      "test-lab-model": 1500
+    },
+    "declared_classes": [
+      "test-lab-model"
+    ],
+    "layout": "class_only",
+    "num_excluded": 0,
+    "num_samples": 1500,
+    "splits": {}
+  }
+}

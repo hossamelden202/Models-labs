@@ -24,6 +24,7 @@ class TorchModelSpec(BaseModel):
 
     model_id: str
     source: Literal["torchscript", "module", "state_dict", "factory"]
+    task: Literal["classification", "detection"] = "classification"
     num_classes: int = Field(gt=0)
     path: Path | None = None
     factory: str | None = None
@@ -189,8 +190,31 @@ def _load_model(spec: TorchModelSpec) -> torch.nn.Module:
             model = torch.jit.load(str(_existing(spec.path)), map_location="cpu")
         elif spec.source == "module":
             path = _existing(spec.path)
-            log.warning("unpickling a full model from %s, only do this for files you trust", path)
-            model = _require_module(torch.load(path, map_location="cpu", weights_only=False))
+            log.warning(
+                "unpickling a full model from %s, only do this for files you trust",
+                path,
+            )
+
+            model = torch.load(
+                path,
+                map_location="cpu",
+                weights_only=False,
+            )
+
+            # Ultralytics checkpoints commonly serialize the actual
+            # inference model inside a dictionary under "ema" or
+            # "model". Prefer EMA for inference and fall back to
+            # model. Do not accept arbitrary dictionaries as models.
+            if isinstance(model, dict):
+                ema = model.get("ema")
+                checkpoint_model = model.get("model")
+
+                if isinstance(ema, torch.nn.Module):
+                    model = ema
+                elif isinstance(checkpoint_model, torch.nn.Module):
+                    model = checkpoint_model
+
+            model = _require_module(model)
         elif spec.source == "state_dict":
             model = _build_registered(spec) if spec.architecture else _build_from_factory(spec)
             _apply_state_dict(model, spec)
@@ -229,11 +253,110 @@ def _shape(value: Any) -> Any:
     return tuple(value.shape) if isinstance(value, torch.Tensor) else type(value).__name__
 
 
+def _is_ultralytics_detector(module: torch.nn.Module) -> bool:
+    """
+    Detect an Ultralytics detection model without importing Ultralytics.
+
+    The controlled runtime may contain Ultralytics while the host runtime
+    does not. Detection therefore relies only on stable characteristics
+    exposed by the loaded nn.Module.
+    """
+    cls = type(module)
+    module_name = cls.__module__.lower()
+    class_name = cls.__name__.lower()
+
+    if "ultralytics" not in module_name:
+        return False
+
+    if "detectionmodel" in class_name:
+        return True
+
+    task = getattr(module, "task", None)
+    if isinstance(task, str) and task.lower() == "detect":
+        return True
+
+    args = getattr(module, "args", None)
+    if isinstance(args, Mapping):
+        task = args.get("task")
+        if isinstance(task, str) and task.lower() == "detect":
+            return True
+
+    return False
+
+
+def _extract_detection_output(
+    output: Any,
+    num_classes: int,
+) -> torch.Tensor:
+    """
+    Extract and validate the raw YOLO detection tensor.
+
+    Ultralytics detection inference normally produces:
+        (batch, 4 + num_classes, num_candidates)
+
+    This is intentionally separate from classification logits.
+    """
+    value = output
+
+    if isinstance(value, Mapping):
+        for key in ("preds", "predictions", "output"):
+            if key in value:
+                value = value[key]
+                break
+
+    if isinstance(value, (tuple, list)):
+        tensor_values = [item for item in value if isinstance(item, torch.Tensor)]
+        if len(tensor_values) == 1:
+            value = tensor_values[0]
+        elif tensor_values:
+            value = tensor_values[0]
+
+    if not isinstance(value, torch.Tensor):
+        raise EvaluationError(
+            "detection model output is not a tensor: "
+            f"{type(value).__name__}"
+        )
+
+    if value.ndim != 3:
+        raise EvaluationError(
+            "expected detection output of shape "
+            f"(batch, 4 + classes, candidates), got {tuple(value.shape)}"
+        )
+
+    if value.shape[0] <= 0:
+        raise EvaluationError("detection output has an empty batch dimension")
+
+    expected_channels = 4 + num_classes
+
+    if value.shape[1] != expected_channels:
+        raise EvaluationError(
+            "detection model output has "
+            f"{value.shape[1]} channels, expected "
+            f"4 + {num_classes} = {expected_channels}"
+        )
+
+    if value.shape[2] <= 0:
+        raise EvaluationError("detection output has no candidate predictions")
+
+    return value
+
+
 class TorchImageClassifier(ModelAdapter):
     def __init__(self, spec: TorchModelSpec, device: str = "auto", module: torch.nn.Module | None = None):
         self.spec = spec
         self.device = resolve_device(device)
         self.model = (module if module is not None else _load_model(spec)).to(self.device).eval()
+
+        # CPU inference should use FP32 inputs and FP32 model weights.
+        #
+        # Some checkpoints, including Ultralytics checkpoints, are
+        # serialized with FP16 weights. CPU validation creates FP32
+        # tensors, while many CPU operators do not reliably support
+        # FP16. Normalize the loaded model to FP32 on CPU instead of
+        # forcing validation/inference inputs to FP16.
+        if self.device.type == "cpu":
+            self.model.float()
+
         for param in self.model.parameters():
             param.requires_grad_(False)
 
@@ -251,6 +374,7 @@ class TorchImageClassifier(ModelAdapter):
             input_size=self.spec.input_size,
             details={
                 "source": self.spec.source,
+                "task": self.spec.task,
                 "mixed_precision": self._amp,
                 **({"architecture": self.spec.architecture} if self.spec.architecture else {}),
             },
