@@ -1,0 +1,33 @@
+{
+  "created_at": "2026-10-05T00:00:29.136172+00:00",
+  "error": null,
+  "finished_at": "2026-10-05T00:00:52.145285+00:00",
+  "job_id": "091e7266844c",
+  "kind": "evaluation",
+  "params": {
+    "batch_size": 32,
+    "dataset_id": "yolo-sohos",
+    "device": "auto",
+    "evaluation_id": null,
+    "model_id": "demo_model",
+    "num_workers": 0,
+    "seed": 42,
+    "subpath": null
+  },
+  "result": {
+    "dataset_id": "{'created_at': '2026-10-04T23:48:44.481726+00:00', 'csv': None, 'dataset_id': 'yolo-sohos', 'kind': 'folder', 'label_column': 'label', 'path_column': 'path', 'root': '/kaggle/working/sohas_test_yolo', 'source': 'local', 'summary': {'classes': {'images': 472}, 'declared_classes': ['images', 'labels'], 'layout': 'class_only', 'num_excluded': 473, 'num_samples': 472, 'splits': {}}}:yolo-sohos",
+    "device": "auto",
+    "evaluation_id": null,
+    "f1": 0.0,
+    "false_negatives": 332,
+    "false_positives": 2228,
+    "mean_iou": 0.0,
+    "model_id": "demo_model",
+    "num_samples": 472,
+    "precision": 0.0,
+    "recall": 0.0,
+    "true_positives": 0
+  },
+  "started_at": "2026-10-05T00:00:29.138179+00:00",
+  "status": "completed"
+}

@@ -1,0 +1,2834 @@
+{
+  "config": {
+    "class_names": null,
+    "compute_stats": true,
+    "filename_overlap_min_stem": 6,
+    "id_column": null,
+    "imbalance_ratio": 5.0,
+    "label_column": "label",
+    "label_name_column": null,
+    "layout": "auto",
+    "max_aspect_ratio": 4.0,
+    "max_bucket_size": 5000,
+    "max_evidence": 20,
+    "max_file_bytes": 52428800,
+    "max_listed_groups": 200,
+    "max_side": 10000,
+    "min_contrast": 0.01,
+    "min_file_bytes": 256,
+    "min_samples_for_outliers": 20,
+    "min_side": 32,
+    "min_split_size_for_gap": 20,
+    "near_duplicate_threshold": 4,
+    "outlier_z": 4.0,
+    "path_column": "path",
+    "severe_imbalance_ratio": 20.0,
+    "split_column": "split",
+    "split_proportion_gap": 0.15
+  },
+  "dataset_id": "unaccurate-weapons",
+  "distribution": {
+    "class_counts": {
+      "Sohas_weapon-Detection": 1472
+    },
+    "class_imbalance": {
+      "majority_class": null,
+      "minority_class": null,
+      "ratio": null
+    },
+    "modes": {
+      "RGB": 1472
+    },
+    "outliers": {
+      "aspect_ratio": {
+        "num_flagged": 0,
+        "robust_stats": {
+          "mad": 0.0,
+          "median": 1.777778
+        }
+      },
+      "file_size": {
+        "num_flagged": 135,
+        "robust_stats": {
+          "mad": 101192.5,
+          "median": 273062.5
+        }
+      },
+      "height": {
+        "num_flagged": 6,
+        "robust_stats": {
+          "mad": 189.0,
+          "median": 720.0
+        }
+      },
+      "width": {
+        "num_flagged": 2,
+        "robust_stats": {
+          "mad": 320.0,
+          "median": 1280.0
+        }
+      }
+    },
+    "split_class_proportions": {}
+  },
+  "exact_duplicates": {
+    "groups": [],
+    "groups_truncated": false,
+    "num_affected_samples": 0,
+    "num_cross_split_groups": 0,
+    "num_groups": 0,
+    "num_label_conflict_groups": 0,
+    "num_redundant_copies": 0
+  },
+  "findings": [
+    {
+      "affected_classes": [
+        "Sohas_weapon-Detection"
+      ],
+      "affected_splits": [],
+      "category": "distribution",
+      "code": "outliers_file_size",
+      "count": 135,
+      "description": "Values more than 4.0 robust z-scores from the median.",
+      "details": {
+        "mad": 101192.5,
+        "median": 273062.5
+      },
+      "evidence_truncated": true,
+      "finding_id": "distribution.outliers_file_size",
+      "sample_ids": [
+        "Sohas_weapon-Detection/images_test/smartphone_0809.JPG",
+        "Sohas_weapon-Detection/images_test/knife_466.jpg",
+        "Sohas_weapon-Detection/images_test/smartphone_0810.JPG",
+        "Sohas_weapon-Detection/images_test/pistol_9010.jpg",
+        "Sohas_weapon-Detection/images_test/monedero_1191.JPG",
+        "Sohas_weapon-Detection/images_test/monedero_1523.jpg",
+        "Sohas_weapon-Detection/images/billete_0160.JPG",
+        "Sohas_weapon-Detection/images/billete_0168.JPG",
+        "Sohas_weapon-Detection/images_test/monedero_1190.JPG",
+        "Sohas_weapon-Detection/images_test/smartphone_0807.JPG",
+        "Sohas_weapon-Detection/images_test/smartphone_0808.JPG",
+        "Sohas_weapon-Detection/images_test/smartphone_1068.jpg",
+        "Sohas_weapon-Detection/images/billete_0161.JPG",
+        "Sohas_weapon-Detection/images_test/smartphone_0805.JPG",
+        "Sohas_weapon-Detection/images_test/smartphone_0806.JPG",
+        "Sohas_weapon-Detection/images/DSC_00071.jpg",
+        "Sohas_weapon-Detection/images/DSC_00091.jpg",
+        "Sohas_weapon-Detection/images/DSC_0016.jpg",
+        "Sohas_weapon-Detection/images_test/tarjeta_2384.jpg",
+        "Sohas_weapon-Detection/images/billete_0165.JPG"
+      ],
+      "severity": "low",
+      "title": "Outliers in file_size"
+    },
+    {
+      "affected_classes": [
+        "Sohas_weapon-Detection"
+      ],
+      "affected_splits": [],
+      "category": "distribution",
+      "code": "outliers_height",
+      "count": 6,
+      "description": "Values more than 4.0 robust z-scores from the median.",
+      "details": {
+        "mad": 189.0,
+        "median": 720.0
+      },
+      "evidence_truncated": false,
+      "finding_id": "distribution.outliers_height",
+      "sample_ids": [
+        "Sohas_weapon-Detection/images_test/knife_541.jpg",
+        "Sohas_weapon-Detection/images_test/knife_466.jpg",
+        "Sohas_weapon-Detection/images_test/knife_132.jpg",
+        "Sohas_weapon-Detection/images_test/pistol_9012.jpg",
+        "Sohas_weapon-Detection/images_test/pistol_9014.jpg",
+        "Sohas_weapon-Detection/images_test/smartphone_0810.JPG"
+      ],
+      "severity": "low",
+      "title": "Outliers in height"
+    },
+    {
+      "affected_classes": [
+        "Sohas_weapon-Detection"
+      ],
+      "affected_splits": [],
+      "category": "distribution",
+      "code": "outliers_width",
+      "count": 2,
+      "description": "Values more than 4.0 robust z-scores from the median.",
+      "details": {
+        "mad": 320.0,
+        "median": 1280.0
+      },
+      "evidence_truncated": false,
+      "finding_id": "distribution.outliers_width",
+      "sample_ids": [
+        "Sohas_weapon-Detection/images_test/knife_132.jpg",
+        "Sohas_weapon-Detection/images_test/knife_466.jpg"
+      ],
+      "severity": "low",
+      "title": "Outliers in width"
+    },
+    {
+      "affected_classes": [
+        "Sohas_weapon-Detection"
+      ],
+      "affected_splits": [],
+      "category": "near_duplicates",
+      "code": "near_duplicate_groups",
+      "count": 604,
+      "description": "Grouping uses a 64-bit difference hash. It links resized, re-encoded or lightly edited copies; similarity is not proof that two images share a source.",
+      "details": {
+        "num_groups": 115
+      },
+      "evidence_truncated": true,
+      "finding_id": "near_duplicates.near_duplicate_groups",
+      "sample_ids": [
+        "Sohas_weapon-Detection/images/ABbframe00154.jpg",
+        "Sohas_weapon-Detection/images/ABbframe00160.jpg",
+        "Sohas_weapon-Detection/images/ABbframe00166.jpg",
+        "Sohas_weapon-Detection/images/ABbframe00169.jpg",
+        "Sohas_weapon-Detection/images/ABbframe00190.jpg",
+        "Sohas_weapon-Detection/images/ABbframe00235.jpg",
+        "Sohas_weapon-Detection/images/ABbframe00265.jpg",
+        "Sohas_weapon-Detection/images/ABbframe00271.jpg",
+        "Sohas_weapon-Detection/images/ABbframe00274.jpg",
+        "Sohas_weapon-Detection/images/ABbframe00277.jpg",
+        "Sohas_weapon-Detection/images/ABbframe00280.jpg",
+        "Sohas_weapon-Detection/images/ABbframe00283.jpg",
+        "Sohas_weapon-Detection/images/ABbframe00286.jpg",
+        "Sohas_weapon-Detection/images/ABbframe00292.jpg",
+        "Sohas_weapon-Detection/images/ABbframe00295.jpg",
+        "Sohas_weapon-Detection/images/ABbframe00298.jpg",
+        "Sohas_weapon-Detection/images/ABbframe00301.jpg",
+        "Sohas_weapon-Detection/images/ABbframe00304.jpg",
+        "Sohas_weapon-Detection/images/ABbframe00313.jpg",
+        "Sohas_weapon-Detection/images/ABbframe00316.jpg"
+      ],
+      "severity": "low",
+      "title": "Near-duplicate image groups"
+    },
+    {
+      "affected_classes": [
+        "Sohas_weapon-Detection"
+      ],
+      "affected_splits": [],
+      "category": "statistics",
+      "code": "outliers_saturation",
+      "count": 16,
+      "description": "Values more than 4.0 robust z-scores from the median.",
+      "details": {
+        "mad": 0.057531,
+        "median": 0.159119
+      },
+      "evidence_truncated": false,
+      "finding_id": "statistics.outliers_saturation",
+      "sample_ids": [
+        "Sohas_weapon-Detection/images_test/tarjeta_2368.jpg",
+        "Sohas_weapon-Detection/images_test/tarjeta_2373.jpg",
+        "Sohas_weapon-Detection/images/billete_2029.jpg",
+        "Sohas_weapon-Detection/images_test/pistol_9009.jpg",
+        "Sohas_weapon-Detection/images_test/sharpenKnife039.jpg",
+        "Sohas_weapon-Detection/images_test/sharpenKnife041.jpg",
+        "Sohas_weapon-Detection/images/billete_2061.jpg",
+        "Sohas_weapon-Detection/images_test/tarjeta_2361.jpg",
+        "Sohas_weapon-Detection/images_test/knife_466.jpg",
+        "Sohas_weapon-Detection/images_test/sharpenKnife202.jpg",
+        "Sohas_weapon-Detection/images_test/sharpenKnife194.jpg",
+        "Sohas_weapon-Detection/images_test/sharpenKnife226.jpg",
+        "Sohas_weapon-Detection/images_test/sharpenKnife242.jpg",
+        "Sohas_weapon-Detection/images_test/sharpenKnife163.jpg",
+        "Sohas_weapon-Detection/images_test/knife_410.jpg",
+        "Sohas_weapon-Detection/images_test/knife_99.jpg"
+      ],
+      "severity": "low",
+      "title": "Outliers in saturation"
+    },
+    {
+      "affected_classes": [],
+      "affected_splits": [],
+      "category": "image_integrity",
+      "code": "excluded_non_image_files",
+      "count": 1868,
+      "description": "These files were not treated as samples because of their extension.",
+      "details": {
+        "examples": [
+          "Sohas_weapon-Detection/annotations/trainval.txt",
+          "Sohas_weapon-Detection/annotations/xmls/ABbframe00154.xml",
+          "Sohas_weapon-Detection/annotations/xmls/ABbframe00160.xml",
+          "Sohas_weapon-Detection/annotations/xmls/ABbframe00166.xml",
+          "Sohas_weapon-Detection/annotations/xmls/ABbframe00169.xml",
+          "Sohas_weapon-Detection/annotations/xmls/ABbframe00190.xml",
+          "Sohas_weapon-Detection/annotations/xmls/ABbframe00235.xml",
+          "Sohas_weapon-Detection/annotations/xmls/ABbframe00265.xml",
+          "Sohas_weapon-Detection/annotations/xmls/ABbframe00271.xml",
+          "Sohas_weapon-Detection/annotations/xmls/ABbframe00274.xml",
+          "Sohas_weapon-Detection/annotations/xmls/ABbframe00277.xml",
+          "Sohas_weapon-Detection/annotations/xmls/ABbframe00280.xml",
+          "Sohas_weapon-Detection/annotations/xmls/ABbframe00283.xml",
+          "Sohas_weapon-Detection/annotations/xmls/ABbframe00286.xml",
+          "Sohas_weapon-Detection/annotations/xmls/ABbframe00292.xml",
+          "Sohas_weapon-Detection/annotations/xmls/ABbframe00295.xml",
+          "Sohas_weapon-Detection/annotations/xmls/ABbframe00298.xml",
+          "Sohas_weapon-Detection/annotations/xmls/ABbframe00301.xml",
+          "Sohas_weapon-Detection/annotations/xmls/ABbframe00304.xml",
+          "Sohas_weapon-Detection/annotations/xmls/ABbframe00313.xml"
+        ],
+        "extensions": {
+          ".txt": 2,
+          ".xml": 1866
+        }
+      },
+      "evidence_truncated": false,
+      "finding_id": "image_integrity.excluded_non_image_files",
+      "sample_ids": [],
+      "severity": "info",
+      "title": "Non-image files skipped during the directory scan"
+    }
+  ],
+  "fingerprint": "2f795fbfc59d4695",
+  "image_integrity": {
+    "excluded_non_image_files": 1868,
+    "extreme_aspect_ratio": 0,
+    "failures": {},
+    "format_extension_mismatch": 0,
+    "huge_files": 0,
+    "huge_images": 0,
+    "non_rgb_modes": {},
+    "tiny_files": 0,
+    "tiny_images": 0,
+    "unsupported_extension": 0
+  },
+  "inventory": {
+    "by_status": {
+      "ok": 1472
+    },
+    "classes": {
+      "Sohas_weapon-Detection": {
+        "count": 1472,
+        "percent": 100.0
+      }
+    },
+    "dimensions": {
+      "aspect_ratio": {
+        "max": 3.058824,
+        "mean": 1.683227,
+        "median": 1.777778,
+        "min": 1.0,
+        "n": 1472,
+        "p05": 1.333333,
+        "p95": 1.777778,
+        "std": 0.171602
+      },
+      "height": {
+        "max": 3456.0,
+        "mean": 825.966033,
+        "median": 720.0,
+        "min": 121.0,
+        "n": 1472,
+        "p05": 300.0,
+        "p95": 1281.0,
+        "std": 296.8831
+      },
+      "most_common_sizes": [
+        {
+          "count": 633,
+          "size": "1280x720"
+        },
+        {
+          "count": 238,
+          "size": "1920x1090"
+        },
+        {
+          "count": 106,
+          "size": "1920x1080"
+        },
+        {
+          "count": 79,
+          "size": "1920x1281"
+        },
+        {
+          "count": 33,
+          "size": "1620x1080"
+        },
+        {
+          "count": 24,
+          "size": "1920x1280"
+        },
+        {
+          "count": 19,
+          "size": "852x480"
+        },
+        {
+          "count": 7,
+          "size": "1300x866"
+        },
+        {
+          "count": 7,
+          "size": "300x168"
+        },
+        {
+          "count": 6,
+          "size": "800x533"
+        }
+      ],
+      "width": {
+        "max": 3840.0,
+        "mean": 1373.436141,
+        "median": 1280.0,
+        "min": 168.0,
+        "n": 1472,
+        "p05": 450.0,
+        "p95": 1920.0,
+        "std": 471.518405
+      }
+    },
+    "duplicate_paths": {
+      "num_groups": 0,
+      "paths": []
+    },
+    "extensions": {
+      ".jpeg": 2,
+      ".jpg": 1470
+    },
+    "file_size_bytes": {
+      "max": 2024508.0,
+      "mean": 349389.097147,
+      "median": 273062.5,
+      "min": 4835.0,
+      "n": 1472,
+      "p05": 20513.1,
+      "p95": 1172022.2,
+      "std": 322789.426504
+    },
+    "formats": {
+      "JPEG": 1472
+    },
+    "missing_files": 0,
+    "modes": {
+      "RGB": 1472
+    },
+    "splits": {
+      "<none>": {
+        "count": 1472,
+        "percent": 100.0
+      }
+    },
+    "total_samples": 1472,
+    "unreadable_files": 0
+  },
+  "label_integrity": {
+    "conflicting_label_groups": 0,
+    "duplicate_sample_ids": 0,
+    "empty_classes": [],
+    "empty_splits": [],
+    "inconsistent_mapping": {
+      "label_to_names": {},
+      "name_to_labels": {}
+    },
+    "label_variants": {},
+    "missing_labels": 0,
+    "split_overlap": 0,
+    "unknown_labels": 0
+  },
+  "leakage": {
+    "applicable": false,
+    "exact_duplicate_cross_split_groups": 0,
+    "filename_overlap": {
+      "num_groups": 0
+    },
+    "label_conflict_groups": 0,
+    "near_duplicate_cross_split_groups": 0,
+    "note": "Leakage findings report shared content or names between splits. File-name matches are leads only and are not evidence of related images."
+  },
+  "near_duplicates": {
+    "groups": [
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 49,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": true,
+        "num_distinct_files": 49,
+        "num_links": 143,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/LBbframe00145.jpg",
+          "Sohas_weapon-Detection/images/LBbframe00160.jpg",
+          "Sohas_weapon-Detection/images/LBbframe00163.jpg",
+          "Sohas_weapon-Detection/images/LBbframe00166.jpg",
+          "Sohas_weapon-Detection/images/LBbframe00178.jpg",
+          "Sohas_weapon-Detection/images/LBbframe00238.jpg",
+          "Sohas_weapon-Detection/images/LBbframe00244.jpg",
+          "Sohas_weapon-Detection/images/LBbframe00256.jpg",
+          "Sohas_weapon-Detection/images/LBbframe00262.jpg",
+          "Sohas_weapon-Detection/images/LBbframe00271.jpg",
+          "Sohas_weapon-Detection/images/LBbframe00313.jpg",
+          "Sohas_weapon-Detection/images/LBbframe00319.jpg",
+          "Sohas_weapon-Detection/images/LBbframe00331.jpg",
+          "Sohas_weapon-Detection/images/LBbframe00361.jpg",
+          "Sohas_weapon-Detection/images/LBbframe00370.jpg",
+          "Sohas_weapon-Detection/images/LBbframe00382.jpg",
+          "Sohas_weapon-Detection/images/LBbframe00403.jpg",
+          "Sohas_weapon-Detection/images/LBbframe00421.jpg",
+          "Sohas_weapon-Detection/images/LBbframe00427.jpg",
+          "Sohas_weapon-Detection/images/LBbframe00439.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 41,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": true,
+        "num_distinct_files": 41,
+        "num_links": 117,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques121.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques147.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques149.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques157.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques159.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques161.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques162.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques163.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques166.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques167.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques169.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques170.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques172.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques173.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques175.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques176.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques177.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques179.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques181.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques186.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 28,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": true,
+        "num_distinct_files": 28,
+        "num_links": 75,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/ABbframe00154.jpg",
+          "Sohas_weapon-Detection/images/ABbframe00160.jpg",
+          "Sohas_weapon-Detection/images/ABbframe00166.jpg",
+          "Sohas_weapon-Detection/images/ABbframe00169.jpg",
+          "Sohas_weapon-Detection/images/ABbframe00190.jpg",
+          "Sohas_weapon-Detection/images/ABbframe00265.jpg",
+          "Sohas_weapon-Detection/images/ABbframe00271.jpg",
+          "Sohas_weapon-Detection/images/ABbframe00274.jpg",
+          "Sohas_weapon-Detection/images/ABbframe00328.jpg",
+          "Sohas_weapon-Detection/images/ABbframe00346.jpg",
+          "Sohas_weapon-Detection/images/ABbframe00349.jpg",
+          "Sohas_weapon-Detection/images/ABbframe00370.jpg",
+          "Sohas_weapon-Detection/images/ABbframe00421.jpg",
+          "Sohas_weapon-Detection/images/ABbframe00430.jpg",
+          "Sohas_weapon-Detection/images/ABmframe00157.jpg",
+          "Sohas_weapon-Detection/images/ABmframe00163.jpg",
+          "Sohas_weapon-Detection/images/ABmframe00172.jpg",
+          "Sohas_weapon-Detection/images/ABmframe00271.jpg",
+          "Sohas_weapon-Detection/images/ABmframe00322.jpg",
+          "Sohas_weapon-Detection/images/ABmframe00412.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 26,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": true,
+        "num_distinct_files": 26,
+        "num_links": 37,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques042.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques044.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques045.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques046.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques048.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques049.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques051.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques052.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques054.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques055.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques056.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques060.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques063.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques064.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques066.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques067.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques068.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques070.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques072.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques073.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 26,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": true,
+        "num_distinct_files": 26,
+        "num_links": 49,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/MBbframe00145.jpg",
+          "Sohas_weapon-Detection/images/MBbframe00154.jpg",
+          "Sohas_weapon-Detection/images/MBbframe00265.jpg",
+          "Sohas_weapon-Detection/images/MBbframe00271.jpg",
+          "Sohas_weapon-Detection/images/MBbframe00337.jpg",
+          "Sohas_weapon-Detection/images/MBbframe00397.jpg",
+          "Sohas_weapon-Detection/images/MBbframe00403.jpg",
+          "Sohas_weapon-Detection/images/MBbframe00415.jpg",
+          "Sohas_weapon-Detection/images/MBmframe00145.jpg",
+          "Sohas_weapon-Detection/images/MBmframe00265.jpg",
+          "Sohas_weapon-Detection/images/MBmframe00271.jpg",
+          "Sohas_weapon-Detection/images/MBmframe00343.jpg",
+          "Sohas_weapon-Detection/images/MBmframe00349.jpg",
+          "Sohas_weapon-Detection/images/MBmframe00373.jpg",
+          "Sohas_weapon-Detection/images/MBmframe00391.jpg",
+          "Sohas_weapon-Detection/images/MBmframe00406.jpg",
+          "Sohas_weapon-Detection/images/MBsframe00199.jpg",
+          "Sohas_weapon-Detection/images/MBsframe00271.jpg",
+          "Sohas_weapon-Detection/images/MBsframe00343.jpg",
+          "Sohas_weapon-Detection/images/MBsframe00418.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 19,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 19,
+        "num_links": 49,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/ABbframe00277.jpg",
+          "Sohas_weapon-Detection/images/ABbframe00280.jpg",
+          "Sohas_weapon-Detection/images/ABbframe00283.jpg",
+          "Sohas_weapon-Detection/images/ABbframe00286.jpg",
+          "Sohas_weapon-Detection/images/ABbframe00292.jpg",
+          "Sohas_weapon-Detection/images/ABbframe00295.jpg",
+          "Sohas_weapon-Detection/images/ABbframe00298.jpg",
+          "Sohas_weapon-Detection/images/ABbframe00301.jpg",
+          "Sohas_weapon-Detection/images/ABbframe00304.jpg",
+          "Sohas_weapon-Detection/images/ABbframe00313.jpg",
+          "Sohas_weapon-Detection/images/ABbframe00316.jpg",
+          "Sohas_weapon-Detection/images/ABbframe00319.jpg",
+          "Sohas_weapon-Detection/images/ABmframe00277.jpg",
+          "Sohas_weapon-Detection/images/ABmframe00289.jpg",
+          "Sohas_weapon-Detection/images/ABmframe00301.jpg",
+          "Sohas_weapon-Detection/images/ABmframe00313.jpg",
+          "Sohas_weapon-Detection/images/ABsframe00001.jpg",
+          "Sohas_weapon-Detection/images/ABsframe00004.jpg",
+          "Sohas_weapon-Detection/images/ABsframe00133.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 15,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 15,
+        "num_links": 30,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/MBbframe00160.jpg",
+          "Sohas_weapon-Detection/images/MBbframe00166.jpg",
+          "Sohas_weapon-Detection/images/MBbframe00178.jpg",
+          "Sohas_weapon-Detection/images/MBbframe00277.jpg",
+          "Sohas_weapon-Detection/images/MBbframe00280.jpg",
+          "Sohas_weapon-Detection/images/MBbframe00304.jpg",
+          "Sohas_weapon-Detection/images/MBbframe00313.jpg",
+          "Sohas_weapon-Detection/images/MBmframe00154.jpg",
+          "Sohas_weapon-Detection/images/MBmframe00157.jpg",
+          "Sohas_weapon-Detection/images/MBmframe00187.jpg",
+          "Sohas_weapon-Detection/images/MBmframe00196.jpg",
+          "Sohas_weapon-Detection/images/MBmframe00277.jpg",
+          "Sohas_weapon-Detection/images/MBmframe00307.jpg",
+          "Sohas_weapon-Detection/images/MBsframe00250.jpg",
+          "Sohas_weapon-Detection/images/MBsframe00349.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 15,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 15,
+        "num_links": 24,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images_test/knife_808.jpg",
+          "Sohas_weapon-Detection/images_test/knife_825.jpg",
+          "Sohas_weapon-Detection/images_test/knife_853.jpg",
+          "Sohas_weapon-Detection/images_test/knife_856.jpg",
+          "Sohas_weapon-Detection/images_test/knife_869.jpg",
+          "Sohas_weapon-Detection/images_test/knife_886.jpg",
+          "Sohas_weapon-Detection/images_test/knife_905.jpg",
+          "Sohas_weapon-Detection/images_test/knife_915.jpg",
+          "Sohas_weapon-Detection/images_test/knife_919.jpg",
+          "Sohas_weapon-Detection/images_test/knife_925.jpg",
+          "Sohas_weapon-Detection/images_test/knife_930.jpg",
+          "Sohas_weapon-Detection/images_test/knife_937.jpg",
+          "Sohas_weapon-Detection/images_test/knife_946.jpg",
+          "Sohas_weapon-Detection/images_test/knife_947.jpg",
+          "Sohas_weapon-Detection/images_test/knife_972.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 12,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 12,
+        "num_links": 19,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/HBbframe00205.jpg",
+          "Sohas_weapon-Detection/images/HBbframe00244.jpg",
+          "Sohas_weapon-Detection/images/HBbframe00373.jpg",
+          "Sohas_weapon-Detection/images/HBbframe00379.jpg",
+          "Sohas_weapon-Detection/images/HBbframe00406.jpg",
+          "Sohas_weapon-Detection/images/HBmframe00145.jpg",
+          "Sohas_weapon-Detection/images/HBmframe00190.jpg",
+          "Sohas_weapon-Detection/images/HBmframe00241.jpg",
+          "Sohas_weapon-Detection/images/HBmframe00355.jpg",
+          "Sohas_weapon-Detection/images/HBmframe00361.jpg",
+          "Sohas_weapon-Detection/images/HBmframe00370.jpg",
+          "Sohas_weapon-Detection/images/HBsframe00391.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 12,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 12,
+        "num_links": 27,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques091.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques092.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques098.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques104.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques106.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques107.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques109.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques110.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques112.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques114.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques115.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques118.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 12,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 12,
+        "num_links": 17,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images_test/knife_1164.jpg",
+          "Sohas_weapon-Detection/images_test/knife_1166.jpg",
+          "Sohas_weapon-Detection/images_test/knife_1168.jpg",
+          "Sohas_weapon-Detection/images_test/knife_1186.jpg",
+          "Sohas_weapon-Detection/images_test/knife_1190.jpg",
+          "Sohas_weapon-Detection/images_test/knife_1215.jpg",
+          "Sohas_weapon-Detection/images_test/knife_1218.jpg",
+          "Sohas_weapon-Detection/images_test/knife_1239.jpg",
+          "Sohas_weapon-Detection/images_test/knife_1242.jpg",
+          "Sohas_weapon-Detection/images_test/knife_1253.jpg",
+          "Sohas_weapon-Detection/images_test/knife_1258.jpg",
+          "Sohas_weapon-Detection/images_test/knife_1261.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 10,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 10,
+        "num_links": 15,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/KnifeDefenseKrav020.jpg",
+          "Sohas_weapon-Detection/images/KnifeDefenseKrav022.jpg",
+          "Sohas_weapon-Detection/images/KnifeDefenseKrav026.jpg",
+          "Sohas_weapon-Detection/images/KnifeDefenseKrav030.jpg",
+          "Sohas_weapon-Detection/images/KnifeDefenseKrav042.jpg",
+          "Sohas_weapon-Detection/images/KnifeDefenseKrav047.jpg",
+          "Sohas_weapon-Detection/images/KnifeDefenseKrav048.jpg",
+          "Sohas_weapon-Detection/images/KnifeDefenseKrav054.jpg",
+          "Sohas_weapon-Detection/images/KnifeDefenseKrav057.jpg",
+          "Sohas_weapon-Detection/images/KnifeDefenseKrav060.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 10,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 10,
+        "num_links": 18,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques703.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques704.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques706.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques709.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques713.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques715.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques719.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques721.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques730.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques731.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 9,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 9,
+        "num_links": 10,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/HBbframe00169.jpg",
+          "Sohas_weapon-Detection/images/HBbframe00175.jpg",
+          "Sohas_weapon-Detection/images/HBbframe00268.jpg",
+          "Sohas_weapon-Detection/images/HBbframe00328.jpg",
+          "Sohas_weapon-Detection/images/HBmframe00268.jpg",
+          "Sohas_weapon-Detection/images/HBmframe00322.jpg",
+          "Sohas_weapon-Detection/images/HBsframe00151.jpg",
+          "Sohas_weapon-Detection/images/HBsframe00163.jpg",
+          "Sohas_weapon-Detection/images/HBsframe00268.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 9,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 9,
+        "num_links": 13,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images_test/monedero_1581.jpg",
+          "Sohas_weapon-Detection/images_test/monedero_1587.jpg",
+          "Sohas_weapon-Detection/images_test/smartphone_1009.jpg",
+          "Sohas_weapon-Detection/images_test/smartphone_1017.jpg",
+          "Sohas_weapon-Detection/images_test/smartphone_1027.jpg",
+          "Sohas_weapon-Detection/images_test/smartphone_1033.jpg",
+          "Sohas_weapon-Detection/images_test/smartphone_1037.jpg",
+          "Sohas_weapon-Detection/images_test/smartphone_1047.jpg",
+          "Sohas_weapon-Detection/images_test/smartphone_1060.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 8,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 8,
+        "num_links": 11,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/KravMagaTraining747.jpg",
+          "Sohas_weapon-Detection/images/KravMagaTraining748.jpg",
+          "Sohas_weapon-Detection/images/KravMagaTraining749.jpg",
+          "Sohas_weapon-Detection/images/KravMagaTraining750.jpg",
+          "Sohas_weapon-Detection/images/KravMagaTraining751.jpg",
+          "Sohas_weapon-Detection/images/KravMagaTraining752.jpg",
+          "Sohas_weapon-Detection/images/KravMagaTraining753.jpg",
+          "Sohas_weapon-Detection/images/KravMagaTraining754.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 8,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 8,
+        "num_links": 11,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images_test/knife_809.jpg",
+          "Sohas_weapon-Detection/images_test/knife_818.jpg",
+          "Sohas_weapon-Detection/images_test/knife_822.jpg",
+          "Sohas_weapon-Detection/images_test/knife_867.jpg",
+          "Sohas_weapon-Detection/images_test/knife_870.jpg",
+          "Sohas_weapon-Detection/images_test/knife_877.jpg",
+          "Sohas_weapon-Detection/images_test/knife_893.jpg",
+          "Sohas_weapon-Detection/images_test/knife_996.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 7,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 3,
+        "members_truncated": false,
+        "num_distinct_files": 7,
+        "num_links": 6,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/DefenseAndSurvive02.jpg",
+          "Sohas_weapon-Detection/images/DefenseAndSurvive04.jpg",
+          "Sohas_weapon-Detection/images/DefenseAndSurvive05.jpg",
+          "Sohas_weapon-Detection/images/DefenseAndSurvive07.jpg",
+          "Sohas_weapon-Detection/images/DefenseAndSurvive09.jpg",
+          "Sohas_weapon-Detection/images/DefenseAndSurvive10.jpg",
+          "Sohas_weapon-Detection/images/DefenseAndSurvive11.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 7,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 7,
+        "num_links": 9,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/DefenseKnifeAttack0132.jpg",
+          "Sohas_weapon-Detection/images/DefenseKnifeAttack0135.jpg",
+          "Sohas_weapon-Detection/images/DefenseKnifeAttack0300.jpg",
+          "Sohas_weapon-Detection/images/DefenseKnifeAttack0681.jpg",
+          "Sohas_weapon-Detection/images/DefenseKnifeAttack0700.jpg",
+          "Sohas_weapon-Detection/images/DefenseKnifeAttack0705.jpg",
+          "Sohas_weapon-Detection/images/DefenseKnifeAttack1071.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 7,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 7,
+        "num_links": 15,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques759.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques762.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques765.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques768.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques773.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques775.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques780.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 7,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 7,
+        "num_links": 9,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/billete_0188.jpg",
+          "Sohas_weapon-Detection/images/billete_0189.jpg",
+          "Sohas_weapon-Detection/images/billete_0190.jpg",
+          "Sohas_weapon-Detection/images/billete_0193.jpg",
+          "Sohas_weapon-Detection/images/billete_0194.jpg",
+          "Sohas_weapon-Detection/images/billete_0199.jpg",
+          "Sohas_weapon-Detection/images/billete_0208.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 7,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 7,
+        "num_links": 8,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images_test/knife_828.jpg",
+          "Sohas_weapon-Detection/images_test/knife_830.jpg",
+          "Sohas_weapon-Detection/images_test/knife_857.jpg",
+          "Sohas_weapon-Detection/images_test/knife_863.jpg",
+          "Sohas_weapon-Detection/images_test/knife_907.jpg",
+          "Sohas_weapon-Detection/images_test/knife_941.jpg",
+          "Sohas_weapon-Detection/images_test/knife_977.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 6,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 6,
+        "num_links": 14,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/DefenseKnifeAttack0002.jpg",
+          "Sohas_weapon-Detection/images/DefenseKnifeAttack0051.jpg",
+          "Sohas_weapon-Detection/images/DefenseKnifeAttack0052.jpg",
+          "Sohas_weapon-Detection/images/DefenseKnifeAttack0053.jpg",
+          "Sohas_weapon-Detection/images/DefenseKnifeAttack0059.jpg",
+          "Sohas_weapon-Detection/images/DefenseKnifeAttack0071.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 6,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 6,
+        "num_links": 6,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/HBbframe00166.jpg",
+          "Sohas_weapon-Detection/images/HBbframe00193.jpg",
+          "Sohas_weapon-Detection/images/HBbframe00253.jpg",
+          "Sohas_weapon-Detection/images/HBbframe00346.jpg",
+          "Sohas_weapon-Detection/images/HBmframe00157.jpg",
+          "Sohas_weapon-Detection/images/HBmframe00175.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 6,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 6,
+        "num_links": 10,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/HBbframe00295.jpg",
+          "Sohas_weapon-Detection/images/HBbframe00301.jpg",
+          "Sohas_weapon-Detection/images/HBbframe00307.jpg",
+          "Sohas_weapon-Detection/images/HBmframe00280.jpg",
+          "Sohas_weapon-Detection/images/HBmframe00286.jpg",
+          "Sohas_weapon-Detection/images/HBmframe00301.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 6,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 6,
+        "num_links": 6,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/KravMagaTraining619.jpg",
+          "Sohas_weapon-Detection/images/KravMagaTraining620.jpg",
+          "Sohas_weapon-Detection/images/KravMagaTraining624.jpg",
+          "Sohas_weapon-Detection/images/KravMagaTraining626.jpg",
+          "Sohas_weapon-Detection/images/KravMagaTraining634.jpg",
+          "Sohas_weapon-Detection/images/KravMagaTraining636.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 6,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 6,
+        "num_links": 8,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/LBbframe00130.jpg",
+          "Sohas_weapon-Detection/images/LBmframe00133.jpg",
+          "Sohas_weapon-Detection/images/LBmframe00202.jpg",
+          "Sohas_weapon-Detection/images/LBmframe00238.jpg",
+          "Sohas_weapon-Detection/images/LBsframe00160.jpg",
+          "Sohas_weapon-Detection/images/LBsframe00301.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 6,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 6,
+        "num_links": 10,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/RusoClases308.jpg",
+          "Sohas_weapon-Detection/images/RusoClases309.jpg",
+          "Sohas_weapon-Detection/images/RusoClases310.jpg",
+          "Sohas_weapon-Detection/images/RusoClases312.jpg",
+          "Sohas_weapon-Detection/images/RusoClases314.jpg",
+          "Sohas_weapon-Detection/images/RusoClases315.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 6,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 6,
+        "num_links": 5,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/billete_0120.jpg",
+          "Sohas_weapon-Detection/images/billete_0127.jpg",
+          "Sohas_weapon-Detection/images/billete_0130.jpg",
+          "Sohas_weapon-Detection/images/billete_0132.jpg",
+          "Sohas_weapon-Detection/images/billete_0137.jpg",
+          "Sohas_weapon-Detection/images/billete_0146.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 6,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 6,
+        "num_links": 11,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images_test/smartphone_1000.jpg",
+          "Sohas_weapon-Detection/images_test/smartphone_1021.jpg",
+          "Sohas_weapon-Detection/images_test/smartphone_1032.jpg",
+          "Sohas_weapon-Detection/images_test/smartphone_1034.jpg",
+          "Sohas_weapon-Detection/images_test/smartphone_1052.jpg",
+          "Sohas_weapon-Detection/images_test/smartphone_1063.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 5,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 5,
+        "num_links": 8,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/ABbframe00235.jpg",
+          "Sohas_weapon-Detection/images/ABmframe00142.jpg",
+          "Sohas_weapon-Detection/images/ABmframe00211.jpg",
+          "Sohas_weapon-Detection/images/ABsframe00184.jpg",
+          "Sohas_weapon-Detection/images/ABsframe00190.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 5,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 3,
+        "members_truncated": false,
+        "num_distinct_files": 5,
+        "num_links": 6,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/billete_0133.jpg",
+          "Sohas_weapon-Detection/images/billete_0135.jpg",
+          "Sohas_weapon-Detection/images/billete_0139.jpg",
+          "Sohas_weapon-Detection/images_test/monedero_1160.jpg",
+          "Sohas_weapon-Detection/images_test/monedero_1181.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 5,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 5,
+        "num_links": 5,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images_test/knife_1286.jpg",
+          "Sohas_weapon-Detection/images_test/knife_1289.jpg",
+          "Sohas_weapon-Detection/images_test/knife_1333.jpg",
+          "Sohas_weapon-Detection/images_test/knife_1341.jpg",
+          "Sohas_weapon-Detection/images_test/knife_1345.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 4,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 4,
+        "num_links": 6,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/DefenseKnifeAttack1310.jpg",
+          "Sohas_weapon-Detection/images/DefenseKnifeAttack1312.jpg",
+          "Sohas_weapon-Detection/images/DefenseKnifeAttack1315.jpg",
+          "Sohas_weapon-Detection/images/DefenseKnifeAttack1318.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 4,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 4,
+        "num_links": 5,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/HBsframe00091.jpg",
+          "Sohas_weapon-Detection/images/HBsframe00097.jpg",
+          "Sohas_weapon-Detection/images/HBsframe00100.jpg",
+          "Sohas_weapon-Detection/images/HBsframe00226.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 4,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 4,
+        "num_links": 3,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques243.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques244.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques245.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques246.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 4,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 3,
+        "members_truncated": false,
+        "num_distinct_files": 4,
+        "num_links": 3,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques695.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques697.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques699.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques700.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 4,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 3,
+        "members_truncated": false,
+        "num_distinct_files": 4,
+        "num_links": 4,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/KravMagaTraining726.jpg",
+          "Sohas_weapon-Detection/images/KravMagaTraining727.jpg",
+          "Sohas_weapon-Detection/images/KravMagaTraining728.jpg",
+          "Sohas_weapon-Detection/images/KravMagaTraining729.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 4,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 4,
+        "num_links": 4,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/MBbframe00289.jpg",
+          "Sohas_weapon-Detection/images/MBbframe00298.jpg",
+          "Sohas_weapon-Detection/images/MBmframe00175.jpg",
+          "Sohas_weapon-Detection/images/MBmframe00286.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 4,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 4,
+        "num_links": 3,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images_test/pistol_5009.jpg",
+          "Sohas_weapon-Detection/images_test/pistol_5013.jpg",
+          "Sohas_weapon-Detection/images_test/smartphone_1004.jpg",
+          "Sohas_weapon-Detection/images_test/smartphone_1012.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 4,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 4,
+        "num_links": 5,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images_test/smartphone_1020.jpg",
+          "Sohas_weapon-Detection/images_test/smartphone_1024.jpg",
+          "Sohas_weapon-Detection/images_test/smartphone_1038.jpg",
+          "Sohas_weapon-Detection/images_test/smartphone_1046.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 4,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 3,
+        "members_truncated": false,
+        "num_distinct_files": 4,
+        "num_links": 3,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images_test/smartphone_1026.jpg",
+          "Sohas_weapon-Detection/images_test/smartphone_1035.jpg",
+          "Sohas_weapon-Detection/images_test/smartphone_1062.jpg",
+          "Sohas_weapon-Detection/images_test/smartphone_1067.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 4,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 4,
+        "num_links": 3,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images_test/smartphone_1039.jpg",
+          "Sohas_weapon-Detection/images_test/smartphone_1045.jpg",
+          "Sohas_weapon-Detection/images_test/smartphone_1051.jpg",
+          "Sohas_weapon-Detection/images_test/smartphone_1065.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 4,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 4,
+        "num_links": 3,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images_test/smartphone_1070.jpg",
+          "Sohas_weapon-Detection/images_test/tarjeta_2409.jpg",
+          "Sohas_weapon-Detection/images_test/tarjeta_2421.jpg",
+          "Sohas_weapon-Detection/images_test/tarjeta_2508.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 3,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 3,
+        "num_links": 2,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/DefenseKnifeAttack0091.jpg",
+          "Sohas_weapon-Detection/images/DefenseKnifeAttack0093.jpg",
+          "Sohas_weapon-Detection/images/DefenseKnifeAttack0095.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 3,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 3,
+        "num_links": 3,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/DefenseKnifeAttack0500.jpg",
+          "Sohas_weapon-Detection/images/DefenseKnifeAttack0501.jpg",
+          "Sohas_weapon-Detection/images/DefenseKnifeAttack0502.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 3,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 3,
+        "num_links": 3,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/DefenseKnifeAttack0666.jpg",
+          "Sohas_weapon-Detection/images/DefenseKnifeAttack0667.jpg",
+          "Sohas_weapon-Detection/images/DefenseKnifeAttack0668.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 3,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 3,
+        "members_truncated": false,
+        "num_distinct_files": 3,
+        "num_links": 3,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/HBsframe00364.jpg",
+          "Sohas_weapon-Detection/images/HBsframe00367.jpg",
+          "Sohas_weapon-Detection/images/HBsframe00373.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 3,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 2,
+        "members_truncated": false,
+        "num_distinct_files": 3,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/KravMagaTraining255.jpg",
+          "Sohas_weapon-Detection/images/KravMagaTraining258.jpg",
+          "Sohas_weapon-Detection/images/KravMagaTraining260.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 3,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 3,
+        "members_truncated": false,
+        "num_distinct_files": 3,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/KravMagaTraining572.jpg",
+          "Sohas_weapon-Detection/images/KravMagaTraining575.jpg",
+          "Sohas_weapon-Detection/images/KravMagaTraining580.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 3,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 3,
+        "num_links": 3,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/KravMagaTraining734.jpg",
+          "Sohas_weapon-Detection/images/KravMagaTraining735.jpg",
+          "Sohas_weapon-Detection/images/KravMagaTraining741.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 3,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 3,
+        "num_links": 2,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/MBbframe00229.jpg",
+          "Sohas_weapon-Detection/images/MBbframe00238.jpg",
+          "Sohas_weapon-Detection/images/MBsframe00286.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 3,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 3,
+        "num_links": 2,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/RusoClases415.jpg",
+          "Sohas_weapon-Detection/images/RusoClases416.jpg",
+          "Sohas_weapon-Detection/images/RusoClases434.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 3,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 3,
+        "num_links": 3,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images_test/knife_1272.jpg",
+          "Sohas_weapon-Detection/images_test/knife_1293.jpg",
+          "Sohas_weapon-Detection/images_test/knife_1332.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 3,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 3,
+        "num_links": 2,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images_test/tarjeta_2381.jpg",
+          "Sohas_weapon-Detection/images_test/tarjeta_2386.jpg",
+          "Sohas_weapon-Detection/images_test/tarjeta_2405.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 1,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/ABmframe00133.jpg",
+          "Sohas_weapon-Detection/images/ABmframe00226.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 3,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/ABsframe00064.jpg",
+          "Sohas_weapon-Detection/images/ABsframe00067.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/DSC_0001.jpg",
+          "Sohas_weapon-Detection/images/DSC_0005.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 0,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 0,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/DSC_00071.jpg",
+          "Sohas_weapon-Detection/images/DSC_00091.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 0,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 0,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/DSC_00211.jpg",
+          "Sohas_weapon-Detection/images/DSC_00221.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 3,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/DefenseKnifeAttack0198.jpg",
+          "Sohas_weapon-Detection/images/DefenseKnifeAttack0202.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 2,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/DefenseKnifeAttack0216.jpg",
+          "Sohas_weapon-Detection/images/DefenseKnifeAttack0219.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/DefenseKnifeAttack0337.jpg",
+          "Sohas_weapon-Detection/images/DefenseKnifeAttack0338.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 3,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/DefenseKnifeAttack0426.jpg",
+          "Sohas_weapon-Detection/images/DefenseKnifeAttack0428.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 2,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/DefenseKnifeAttack0940.jpg",
+          "Sohas_weapon-Detection/images/DefenseKnifeAttack0942.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/DefenseKnifeAttack1420.jpg",
+          "Sohas_weapon-Detection/images/DefenseKnifeAttack1422.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 0,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 0,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/HBbframe00241.jpg",
+          "Sohas_weapon-Detection/images/HBmframe00139.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 3,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/HBsframe00133.jpg",
+          "Sohas_weapon-Detection/images/HBsframe00436.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 3,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques123.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques124.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 3,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques133.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques134.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques290.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques292.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 2,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques294.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques295.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques377.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques380.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques626.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques743.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 2,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques628.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques630.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques670.jpg",
+          "Sohas_weapon-Detection/images/KravMagaKnifeDefenseTechniques676.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/KravMagaTraining20340.jpg",
+          "Sohas_weapon-Detection/images/KravMagaTraining20342.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 1,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/KravMagaTraining20399.jpg",
+          "Sohas_weapon-Detection/images/KravMagaTraining20404.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 2,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/KravMagaTraining20622.jpg",
+          "Sohas_weapon-Detection/images/KravMagaTraining20623.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 3,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/KravMagaTraining20626.jpg",
+          "Sohas_weapon-Detection/images/KravMagaTraining20627.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/KravMagaTraining20921.jpg",
+          "Sohas_weapon-Detection/images/KravMagaTraining20924.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 3,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/KravMagaTraining21026.jpg",
+          "Sohas_weapon-Detection/images/KravMagaTraining21027.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 3,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/KravMagaTraining21028.jpg",
+          "Sohas_weapon-Detection/images/KravMagaTraining21029.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 2,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/KravMagaTraining21225.jpg",
+          "Sohas_weapon-Detection/images/KravMagaTraining21226.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/KravMagaTraining342.jpg",
+          "Sohas_weapon-Detection/images/KravMagaTraining344.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/KravMagaTraining376.jpg",
+          "Sohas_weapon-Detection/images/KravMagaTraining379.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/KravMagaTraining657.jpg",
+          "Sohas_weapon-Detection/images/KravMagaTraining658.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/KravMagaTraining690.jpg",
+          "Sohas_weapon-Detection/images/KravMagaTraining691.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 1,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/KravMagaTraining716.jpg",
+          "Sohas_weapon-Detection/images/KravMagaTraining718.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 2,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/LBbframe00118.jpg",
+          "Sohas_weapon-Detection/images/LBmframe00121.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 3,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/MBmframe00100.jpg",
+          "Sohas_weapon-Detection/images/MBmframe00106.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 3,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/RealityKnifeAttacks0178.jpg",
+          "Sohas_weapon-Detection/images/RealityKnifeAttacks0180.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 0,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 0,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/RealityKnifeAttacks0592.jpg",
+          "Sohas_weapon-Detection/images/RealityKnifeAttacks0593.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 1,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/RealityKnifeAttacks0650.jpg",
+          "Sohas_weapon-Detection/images/RealityKnifeAttacks0652.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 2,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/RusoClases338.jpg",
+          "Sohas_weapon-Detection/images/RusoClases339.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 1,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/RusoClases647.jpg",
+          "Sohas_weapon-Detection/images/RusoClases648.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 1,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/RusoClases793.jpg",
+          "Sohas_weapon-Detection/images/RusoClases794.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 1,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/billete_0125.jpg",
+          "Sohas_weapon-Detection/images/billete_0140.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 2,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/billete_0148.jpg",
+          "Sohas_weapon-Detection/images/billete_0150.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images/billete_0205.jpg",
+          "Sohas_weapon-Detection/images/billete_0207.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 3,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images_test/knife_1212.jpg",
+          "Sohas_weapon-Detection/images_test/knife_1214.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images_test/knife_1268.jpg",
+          "Sohas_weapon-Detection/images_test/knife_1270.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 0,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 0,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images_test/knife_1288.jpg",
+          "Sohas_weapon-Detection/images_test/knife_1308.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 3,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images_test/knife_1297.jpg",
+          "Sohas_weapon-Detection/images_test/knife_1323.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 0,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 0,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images_test/knife_617.jpg",
+          "Sohas_weapon-Detection/images_test/knife_649.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 3,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images_test/knife_618.jpg",
+          "Sohas_weapon-Detection/images_test/knife_712.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 2,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images_test/knife_623.jpg",
+          "Sohas_weapon-Detection/images_test/knife_728.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 1,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images_test/knife_813.jpg",
+          "Sohas_weapon-Detection/images_test/knife_908.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images_test/pistola_z3v7_01.jpg",
+          "Sohas_weapon-Detection/images_test/smartphone_z3v7_26.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 3,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images_test/sharpenKnife028.jpg",
+          "Sohas_weapon-Detection/images_test/sharpenKnife032.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 3,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images_test/sharpenKnife039.jpg",
+          "Sohas_weapon-Detection/images_test/sharpenKnife041.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 2,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images_test/sharpenKnife163.jpg",
+          "Sohas_weapon-Detection/images_test/sharpenKnife194.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images_test/smartphone_z3v7_05.jpg",
+          "Sohas_weapon-Detection/images_test/smartphone_z3v7_06.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images_test/smartphone_z3v8_07.jpg",
+          "Sohas_weapon-Detection/images_test/smartphone_z3v8_08.jpg"
+        ],
+        "splits": []
+      },
+      {
+        "classes": [
+          "Sohas_weapon-Detection"
+        ],
+        "count": 2,
+        "cross_split": false,
+        "label_disagreement": false,
+        "max_link_distance": 4,
+        "members_truncated": false,
+        "num_distinct_files": 2,
+        "num_links": 1,
+        "sample_ids": [
+          "Sohas_weapon-Detection/images_test/tarjeta_2382.jpg",
+          "Sohas_weapon-Detection/images_test/tarjeta_2393.jpg"
+        ],
+        "splits": []
+      }
+    ],
+    "groups_truncated": false,
+    "method": "dhash64",
+    "num_affected_samples": 604,
+    "num_candidate_pairs_checked": 9752,
+    "num_cross_split_groups": 0,
+    "num_groups": 115,
+    "num_hashed": 1472,
+    "num_links": 922,
+    "num_skipped_buckets": 0,
+    "num_unique_hashes": 1409,
+    "threshold": 4
+  },
+  "scan": {
+    "declared_classes": [
+      "Sohas_weapon-Detection"
+    ],
+    "declared_splits": null,
+    "errors_by_stage_and_type": {},
+    "excluded_by_reason": {
+      "unsupported_extension": 1868
+    },
+    "excluded_total": 1868,
+    "layout": "class_only",
+    "records_by_status": {
+      "ok": 1472
+    },
+    "records_total": 1472,
+    "records_with_warnings": 0,
+    "source_kind": "folder"
+  },
+  "schema_version": 1,
+  "statistics": {
+    "enabled": true,
+    "near_uniform_images": 0,
+    "num_measured": 1472,
+    "outliers": {
+      "brightness": {
+        "num_flagged": 0,
+        "robust_stats": {
+          "mad": 0.104659,
+          "median": 0.449193
+        }
+      },
+      "contrast": {
+        "num_flagged": 0,
+        "robust_stats": {
+          "mad": 0.040308,
+          "median": 0.215745
+        }
+      },
+      "saturation": {
+        "num_flagged": 16,
+        "robust_stats": {
+          "mad": 0.057531,
+          "median": 0.159119
+        }
+      }
+    },
+    "overall": {
+      "brightness": {
+        "max": 0.950568,
+        "mean": 0.459338,
+        "median": 0.449193,
+        "min": 0.015007,
+        "n": 1472,
+        "p05": 0.243794,
+        "p95": 0.810782,
+        "std": 0.161955
+      },
+      "contrast": {
+        "max": 0.421055,
+        "mean": 0.21177,
+        "median": 0.215745,
+        "min": 0.06367,
+        "n": 1472,
+        "p05": 0.124654,
+        "p95": 0.29499,
+        "std": 0.055453
+      },
+      "saturation": {
+        "max": 0.749573,
+        "mean": 0.194989,
+        "median": 0.159119,
+        "min": 0.011506,
+        "n": 1472,
+        "p05": 0.068146,
+        "p95": 0.44025,
+        "std": 0.114843
+      }
+    },
+    "per_class": {
+      "Sohas_weapon-Detection": {
+        "brightness": {
+          "mean": 0.459338,
+          "median": 0.449193,
+          "n": 1472,
+          "std": 0.161955
+        },
+        "contrast": {
+          "mean": 0.21177,
+          "median": 0.215745,
+          "n": 1472,
+          "std": 0.055453
+        },
+        "saturation": {
+          "mean": 0.194989,
+          "median": 0.159119,
+          "n": 1472,
+          "std": 0.114843
+        }
+      }
+    }
+  },
+  "summary": {
+    "findings_by_category": {
+      "distribution": 3,
+      "image_integrity": 1,
+      "near_duplicates": 1,
+      "statistics": 1
+    },
+    "findings_by_severity": {
+      "high": 0,
+      "info": 1,
+      "low": 5,
+      "medium": 0
+    },
+    "total_findings": 6
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "created_at": "2026-10-04T23:35:37.874611+00:00",
+  "error": {
+    "message": "could not find a YOLO detection layout under /kaggle/input/datasets/snehilsanyal/weapon-detection-test; expected images/ and labels/ directories",
+    "traceback": "Traceback (most recent call last):\n  File \"/kaggle/working/modellab/src/modellab/server/jobs.py\", line 96, in _run\n    update = {\"status\": \"completed\", \"result\": fn()}\n                                               ~~^^\n  File \"/kaggle/working/modellab/src/modellab/server/app.py\", line 436, in <lambda>\n    return enqueue(\"evaluation\", params, lambda: services.evaluate(ws, cache, store, params), wait, timeout)\n                                                 ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/kaggle/working/modellab/src/modellab/server/services.py\", line 118, in evaluate\n    dataset = YOLODetectionDataset(\n        root=root,\n    ...<2 lines>...\n        preprocess=pre,\n    )\n  File \"/kaggle/working/modellab/src/modellab/evaluation/detection_dataset.py\", line 148, in __init__\n    self.images_root, self.labels_root = _find_yolo_dirs(self.root)\n                                         ~~~~~~~~~~~~~~~^^^^^^^^^^^\n  File \"/kaggle/working/modellab/src/modellab/evaluation/detection_dataset.py\", line 31, in _find_yolo_dirs\n    raise DatasetError(\n    ...<2 lines>...\n    )\nmodellab.core.errors.DatasetError: could not find a YOLO detection layout under /kaggle/input/datasets/snehilsanyal/weapon-detection-test; expected images/ and labels/ directories\n",
+    "type": "DatasetError"
+  },
+  "finished_at": "2026-10-04T23:35:37.884606+00:00",
+  "job_id": "1c55607910d7",
+  "kind": "evaluation",
+  "params": {
+    "batch_size": 32,
+    "dataset_id": "accurte-weapons",
+    "device": "auto",
+    "evaluation_id": null,
+    "model_id": "demo_model",
+    "num_workers": 0,
+    "seed": 42,
+    "subpath": null
+  },
+  "result": null,
+  "started_at": "2026-10-04T23:35:37.875790+00:00",
+  "status": "failed"
+}

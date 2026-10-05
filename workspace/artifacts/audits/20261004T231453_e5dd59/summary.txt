@@ -1,0 +1,27 @@
+ModelLab dataset audit
+dataset: unaccurate-weapons    layout: class_only    fingerprint: 2f795fbfc59d4695
+samples: 1472  (ok 1472)
+excluded from scan: 1868
+classes: Sohas_weapon-Detection 1472 (100.0%)
+splits: <none> 1472
+findings: high 0, medium 0, low 5, info 1
+
+[LOW] distribution.outliers_file_size: Outliers in file_size (count 135)
+    Values more than 4.0 robust z-scores from the median.
+    examples: Sohas_weapon-Detection/images_test/smartphone_0809.JPG, Sohas_weapon-Detection/images_test/knife_466.jpg, Sohas_weapon-Detection/images_test/smartphone_0810.JPG, Sohas_weapon-Detection/images_test/pistol_9010.jpg, Sohas_weapon-Detection/images_test/monedero_1191.JPG, ...
+[LOW] distribution.outliers_height: Outliers in height (count 6)
+    Values more than 4.0 robust z-scores from the median.
+    examples: Sohas_weapon-Detection/images_test/knife_541.jpg, Sohas_weapon-Detection/images_test/knife_466.jpg, Sohas_weapon-Detection/images_test/knife_132.jpg, Sohas_weapon-Detection/images_test/pistol_9012.jpg, Sohas_weapon-Detection/images_test/pistol_9014.jpg, ...
+[LOW] distribution.outliers_width: Outliers in width (count 2)
+    Values more than 4.0 robust z-scores from the median.
+    examples: Sohas_weapon-Detection/images_test/knife_132.jpg, Sohas_weapon-Detection/images_test/knife_466.jpg
+[LOW] near_duplicates.near_duplicate_groups: Near-duplicate image groups (count 604)
+    Grouping uses a 64-bit difference hash. It links resized, re-encoded or lightly edited copies; similarity is not proof that two images share a source.
+    examples: Sohas_weapon-Detection/images/ABbframe00154.jpg, Sohas_weapon-Detection/images/ABbframe00160.jpg, Sohas_weapon-Detection/images/ABbframe00166.jpg, Sohas_weapon-Detection/images/ABbframe00169.jpg, Sohas_weapon-Detection/images/ABbframe00190.jpg, ...
+[LOW] statistics.outliers_saturation: Outliers in saturation (count 16)
+    Values more than 4.0 robust z-scores from the median.
+    examples: Sohas_weapon-Detection/images_test/tarjeta_2368.jpg, Sohas_weapon-Detection/images_test/tarjeta_2373.jpg, Sohas_weapon-Detection/images/billete_2029.jpg, Sohas_weapon-Detection/images_test/pistol_9009.jpg, Sohas_weapon-Detection/images_test/sharpenKnife039.jpg, ...
+[INFO] image_integrity.excluded_non_image_files: Non-image files skipped during the directory scan (count 1868)
+    These files were not treated as samples because of their extension.
+
+Findings describe measured properties of the data. They do not by themselves establish the cause of any model behaviour.

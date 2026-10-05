@@ -14,6 +14,7 @@ import numpy as np
 import pyarrow as pa
 import pyarrow.parquet as pq
 import torch
+from torchvision.ops import batched_nms
 from pydantic import BaseModel, ConfigDict, Field
 from torch.utils.data import DataLoader, Dataset
 
@@ -118,53 +119,160 @@ def _decode_yolo(
     output: torch.Tensor,
     num_classes: int,
     confidence_threshold: float,
+    iou_threshold: float,
+    input_height: int,
+    input_width: int,
 ):
     """
-    Decode the raw Ultralytics YOLO output.
+    Post-process an Ultralytics YOLO inference tensor.
+
+    DetectionModel.forward() has already performed the DFL/anchor
+    decoding. This function performs confidence filtering, class-aware
+    NMS, and conversion to normalized xyxy coordinates.
 
     Input:
-        (batch, 4 + classes, candidates)
+        (batch, 4 + num_classes, candidates)
 
-    Coordinates are converted to normalized xyxy coordinates.
+    Output:
+        One list of detections per batch item, with normalized boxes.
     """
 
-    output = output.detach().float().cpu().numpy()
+    if output.ndim != 3:
+        raise EvaluationError(
+            "expected detection output of shape "
+            f"(batch, 4 + classes, candidates), got {tuple(output.shape)}"
+        )
+
+    expected_channels = 4 + num_classes
+
+    if output.shape[1] != expected_channels:
+        raise EvaluationError(
+            "detection model output has "
+            f"{output.shape[1]} channels, expected "
+            f"4 + {num_classes} = {expected_channels}"
+        )
+
+    if input_height <= 0 or input_width <= 0:
+        raise EvaluationError(
+            "detection input dimensions must be positive, got "
+            f"{input_height}x{input_width}"
+        )
+
+    output = output.detach().float()
 
     results = []
 
     for row in output:
-        boxes = row[:4].T
-        scores = row[4:].T
+        boxes_xywh = row[:4].T
+        class_scores = row[4:].T
 
-        class_ids = scores.argmax(axis=1)
-        confidences = scores.max(axis=1)
+        class_ids = class_scores.argmax(dim=1)
+        confidences = class_scores.max(dim=1).values
+
+        keep = confidences >= float(confidence_threshold)
+
+        if not bool(keep.any()):
+            results.append([])
+            continue
+
+        boxes_xywh = boxes_xywh[keep]
+        class_ids = class_ids[keep]
+        confidences = confidences[keep]
+
+        # xywh -> xyxy.
+        x = boxes_xywh[:, 0]
+        y = boxes_xywh[:, 1]
+        w = boxes_xywh[:, 2]
+        h = boxes_xywh[:, 3]
+
+        boxes_xyxy = torch.stack(
+            (
+                x - w / 2.0,
+                y - h / 2.0,
+                x + w / 2.0,
+                y + h / 2.0,
+            ),
+            dim=1,
+        )
+
+        # Remove NaN/Inf values.
+        finite = torch.isfinite(boxes_xyxy).all(dim=1)
+        finite &= torch.isfinite(confidences)
+
+        if not bool(finite.any()):
+            results.append([])
+            continue
+
+        boxes_xyxy = boxes_xyxy[finite]
+        class_ids = class_ids[finite]
+        confidences = confidences[finite]
+
+        # Remove zero/negative-area boxes.
+        widths = boxes_xyxy[:, 2] - boxes_xyxy[:, 0]
+        heights = boxes_xyxy[:, 3] - boxes_xyxy[:, 1]
+
+        valid_size = (widths > 0) & (heights > 0)
+
+        if not bool(valid_size.any()):
+            results.append([])
+            continue
+
+        boxes_xyxy = boxes_xyxy[valid_size]
+        class_ids = class_ids[valid_size]
+        confidences = confidences[valid_size]
+
+        # Class-aware NMS.
+        keep_indices = batched_nms(
+            boxes_xyxy,
+            confidences,
+            class_ids,
+            float(iou_threshold),
+        )
+
+        # Keep at most 300 detections per image.
+        keep_indices = keep_indices[:300]
+
+        boxes_xyxy = boxes_xyxy[keep_indices]
+        class_ids = class_ids[keep_indices]
+        confidences = confidences[keep_indices]
+
+        # Predictions are in input-image pixels.
+        # ModelLab YOLO targets are normalized [0, 1].
+        scale = boxes_xyxy.new_tensor(
+            [
+                float(input_width),
+                float(input_height),
+                float(input_width),
+                float(input_height),
+            ]
+        )
+
+        boxes_normalized = boxes_xyxy / scale
+        boxes_normalized = boxes_normalized.clamp(0.0, 1.0)
 
         detections = []
 
         for box, cls, confidence in zip(
-            boxes,
+            boxes_normalized,
             class_ids,
             confidences,
             strict=True,
         ):
-            confidence = float(confidence)
-
-            if confidence < confidence_threshold:
-                continue
-
-            x, y, w, h = [float(v) for v in box]
-
             detections.append(
                 {
-                    "class_id": int(cls),
-                    "confidence": confidence,
-                    "box": _xywh_to_xyxy((x, y, w, h)).tolist(),
+                    "class_id": int(cls.item()),
+                    "confidence": float(confidence.item()),
+                    "box": [
+                        float(value)
+                        for value in box.tolist()
+                    ],
                 }
             )
 
         results.append(detections)
 
     return results
+
 
 
 def _greedy_match(predictions, targets, iou_threshold):
@@ -294,10 +402,20 @@ def run_detection_evaluation(
                 model.spec.num_classes,
             )
 
+            if model.spec.input_size is None:
+                input_height = int(batch.shape[-2])
+                input_width = int(batch.shape[-1])
+            else:
+                input_height = int(model.spec.input_size[0])
+                input_width = int(model.spec.input_size[1])
+
             predictions = _decode_yolo(
                 raw,
                 model.spec.num_classes,
                 config.confidence_threshold,
+                config.iou_threshold,
+                input_height,
+                input_width,
             )
 
             for sample_id, path, target, preds in zip(

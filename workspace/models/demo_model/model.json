@@ -12,7 +12,7 @@
       "details": {
         "mixed_precision": false,
         "source": "module",
-        "task": "classification"
+        "task": "detection"
       },
       "device": "cpu",
       "framework": "pytorch",
@@ -24,7 +24,7 @@
       "num_classes": 5
     }
   },
-  "created_at": "2026-10-04T22:28:00.020326+00:00",
+  "created_at": "2026-10-04T23:11:03.210934+00:00",
   "files": [],
   "model_id": "demo_model",
   "preprocess": {
@@ -55,11 +55,11 @@
     "num_classes": 5,
     "output_index": 0,
     "output_key": null,
-    "path": "/kaggle/working/modellab/workspace/model_artifacts/best2swwsdass2s.pt/best2swwsdass2s.pt",
+    "path": "/kaggle/working/modellab/workspace/model_artifacts/best2swwsdass2ws.pt/best2swwsdass2ws.pt",
     "single_logit_binary": false,
     "source": "module",
     "state_dict_key": null,
     "strip_prefix": null,
-    "task": "classification"
+    "task": "detection"
   }
 }

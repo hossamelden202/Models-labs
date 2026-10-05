@@ -1,0 +1,24 @@
+{
+  "created_at": "2026-10-04T23:55:40.736646+00:00",
+  "error": {
+    "message": "'EvaluationResult' object has no attribute 'evaluation_id'",
+    "traceback": "Traceback (most recent call last):\n  File \"/kaggle/working/modellab/src/modellab/server/jobs.py\", line 96, in _run\n    update = {\"status\": \"completed\", \"result\": fn()}\n                                               ~~^^\n  File \"/kaggle/working/modellab/src/modellab/server/app.py\", line 436, in <lambda>\n    return enqueue(\"evaluation\", params, lambda: services.evaluate(ws, cache, store, params), wait, timeout)\n                                                 ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/kaggle/working/modellab/src/modellab/server/services.py\", line 152, in evaluate\n    \"evaluation_id\": result.evaluation_id,\n                     ^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/dist-packages/pydantic/main.py\", line 1042, in __getattr__\n    raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')\nAttributeError: 'EvaluationResult' object has no attribute 'evaluation_id'\n",
+    "type": "AttributeError"
+  },
+  "finished_at": "2026-10-04T23:56:02.710888+00:00",
+  "job_id": "24363d921a7a",
+  "kind": "evaluation",
+  "params": {
+    "batch_size": 32,
+    "dataset_id": "yolo-sohos",
+    "device": "auto",
+    "evaluation_id": null,
+    "model_id": "demo_model",
+    "num_workers": 0,
+    "seed": 42,
+    "subpath": null
+  },
+  "result": null,
+  "started_at": "2026-10-04T23:55:40.738107+00:00",
+  "status": "failed"
+}

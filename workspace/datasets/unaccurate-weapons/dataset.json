@@ -1,0 +1,22 @@
+{
+  "created_at": "2026-10-04T22:47:20.685808+00:00",
+  "csv": null,
+  "dataset_id": "unaccurate-weapons",
+  "kind": "folder",
+  "label_column": "label",
+  "path_column": "path",
+  "root": "/kaggle/input/datasets/ankan1998/weapon-detection-dataset",
+  "source": "local",
+  "summary": {
+    "classes": {
+      "Sohas_weapon-Detection": 1472
+    },
+    "declared_classes": [
+      "Sohas_weapon-Detection"
+    ],
+    "layout": "class_only",
+    "num_excluded": 1868,
+    "num_samples": 1472,
+    "splits": {}
+  }
+}

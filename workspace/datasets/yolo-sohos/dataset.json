@@ -1,0 +1,23 @@
+{
+  "created_at": "2026-10-04T23:48:44.481726+00:00",
+  "csv": null,
+  "dataset_id": "yolo-sohos",
+  "kind": "folder",
+  "label_column": "label",
+  "path_column": "path",
+  "root": "/kaggle/working/sohas_test_yolo",
+  "source": "local",
+  "summary": {
+    "classes": {
+      "images": 472
+    },
+    "declared_classes": [
+      "images",
+      "labels"
+    ],
+    "layout": "class_only",
+    "num_excluded": 473,
+    "num_samples": 472,
+    "splits": {}
+  }
+}

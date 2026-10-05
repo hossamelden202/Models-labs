@@ -1,0 +1,15 @@
+{
+  "audit_id": "20261004T231453_e5dd59",
+  "dataset_id": "unaccurate-weapons",
+  "duration_seconds": 66.669,
+  "fingerprint": "2f795fbfc59d4695",
+  "num_records": 1472,
+  "source_kind": "folder",
+  "timestamp": "2026-10-04T23:14:53.182293+00:00",
+  "versions": {
+    "modellab": "0.1.0",
+    "numpy": "2.1.3",
+    "pillow": "12.3.0",
+    "python": "3.13.15"
+  }
+}
