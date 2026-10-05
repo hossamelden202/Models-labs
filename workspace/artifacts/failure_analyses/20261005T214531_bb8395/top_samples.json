@@ -1,0 +1,452 @@
+[
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 3,
+    "path": "/kaggle/working/weapons/images/knife_397.jpg",
+    "sample_id": "knife_397.jpg",
+    "severity": 6.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 2,
+    "path": "/kaggle/working/weapons/images/knife_173.jpg",
+    "sample_id": "knife_173.jpg",
+    "severity": 4.5,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 2,
+    "path": "/kaggle/working/weapons/images/knife_502.jpg",
+    "sample_id": "knife_502.jpg",
+    "severity": 4.5,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 2,
+    "path": "/kaggle/working/weapons/images/knife_61.jpg",
+    "sample_id": "knife_61.jpg",
+    "severity": 4.5,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 2,
+    "path": "/kaggle/working/weapons/images/knife_769.jpg",
+    "sample_id": "knife_769.jpg",
+    "severity": 4.5,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 2,
+    "path": "/kaggle/working/weapons/images/knife_875.jpg",
+    "sample_id": "knife_875.jpg",
+    "severity": 4.5,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 2,
+    "path": "/kaggle/working/weapons/images/knife_946.jpg",
+    "sample_id": "knife_946.jpg",
+    "severity": 4.5,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_1127.jpg",
+    "sample_id": "knife_1127.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_113.jpg",
+    "sample_id": "knife_113.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_1136.jpg",
+    "sample_id": "knife_1136.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_1137.jpg",
+    "sample_id": "knife_1137.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_115.jpg",
+    "sample_id": "knife_115.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_1153.jpg",
+    "sample_id": "knife_1153.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_1164.jpg",
+    "sample_id": "knife_1164.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_1173.jpg",
+    "sample_id": "knife_1173.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_1186.jpg",
+    "sample_id": "knife_1186.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_1215.jpg",
+    "sample_id": "knife_1215.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_1236.jpg",
+    "sample_id": "knife_1236.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_1237.jpg",
+    "sample_id": "knife_1237.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_1239.jpg",
+    "sample_id": "knife_1239.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_1253.jpg",
+    "sample_id": "knife_1253.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_1258.jpg",
+    "sample_id": "knife_1258.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_1272.jpg",
+    "sample_id": "knife_1272.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_1286.jpg",
+    "sample_id": "knife_1286.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_1288.jpg",
+    "sample_id": "knife_1288.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_1293.jpg",
+    "sample_id": "knife_1293.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_13.jpg",
+    "sample_id": "knife_13.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_130.jpg",
+    "sample_id": "knife_130.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_1308.jpg",
+    "sample_id": "knife_1308.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_1314.jpg",
+    "sample_id": "knife_1314.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_1315.jpg",
+    "sample_id": "knife_1315.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_1341.jpg",
+    "sample_id": "knife_1341.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_138.jpg",
+    "sample_id": "knife_138.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_145.jpg",
+    "sample_id": "knife_145.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_150.jpg",
+    "sample_id": "knife_150.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_161.jpg",
+    "sample_id": "knife_161.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_182.jpg",
+    "sample_id": "knife_182.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_196.jpg",
+    "sample_id": "knife_196.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_221.jpg",
+    "sample_id": "knife_221.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_252.jpg",
+    "sample_id": "knife_252.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_254.jpg",
+    "sample_id": "knife_254.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_256.jpg",
+    "sample_id": "knife_256.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_259.jpg",
+    "sample_id": "knife_259.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_268.jpg",
+    "sample_id": "knife_268.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_27.jpg",
+    "sample_id": "knife_27.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_280.jpg",
+    "sample_id": "knife_280.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_288.jpg",
+    "sample_id": "knife_288.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_290.jpg",
+    "sample_id": "knife_290.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_312.jpg",
+    "sample_id": "knife_312.jpg",
+    "severity": 3.0,
+    "tp": 0
+  },
+  {
+    "failure_type": "mixed_error",
+    "fn": 1,
+    "fp": 1,
+    "path": "/kaggle/working/weapons/images/knife_319.jpg",
+    "sample_id": "knife_319.jpg",
+    "severity": 3.0,
+    "tp": 0
+  }
+]

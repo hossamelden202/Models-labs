@@ -408,7 +408,111 @@ def create_app(settings: ServerSettings) -> FastAPI:
 
     @api.get("/jobs/{job_id}")
     def get_job(job_id: str):
-        return jobs.get(job_id)
+        job_response = jobs.get(job_id)
+
+        # ========================================================
+        # Attach complete persisted failure-analysis report.
+        #
+        # jobs.get() may return a model/dataclass/object rather
+        # than a plain dict, so normalize it before enrichment.
+        # ========================================================
+
+        try:
+            # Normalize the Jobs store result into a mutable dict.
+            if isinstance(job_response, dict):
+                response_dict = dict(job_response)
+
+            elif hasattr(job_response, "model_dump"):
+                response_dict = job_response.model_dump(
+                    mode="json"
+                )
+
+            elif hasattr(job_response, "dict"):
+                response_dict = job_response.dict()
+
+            elif hasattr(job_response, "__dict__"):
+                response_dict = dict(vars(job_response))
+
+            else:
+                response_dict = None
+
+            if isinstance(response_dict, dict):
+
+                # ------------------------------------------------
+                # Find analysis_id recursively.
+                # ------------------------------------------------
+                def _find_analysis_id(value):
+                    if isinstance(value, dict):
+                        for key in (
+                            "analysis_id",
+                            "analysisId",
+                        ):
+                            candidate = value.get(key)
+
+                            if (
+                                isinstance(candidate, str)
+                                and candidate.strip()
+                            ):
+                                return candidate.strip()
+
+                        for value_item in value.values():
+                            found = _find_analysis_id(value_item)
+                            if found:
+                                return found
+
+                    elif isinstance(value, list):
+                        for item in value:
+                            found = _find_analysis_id(item)
+                            if found:
+                                return found
+
+                    return None
+
+                analysis_id = _find_analysis_id(response_dict)
+
+                # ------------------------------------------------
+                # Load the persisted full failure-analysis report.
+                #
+                # Do this whenever an analysis_id is present.
+                # We do NOT depend on a particular status string.
+                # ------------------------------------------------
+                if analysis_id:
+
+                    from pathlib import Path
+                    import json
+
+                    report_path = (
+                        Path("/kaggle/working/modellab")
+                        / "workspace"
+                        / "artifacts"
+                        / "failure_analyses"
+                        / str(analysis_id)
+                        / "report.json"
+                    )
+
+                    if report_path.is_file():
+
+                        with report_path.open(
+                            "r",
+                            encoding="utf-8",
+                        ) as fh:
+                            report = json.load(fh)
+
+                        response_dict["analysis_id"] = analysis_id
+                        response_dict["analysis_report"] = report
+                        response_dict["report"] = report
+
+                # Always return the normalized response so the
+                # enriched fields actually reach the API client.
+                job_response = response_dict
+
+        except Exception:
+            # Report enrichment must never break the normal Jobs API.
+            # Fall back to the original job response if enrichment
+            # encounters an unexpected problem.
+            pass
+
+        return job_response
 
     @api.get("/jobs/{job_id}/log")
     def job_log(job_id: str, tail: int | None = Query(None, ge=1)):

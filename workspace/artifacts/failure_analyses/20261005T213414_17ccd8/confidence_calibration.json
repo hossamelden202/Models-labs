@@ -1,0 +1,131 @@
+{
+  "bins": [
+    {
+      "false_positive_rate": null,
+      "fp": 0,
+      "mean_confidence": null,
+      "precision": null,
+      "predictions": 0,
+      "range": [
+        0.0,
+        0.1
+      ],
+      "tp": 0
+    },
+    {
+      "false_positive_rate": null,
+      "fp": 0,
+      "mean_confidence": null,
+      "precision": null,
+      "predictions": 0,
+      "range": [
+        0.1,
+        0.2
+      ],
+      "tp": 0
+    },
+    {
+      "false_positive_rate": 0.9166666666666666,
+      "fp": 22,
+      "mean_confidence": 0.272491455078125,
+      "precision": 0.08333333333333333,
+      "predictions": 24,
+      "range": [
+        0.2,
+        0.3
+      ],
+      "tp": 2
+    },
+    {
+      "false_positive_rate": 0.9347826086956522,
+      "fp": 43,
+      "mean_confidence": 0.34134043817934784,
+      "precision": 0.06521739130434782,
+      "predictions": 46,
+      "range": [
+        0.3,
+        0.4
+      ],
+      "tp": 3
+    },
+    {
+      "false_positive_rate": 0.8823529411764706,
+      "fp": 45,
+      "mean_confidence": 0.45282820159313725,
+      "precision": 0.11764705882352941,
+      "predictions": 51,
+      "range": [
+        0.4,
+        0.5
+      ],
+      "tp": 6
+    },
+    {
+      "false_positive_rate": 0.7777777777777778,
+      "fp": 35,
+      "mean_confidence": 0.5538411458333333,
+      "precision": 0.2222222222222222,
+      "predictions": 45,
+      "range": [
+        0.5,
+        0.6
+      ],
+      "tp": 10
+    },
+    {
+      "false_positive_rate": 0.8679245283018868,
+      "fp": 46,
+      "mean_confidence": 0.6505288178066038,
+      "precision": 0.1320754716981132,
+      "predictions": 53,
+      "range": [
+        0.6,
+        0.7
+      ],
+      "tp": 7
+    },
+    {
+      "false_positive_rate": 0.746031746031746,
+      "fp": 47,
+      "mean_confidence": 0.7497364831349206,
+      "precision": 0.25396825396825395,
+      "predictions": 63,
+      "range": [
+        0.7,
+        0.8
+      ],
+      "tp": 16
+    },
+    {
+      "false_positive_rate": 0.6666666666666666,
+      "fp": 10,
+      "mean_confidence": 0.8206380208333334,
+      "precision": 0.3333333333333333,
+      "predictions": 15,
+      "range": [
+        0.8,
+        0.9
+      ],
+      "tp": 5
+    },
+    {
+      "false_positive_rate": null,
+      "fp": 0,
+      "mean_confidence": null,
+      "precision": null,
+      "predictions": 0,
+      "range": [
+        0.9,
+        1.0
+      ],
+      "tp": 0
+    }
+  ],
+  "false_positives": 248,
+  "high_confidence_false_positives": 103,
+  "high_confidence_predictions": 131,
+  "overall_precision": 0.16498316498316498,
+  "populated_bins": 7,
+  "predictions": 297,
+  "true_positives": 49
+}

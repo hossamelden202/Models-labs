@@ -1,0 +1,73 @@
+{
+  "class_names": [
+    "handgun",
+    "long_gun",
+    "knife",
+    "sword",
+    "explosive"
+  ],
+  "confidence_threshold": 0.25,
+  "f1": 0.15986949429037522,
+  "false_negatives": 267,
+  "false_positives": 248,
+  "iou_threshold": 0.5,
+  "mean_iou": 0.7559261113929755,
+  "num_classes": 5,
+  "num_samples": 472,
+  "per_class": {
+    "explosive": {
+      "class_id": 4,
+      "f1": 0.0,
+      "fn": 0,
+      "fp": 9,
+      "mean_iou": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "tp": 0
+    },
+    "handgun": {
+      "class_id": 0,
+      "f1": 0.0125,
+      "fn": 77,
+      "fp": 81,
+      "mean_iou": 0.7409917415316905,
+      "precision": 0.012195121951219513,
+      "recall": 0.01282051282051282,
+      "tp": 1
+    },
+    "knife": {
+      "class_id": 2,
+      "f1": 0.22273781902552206,
+      "fn": 190,
+      "fp": 145,
+      "mean_iou": 0.756237244098419,
+      "precision": 0.24870466321243523,
+      "recall": 0.20168067226890757,
+      "tp": 48
+    },
+    "long_gun": {
+      "class_id": 1,
+      "f1": 0.0,
+      "fn": 0,
+      "fp": 4,
+      "mean_iou": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "tp": 0
+    },
+    "sword": {
+      "class_id": 3,
+      "f1": 0.0,
+      "fn": 0,
+      "fp": 9,
+      "mean_iou": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "tp": 0
+    }
+  },
+  "precision": 0.16498316498316498,
+  "recall": 0.1550632911392405,
+  "task": "detection",
+  "true_positives": 49
+}

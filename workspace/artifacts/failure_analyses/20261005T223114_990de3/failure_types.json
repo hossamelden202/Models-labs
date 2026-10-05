@@ -1,0 +1,17 @@
+{
+  "correct": {
+    "count": 161
+  },
+  "false_negative": {
+    "count": 72
+  },
+  "false_positive": {
+    "count": 44
+  },
+  "localization_error": {
+    "count": 0
+  },
+  "mixed_error": {
+    "count": 195
+  }
+}

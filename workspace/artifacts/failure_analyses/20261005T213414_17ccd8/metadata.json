@@ -1,0 +1,13 @@
+{
+  "analysis_id": "20261005T213414_17ccd8",
+  "analysis_type": "detection",
+  "audit_id": null,
+  "evaluation_id": "weapons-final7632478",
+  "n_samples": 472,
+  "timestamp": "2026-10-05T21:34:14.113371+00:00",
+  "versions": {
+    "modellab": "0.1.0",
+    "numpy": "2.1.3",
+    "pandas": "2.3.3"
+  }
+}

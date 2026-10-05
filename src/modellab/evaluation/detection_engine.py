@@ -379,7 +379,7 @@ def run_detection_evaluation(
 
     try:
         for ids, paths, targets, batch in loader:
-            batch = batch.to(model.device)
+            batch = model._prepare_model_input(batch)
 
             try:
                 with torch.no_grad():

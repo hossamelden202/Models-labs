@@ -1,0 +1,30 @@
+{
+  "high": {
+    "false_positive_rate": 0.7862595419847328,
+    "fp": 103,
+    "predictions": 131,
+    "tp": 28,
+    "true_positive_rate": 0.21374045801526717
+  },
+  "low": {
+    "false_positive_rate": 0.0,
+    "fp": 0,
+    "predictions": 0,
+    "tp": 0,
+    "true_positive_rate": 0.0
+  },
+  "medium": {
+    "false_positive_rate": 0.8734939759036144,
+    "fp": 145,
+    "predictions": 166,
+    "tp": 21,
+    "true_positive_rate": 0.12650602409638553
+  },
+  "very_high": {
+    "false_positive_rate": 0.0,
+    "fp": 0,
+    "predictions": 0,
+    "tp": 0,
+    "true_positive_rate": 0.0
+  }
+}

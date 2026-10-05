@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/kaggle/working/modellab/src/modellab/server/jobs.py", line 96, in _run
+    update = {"status": "completed", "result": fn()}
+                                               ~~^^
+  File "/kaggle/working/modellab/src/modellab/server/app.py", line 488, in <lambda>
+    if found:
+    
+  File "/kaggle/working/modellab/src/modellab/server/services.py", line 339, in experiments
+    create_baseline(store, family, p["baseline_evaluation_id"])
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/modellab/src/modellab/experiments/baseline.py", line 48, in create_baseline
+    raise ExperimentError(f"evaluation '{evaluation_id}' is missing predictions or metadata")
+modellab.experiments.errors.ExperimentError: evaluation 'weapons-final7632478' is missing predictions or metadata
+

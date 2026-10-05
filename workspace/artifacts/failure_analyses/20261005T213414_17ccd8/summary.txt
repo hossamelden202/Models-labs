@@ -1,0 +1,42 @@
+MODEL LAB DETECTION FAILURE ANALYSIS
+==================================================
+
+Analysis ID: 20261005T213414_17ccd8
+Evaluation ID: weapons-final7632478
+Samples: 472
+
+OVERALL
+--------------------------------------------------
+Correct images: 161
+Error images: 311
+Image accuracy: 0.3411
+True positives: 49
+False positives: 248
+False negatives: 267
+Precision: 0.1650
+Recall: 0.1551
+F1: 0.1599
+Mean matched IoU: 0.7559
+
+FAILURE TYPES
+--------------------------------------------------
+correct: 161
+false_positive: 44
+false_negative: 72
+mixed_error: 195
+localization_error: 0
+
+PER-CLASS
+--------------------------------------------------
+handgun: TP=1 FP=81 FN=77 P=0.0122 R=0.0128 F1=0.0125
+long_gun: TP=0 FP=4 FN=0 P=0.0000 R=0.0000 F1=0.0000
+knife: TP=48 FP=145 FN=190 P=0.2487 R=0.2017 F1=0.2227
+sword: TP=0 FP=9 FN=0 P=0.0000 R=0.0000 F1=0.0000
+explosive: TP=0 FP=9 FN=0 P=0.0000 R=0.0000 F1=0.0000
+
+ACTIONABLE FINDINGS
+--------------------------------------------------
+- False negatives exceed true positives; missed-object detection is a major bottleneck.
+- False positives exceed true positives; the detector is producing many incorrect detections.
+- Matched detections have relatively strong localization (mean IoU=0.756); localization is not the primary failure bottleneck.
+- 103 false-positive detections have high confidence (0.60-0.90).

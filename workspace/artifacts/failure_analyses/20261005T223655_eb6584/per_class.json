@@ -1,0 +1,57 @@
+{
+  "explosive": {
+    "class_id": 4,
+    "f1": 0.0,
+    "fn": 0,
+    "fp": 9,
+    "mean_iou": 0.0,
+    "name": "explosive",
+    "precision": 0.0,
+    "recall": 0.0,
+    "tp": 0
+  },
+  "handgun": {
+    "class_id": 0,
+    "f1": 0.0125,
+    "fn": 77,
+    "fp": 81,
+    "mean_iou": 0.7409917415316905,
+    "name": "handgun",
+    "precision": 0.012195121951219513,
+    "recall": 0.01282051282051282,
+    "tp": 1
+  },
+  "knife": {
+    "class_id": 2,
+    "f1": 0.22273781902552206,
+    "fn": 190,
+    "fp": 145,
+    "mean_iou": 0.756237244098419,
+    "name": "knife",
+    "precision": 0.24870466321243523,
+    "recall": 0.20168067226890757,
+    "tp": 48
+  },
+  "long_gun": {
+    "class_id": 1,
+    "f1": 0.0,
+    "fn": 0,
+    "fp": 4,
+    "mean_iou": 0.0,
+    "name": "long_gun",
+    "precision": 0.0,
+    "recall": 0.0,
+    "tp": 0
+  },
+  "sword": {
+    "class_id": 3,
+    "f1": 0.0,
+    "fn": 0,
+    "fp": 9,
+    "mean_iou": 0.0,
+    "name": "sword",
+    "precision": 0.0,
+    "recall": 0.0,
+    "tp": 0
+  }
+}

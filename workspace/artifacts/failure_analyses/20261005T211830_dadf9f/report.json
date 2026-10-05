@@ -1,0 +1,1015 @@
+{
+  "actionable_findings": [
+    "False negatives exceed true positives; missed-object detection is a major bottleneck.",
+    "False positives exceed true positives; the detector is producing many incorrect detections.",
+    "Matched detections have relatively strong localization (mean IoU=0.756); localization is not the primary failure bottleneck.",
+    "103 false-positive detections have high confidence (0.60-0.90)."
+  ],
+  "analysis_type": "detection",
+  "audit_correlation": null,
+  "confidence": {
+    "high": {
+      "false_positive_rate": 0.7862595419847328,
+      "fp": 103,
+      "predictions": 131,
+      "tp": 28,
+      "true_positive_rate": 0.21374045801526717
+    },
+    "low": {
+      "false_positive_rate": 0.0,
+      "fp": 0,
+      "predictions": 0,
+      "tp": 0,
+      "true_positive_rate": 0.0
+    },
+    "medium": {
+      "false_positive_rate": 0.8734939759036144,
+      "fp": 145,
+      "predictions": 166,
+      "tp": 21,
+      "true_positive_rate": 0.12650602409638553
+    },
+    "very_high": {
+      "false_positive_rate": 0.0,
+      "fp": 0,
+      "predictions": 0,
+      "tp": 0,
+      "true_positive_rate": 0.0
+    }
+  },
+  "confidence_calibration": {
+    "bins": [
+      {
+        "false_positive_rate": null,
+        "fp": 0,
+        "mean_confidence": null,
+        "precision": null,
+        "predictions": 0,
+        "range": [
+          0.0,
+          0.1
+        ],
+        "tp": 0
+      },
+      {
+        "false_positive_rate": null,
+        "fp": 0,
+        "mean_confidence": null,
+        "precision": null,
+        "predictions": 0,
+        "range": [
+          0.1,
+          0.2
+        ],
+        "tp": 0
+      },
+      {
+        "false_positive_rate": null,
+        "fp": 0,
+        "mean_confidence": null,
+        "precision": null,
+        "predictions": 0,
+        "range": [
+          0.2,
+          0.3
+        ],
+        "tp": 0
+      },
+      {
+        "false_positive_rate": null,
+        "fp": 0,
+        "mean_confidence": null,
+        "precision": null,
+        "predictions": 0,
+        "range": [
+          0.3,
+          0.4
+        ],
+        "tp": 0
+      },
+      {
+        "false_positive_rate": null,
+        "fp": 0,
+        "mean_confidence": null,
+        "precision": null,
+        "predictions": 0,
+        "range": [
+          0.4,
+          0.5
+        ],
+        "tp": 0
+      },
+      {
+        "false_positive_rate": null,
+        "fp": 0,
+        "mean_confidence": null,
+        "precision": null,
+        "predictions": 0,
+        "range": [
+          0.5,
+          0.6
+        ],
+        "tp": 0
+      },
+      {
+        "false_positive_rate": null,
+        "fp": 0,
+        "mean_confidence": null,
+        "precision": null,
+        "predictions": 0,
+        "range": [
+          0.6,
+          0.7
+        ],
+        "tp": 0
+      },
+      {
+        "false_positive_rate": null,
+        "fp": 0,
+        "mean_confidence": null,
+        "precision": null,
+        "predictions": 0,
+        "range": [
+          0.7,
+          0.8
+        ],
+        "tp": 0
+      },
+      {
+        "false_positive_rate": null,
+        "fp": 0,
+        "mean_confidence": null,
+        "precision": null,
+        "predictions": 0,
+        "range": [
+          0.8,
+          0.9
+        ],
+        "tp": 0
+      },
+      {
+        "false_positive_rate": null,
+        "fp": 0,
+        "mean_confidence": null,
+        "precision": null,
+        "predictions": 0,
+        "range": [
+          0.9,
+          1.0
+        ],
+        "tp": 0
+      }
+    ],
+    "false_positives": 0,
+    "high_confidence_false_positives": 0,
+    "high_confidence_predictions": 0,
+    "overall_precision": 0.0,
+    "populated_bins": 0,
+    "predictions": 0,
+    "true_positives": 0
+  },
+  "confidence_calibration_note": "Confidence calibration here is empirical confidence behaviour and threshold sensitivity; it does not claim probabilistic calibration.",
+  "diagnostic_findings": [
+    {
+      "evidence": {
+        "false_negatives": 267,
+        "true_positives": 49
+      },
+      "finding": "False negatives exceed true positives.",
+      "severity": "high",
+      "type": "recall_bottleneck"
+    },
+    {
+      "evidence": {
+        "false_positives": 248,
+        "true_positives": 49
+      },
+      "finding": "False positives exceed true positives.",
+      "severity": "high",
+      "type": "precision_bottleneck"
+    }
+  ],
+  "extended_slices": {
+    "class:explosive": {
+      "class_id": 4,
+      "error_rate": 0.0,
+      "errors": 0,
+      "f1": 0.0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "slice_type": "class",
+      "slice_value": "explosive",
+      "support": 0,
+      "true_positives": 0
+    },
+    "class:handgun": {
+      "class_id": 0,
+      "error_rate": 0.0,
+      "errors": 0,
+      "f1": 0.0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "slice_type": "class",
+      "slice_value": "handgun",
+      "support": 0,
+      "true_positives": 0
+    },
+    "class:knife": {
+      "class_id": 2,
+      "error_rate": 0.0,
+      "errors": 0,
+      "f1": 0.0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "slice_type": "class",
+      "slice_value": "knife",
+      "support": 0,
+      "true_positives": 0
+    },
+    "class:long_gun": {
+      "class_id": 1,
+      "error_rate": 0.0,
+      "errors": 0,
+      "f1": 0.0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "slice_type": "class",
+      "slice_value": "long_gun",
+      "support": 0,
+      "true_positives": 0
+    },
+    "class:sword": {
+      "class_id": 3,
+      "error_rate": 0.0,
+      "errors": 0,
+      "f1": 0.0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "slice_type": "class",
+      "slice_value": "sword",
+      "support": 0,
+      "true_positives": 0
+    },
+    "confidence:>=0.90": {
+      "error_rate": 0.0,
+      "errors": 0,
+      "f1": 0.0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "slice_type": "confidence",
+      "slice_value": ">=0.90",
+      "support": 0,
+      "true_positives": 0
+    },
+    "failure_type:correct": {
+      "error_rate": 0.0,
+      "errors": 0,
+      "f1": 1.0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "slice_type": "failure_type",
+      "slice_value": "correct",
+      "support": 161,
+      "true_positives": 44
+    },
+    "failure_type:false_negative": {
+      "error_rate": 1.0,
+      "errors": 72,
+      "f1": 0.0,
+      "false_negatives": 72,
+      "false_positives": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "slice_type": "failure_type",
+      "slice_value": "false_negative",
+      "support": 72,
+      "true_positives": 0
+    },
+    "failure_type:false_positive": {
+      "error_rate": 1.0,
+      "errors": 239,
+      "f1": 0.02207505518763797,
+      "false_negatives": 195,
+      "false_positives": 248,
+      "precision": 0.019762845849802372,
+      "recall": 0.025,
+      "slice_type": "failure_type",
+      "slice_value": "false_positive",
+      "support": 239,
+      "true_positives": 5
+    },
+    "failure_type:mixed_error": {
+      "error_rate": 0.0,
+      "errors": 0,
+      "f1": 0.0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "slice_type": "failure_type",
+      "slice_value": "mixed_error",
+      "support": 0,
+      "true_positives": 0
+    },
+    "predictions:multiple": {
+      "error_rate": 0.0,
+      "errors": 0,
+      "f1": 0.0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "slice_type": "prediction_count",
+      "slice_value": ">=2",
+      "support": 0,
+      "true_positives": 0
+    }
+  },
+  "failure_types": {
+    "correct": {
+      "count": 161
+    },
+    "false_negative": {
+      "count": 72
+    },
+    "false_positive": {
+      "count": 239
+    },
+    "localization_error": {
+      "count": 0
+    },
+    "mixed_error": {
+      "count": 0
+    }
+  },
+  "inputs": {
+    "analysis_id": "20261005T211830_dadf9f",
+    "audit_id": null,
+    "class_names": [
+      "handgun",
+      "long_gun",
+      "knife",
+      "sword",
+      "explosive"
+    ],
+    "evaluation_id": "weapons-final7632478",
+    "iou_threshold": 0.5,
+    "n_classes": 5,
+    "n_samples": 472
+  },
+  "limitations": [
+    "Failure slices are observed associations, not causal explanations.",
+    "Confidence describes model behaviour and does not prove data quality problems.",
+    "Object-size thresholds use normalized box area and are heuristic.",
+    "Audit correlation depends on the audit records exposing sample-level identifiers."
+  ],
+  "localization": {
+    "count": 0,
+    "iou_threshold": 0.5,
+    "prediction_candidates": [],
+    "target_candidates": []
+  },
+  "object_size": {
+    "large": {
+      "ground_truth": 316,
+      "matched": 49,
+      "miss_rate": 0.8449367088607594,
+      "missed": 267,
+      "recall": 0.1550632911392405
+    },
+    "medium": {
+      "ground_truth": 0,
+      "matched": 0,
+      "miss_rate": 0.0,
+      "missed": 0,
+      "recall": 0.0
+    },
+    "small": {
+      "ground_truth": 0,
+      "matched": 0,
+      "miss_rate": 0.0,
+      "missed": 0,
+      "recall": 0.0
+    }
+  },
+  "overall": {
+    "correct_images": 161,
+    "error_images": 311,
+    "f1": 0.15986949429037522,
+    "false_negatives": 267,
+    "false_positives": 248,
+    "image_accuracy": 0.3411016949152542,
+    "mean_iou": 0.7559261113929755,
+    "precision": 0.16498316498316498,
+    "recall": 0.1550632911392405,
+    "true_positives": 49
+  },
+  "per_class": {
+    "explosive": {
+      "class_id": 4,
+      "f1": 0.0,
+      "fn": 0,
+      "fp": 9,
+      "mean_iou": 0.0,
+      "name": "explosive",
+      "precision": 0.0,
+      "recall": 0.0,
+      "tp": 0
+    },
+    "handgun": {
+      "class_id": 0,
+      "f1": 0.0125,
+      "fn": 77,
+      "fp": 81,
+      "mean_iou": 0.7409917415316905,
+      "name": "handgun",
+      "precision": 0.012195121951219513,
+      "recall": 0.01282051282051282,
+      "tp": 1
+    },
+    "knife": {
+      "class_id": 2,
+      "f1": 0.22273781902552206,
+      "fn": 190,
+      "fp": 145,
+      "mean_iou": 0.756237244098419,
+      "name": "knife",
+      "precision": 0.24870466321243523,
+      "recall": 0.20168067226890757,
+      "tp": 48
+    },
+    "long_gun": {
+      "class_id": 1,
+      "f1": 0.0,
+      "fn": 0,
+      "fp": 4,
+      "mean_iou": 0.0,
+      "name": "long_gun",
+      "precision": 0.0,
+      "recall": 0.0,
+      "tp": 0
+    },
+    "sword": {
+      "class_id": 3,
+      "f1": 0.0,
+      "fn": 0,
+      "fp": 9,
+      "mean_iou": 0.0,
+      "name": "sword",
+      "precision": 0.0,
+      "recall": 0.0,
+      "tp": 0
+    }
+  },
+  "schema_version": 2,
+  "threshold_sensitivity": [
+    {
+      "confidence_threshold": 0.1,
+      "f1": 0.0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "true_positives": 0
+    },
+    {
+      "confidence_threshold": 0.2,
+      "f1": 0.0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "true_positives": 0
+    },
+    {
+      "confidence_threshold": 0.3,
+      "f1": 0.0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "true_positives": 0
+    },
+    {
+      "confidence_threshold": 0.4,
+      "f1": 0.0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "true_positives": 0
+    },
+    {
+      "confidence_threshold": 0.5,
+      "f1": 0.0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "true_positives": 0
+    },
+    {
+      "confidence_threshold": 0.6,
+      "f1": 0.0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "true_positives": 0
+    },
+    {
+      "confidence_threshold": 0.7,
+      "f1": 0.0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "true_positives": 0
+    },
+    {
+      "confidence_threshold": 0.8,
+      "f1": 0.0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "true_positives": 0
+    },
+    {
+      "confidence_threshold": 0.9,
+      "f1": 0.0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "true_positives": 0
+    }
+  ],
+  "warnings": [],
+  "worst_samples": [
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 3,
+      "path": "/kaggle/working/weapons/images/knife_397.jpg",
+      "sample_id": "knife_397.jpg",
+      "severity": 6.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 2,
+      "path": "/kaggle/working/weapons/images/knife_173.jpg",
+      "sample_id": "knife_173.jpg",
+      "severity": 4.5,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 2,
+      "path": "/kaggle/working/weapons/images/knife_502.jpg",
+      "sample_id": "knife_502.jpg",
+      "severity": 4.5,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 2,
+      "path": "/kaggle/working/weapons/images/knife_61.jpg",
+      "sample_id": "knife_61.jpg",
+      "severity": 4.5,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 2,
+      "path": "/kaggle/working/weapons/images/knife_769.jpg",
+      "sample_id": "knife_769.jpg",
+      "severity": 4.5,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 2,
+      "path": "/kaggle/working/weapons/images/knife_875.jpg",
+      "sample_id": "knife_875.jpg",
+      "severity": 4.5,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 2,
+      "path": "/kaggle/working/weapons/images/knife_946.jpg",
+      "sample_id": "knife_946.jpg",
+      "severity": 4.5,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_1127.jpg",
+      "sample_id": "knife_1127.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_113.jpg",
+      "sample_id": "knife_113.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_1136.jpg",
+      "sample_id": "knife_1136.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_1137.jpg",
+      "sample_id": "knife_1137.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_115.jpg",
+      "sample_id": "knife_115.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_1153.jpg",
+      "sample_id": "knife_1153.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_1164.jpg",
+      "sample_id": "knife_1164.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_1173.jpg",
+      "sample_id": "knife_1173.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_1186.jpg",
+      "sample_id": "knife_1186.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_1215.jpg",
+      "sample_id": "knife_1215.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_1236.jpg",
+      "sample_id": "knife_1236.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_1237.jpg",
+      "sample_id": "knife_1237.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_1239.jpg",
+      "sample_id": "knife_1239.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_1253.jpg",
+      "sample_id": "knife_1253.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_1258.jpg",
+      "sample_id": "knife_1258.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_1272.jpg",
+      "sample_id": "knife_1272.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_1286.jpg",
+      "sample_id": "knife_1286.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_1288.jpg",
+      "sample_id": "knife_1288.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_1293.jpg",
+      "sample_id": "knife_1293.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_13.jpg",
+      "sample_id": "knife_13.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_130.jpg",
+      "sample_id": "knife_130.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_1308.jpg",
+      "sample_id": "knife_1308.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_1314.jpg",
+      "sample_id": "knife_1314.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_1315.jpg",
+      "sample_id": "knife_1315.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_1341.jpg",
+      "sample_id": "knife_1341.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_138.jpg",
+      "sample_id": "knife_138.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_145.jpg",
+      "sample_id": "knife_145.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_150.jpg",
+      "sample_id": "knife_150.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_161.jpg",
+      "sample_id": "knife_161.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_182.jpg",
+      "sample_id": "knife_182.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_196.jpg",
+      "sample_id": "knife_196.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_221.jpg",
+      "sample_id": "knife_221.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_252.jpg",
+      "sample_id": "knife_252.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_254.jpg",
+      "sample_id": "knife_254.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_256.jpg",
+      "sample_id": "knife_256.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_259.jpg",
+      "sample_id": "knife_259.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_268.jpg",
+      "sample_id": "knife_268.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_27.jpg",
+      "sample_id": "knife_27.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_280.jpg",
+      "sample_id": "knife_280.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_288.jpg",
+      "sample_id": "knife_288.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_290.jpg",
+      "sample_id": "knife_290.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_312.jpg",
+      "sample_id": "knife_312.jpg",
+      "severity": 3.0,
+      "tp": 0
+    },
+    {
+      "failure_type": "false_positive",
+      "fn": 1,
+      "fp": 1,
+      "path": "/kaggle/working/weapons/images/knife_319.jpg",
+      "sample_id": "knife_319.jpg",
+      "severity": 3.0,
+      "tp": 0
+    }
+  ]
+}

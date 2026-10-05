@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/kaggle/working/modellab/src/modellab/server/jobs.py", line 96, in _run
+    update = {"status": "completed", "result": fn()}
+                                               ~~^^
+  File "/kaggle/working/modellab/src/modellab/server/app.py", line 466, in <lambda>
+    return enqueue("analysis", params, lambda: services.analyze(ws, store, params), wait, timeout)
+                                               ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/modellab/src/modellab/server/services.py", line 233, in analyze
+    FailureConfig,
+    
+  File "/kaggle/working/modellab/src/modellab/analysis/engine.py", line 67, in load_evaluation
+    raise EvaluationError(f"evaluation '{evaluation_id}' not found under {root}")
+modellab.core.errors.EvaluationError: evaluation 'weapons-final7632478' not found under /kaggle/working/modellab/workspace/artifacts
+

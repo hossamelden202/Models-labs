@@ -1,3 +1,5 @@
+from modellab.core.errors import EvaluationError
+import json
 import threading
 from collections import Counter, OrderedDict
 from pathlib import Path
@@ -130,7 +132,10 @@ def evaluate(ws, cache, store, p):
         dataset = YOLODetectionDataset(
             root=root,
             class_names=model.spec.class_names,
-            dataset_id=dataset_label(rec, p["dataset_id"]),
+            dataset_id=dataset_label(
+                p["dataset_id"],
+                p.get("subpath"),
+            ),
             preprocess=detection_pre,
         )
 
@@ -224,25 +229,99 @@ def audit(ws, store, p):
 
 
 def analyze(ws, store, p):
-    from modellab.analysis import FailureConfig, analyze_failures, load_audit, load_evaluation
+    from modellab.analysis import (
+        FailureConfig,
+        analyze_failures,
+        analyze_detection_failures,
+        load_audit,
+        load_evaluation,
+        load_detection_evaluation,
+    )
 
     cfg = FailureConfig.model_validate(p.get("config") or {})
-    predictions, names, _ = load_evaluation(store.root, p["evaluation_id"])
+
+    evaluation_id = p["evaluation_id"]
+
+    # Classification and detection evaluations intentionally have
+    # different persisted prediction schemas. Dispatch from metadata
+    # instead of forcing detection rows through classification analysis.
+    evaluation_dir = store.resolve(
+        Path("evaluations") / evaluation_id
+    )
+    metadata_path = evaluation_dir / "metadata.json"
+
+    if not metadata_path.is_file():
+        raise EvaluationError(
+            f"evaluation '{evaluation_id}' not found under {store.root}"
+        )
+
+    metadata = json.loads(metadata_path.read_text())
+    task = metadata.get("task", "classification")
+
     records = report = None
     if p.get("audit_id"):
         records, report = load_audit(store.root, p["audit_id"])
-    result = analyze_failures(
-        predictions, names, cfg, audit_records=records, audit_report=report, store=store,
-        analysis_id=p.get("analysis_id"), evaluation_id=p["evaluation_id"], audit_id=p.get("audit_id"),
-    )
+
+    if task == "detection":
+        predictions, names, detection_meta = load_detection_evaluation(
+            store.root,
+            evaluation_id,
+        )
+
+        result = analyze_detection_failures(
+            predictions,
+            names,
+            iou_threshold=float(
+                detection_meta.get("iou_threshold", 0.5)
+            ),
+            config=cfg,
+            store=store,
+            analysis_id=p.get("analysis_id"),
+            evaluation_id=evaluation_id,
+            audit_id=p.get("audit_id"),
+        )
+    else:
+        predictions, names, _ = load_evaluation(
+            store.root,
+            evaluation_id,
+        )
+
+        result = analyze_failures(
+            predictions,
+            names,
+            cfg,
+            audit_records=records,
+            audit_report=report,
+            store=store,
+            analysis_id=p.get("analysis_id"),
+            evaluation_id=evaluation_id,
+            audit_id=p.get("audit_id"),
+        )
+
     rep = result.report
+
+    if task == "detection":
+        accuracy = rep["overall"]["image_accuracy"]
+        n_errors = rep["overall"]["error_images"]
+
+        # Detection reports use extended_slices and diagnostic sections
+        # rather than the classification report's top-level "slices".
+        slices = {}
+    else:
+        accuracy = rep["overall"]["accuracy"]
+        n_errors = rep["overall"]["n_errors"]
+        slices = rep.get("slices", {})
+
+    slice_info = slices.get("info", {})
+    slice_top = slices.get("top", [])
+
     return {
         "analysis_id": result.analysis_id,
         "n_samples": rep["inputs"]["n_samples"],
-        "accuracy": rep["overall"]["accuracy"],
-        "n_errors": rep["overall"]["n_errors"],
-        "num_tested_slices": rep["slices"]["info"]["num_tested"],
-        "top_slices": rep["slices"]["top"][:10],
+        "accuracy": accuracy,
+        "n_errors": n_errors,
+        "num_tested_slices": slice_info.get("num_tested", 0),
+        "top_slices": slice_top[:10],
     }
 
 

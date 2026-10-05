@@ -1,0 +1,51 @@
+{
+  "batch_size": 32,
+  "class_names": [
+    "handgun",
+    "long_gun",
+    "knife",
+    "sword",
+    "explosive"
+  ],
+  "dataset_id": "weapons-small",
+  "device": "cuda",
+  "evaluation_id": "weapons-final7632478",
+  "model": {
+    "class_names": [
+      "handgun",
+      "long_gun",
+      "knife",
+      "sword",
+      "explosive"
+    ],
+    "factory": null,
+    "factory_kwargs": {},
+    "input_size": [
+      224,
+      224
+    ],
+    "mixed_precision": false,
+    "model_id": "weapons-final-model",
+    "num_classes": 5,
+    "output_index": 0,
+    "output_key": null,
+    "path": "/kaggle/working/modellab/workspace/model_artifacts/artifact_7e271f0344b64dd5ae0c9bf590335604/best.pt",
+    "single_logit_binary": false,
+    "source": "module",
+    "state_dict_key": null,
+    "strip_prefix": null,
+    "task": "detection"
+  },
+  "model_id": "weapons-final-model",
+  "num_classes": 5,
+  "num_samples": 472,
+  "num_workers": 4,
+  "seed": 42,
+  "task": "detection",
+  "timestamp": "2026-10-05T20:31:51.510717+00:00",
+  "versions": {
+    "modellab": "0.1.0",
+    "python": "3.13.15",
+    "torch": "2.11.0+cu128"
+  }
+}

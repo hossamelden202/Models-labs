@@ -1,0 +1,32 @@
+{
+  "created_at": "2026-10-05T20:58:19.122706+00:00",
+  "error": null,
+  "finished_at": "2026-10-05T20:58:19.141604+00:00",
+  "job_id": "f6e931f079f2",
+  "kind": "analysis",
+  "params": {
+    "analysis_id": "ana",
+    "audit_id": null,
+    "config": {
+      "alpha": 0.05,
+      "high_confidence_threshold": 0.9,
+      "low_confidence_threshold": 0.6,
+      "max_evidence": 20,
+      "max_listed_slices": 100,
+      "min_risk_difference": 0.05,
+      "min_support": 20,
+      "top_confusions": 5
+    },
+    "evaluation_id": "weapons-final7632478"
+  },
+  "result": {
+    "accuracy": 0.3411016949152542,
+    "analysis_id": "ana",
+    "n_errors": 311,
+    "n_samples": 472,
+    "num_tested_slices": 0,
+    "top_slices": []
+  },
+  "started_at": "2026-10-05T20:58:19.123782+00:00",
+  "status": "completed"
+}

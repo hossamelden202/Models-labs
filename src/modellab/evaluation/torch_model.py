@@ -403,10 +403,43 @@ class TorchImageClassifier(ModelAdapter):
             )
         return logits
 
+    def _prepare_model_input(self, batch: torch.Tensor) -> torch.Tensor:
+        """Move an inference batch to the model device and dtype.
+
+        ModelLab preserves the model's weights and adapts the input
+        tensor to the model's floating-point execution dtype. This
+        keeps FP32, FP16, and BF16 models architecture-independent.
+
+        Mixed-precision autocast remains responsible for its own
+        operator-level casting and is not changed here.
+        """
+        if not isinstance(batch, torch.Tensor):
+            raise EvaluationError(
+                f"model input must be a torch.Tensor, got {type(batch).__name__}"
+            )
+
+        dtype = batch.dtype
+
+        if batch.is_floating_point():
+            for parameter in self.model.parameters():
+                if parameter.is_floating_point():
+                    dtype = parameter.dtype
+                    break
+            else:
+                for buffer in self.model.buffers():
+                    if buffer.is_floating_point():
+                        dtype = buffer.dtype
+                        break
+
+        return batch.to(
+            device=self.device,
+            dtype=dtype,
+        )
+
     def predict_probabilities(self, batch: torch.Tensor) -> np.ndarray:
         if batch.ndim != 4:
             raise EvaluationError(f"batch must have shape (N, C, H, W), got {tuple(batch.shape)}")
-        batch = batch.to(self.device)
+        batch = self._prepare_model_input(batch)
         try:
             with torch.no_grad():
                 if self._amp:

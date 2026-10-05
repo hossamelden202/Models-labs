@@ -112,6 +112,1657 @@ def load_failure_analysis(store: ArtifactStore, analysis_id: str) -> FailureAnal
     )
 
 
+def load_detection_evaluation(root, evaluation_id: str):
+    """Load a persisted detection evaluation.
+
+    Detection evaluations intentionally use JSON because each image can
+    contain multiple ground-truth and predicted boxes. Classification
+    evaluations continue to use predictions.parquet and load_evaluation().
+    """
+    base = Path(root) / "evaluations" / evaluation_id
+    predictions_path = base / "predictions.json"
+    metadata_path = base / "metadata.json"
+
+    if not predictions_path.is_file() or not metadata_path.is_file():
+        raise EvaluationError(
+            f"detection evaluation '{evaluation_id}' not found under {root}"
+        )
+
+    try:
+        predictions = json.loads(predictions_path.read_text())
+        meta = json.loads(metadata_path.read_text())
+    except (OSError, json.JSONDecodeError) as exc:
+        raise EvaluationError(
+            f"could not read detection evaluation '{evaluation_id}': {exc}"
+        ) from exc
+
+    if meta.get("task") != "detection":
+        raise EvaluationError(
+            f"evaluation '{evaluation_id}' is not a detection evaluation"
+        )
+
+    if not isinstance(predictions, list):
+        raise EvaluationError(
+            f"detection evaluation '{evaluation_id}' predictions.json "
+            "must contain a list"
+        )
+
+    names = list(meta.get("class_names") or [])
+    if not names:
+        raise EvaluationError(
+            f"detection evaluation '{evaluation_id}' has no class_names"
+        )
+
+    return predictions, names, meta
+
+
+def _detection_iou(box_a, box_b):
+    ax1, ay1, ax2, ay2 = [float(v) for v in box_a]
+    bx1, by1, bx2, by2 = [float(v) for v in box_b]
+
+    ix1 = max(ax1, bx1)
+    iy1 = max(ay1, by1)
+    ix2 = min(ax2, bx2)
+    iy2 = min(ay2, by2)
+
+    iw = max(0.0, ix2 - ix1)
+    ih = max(0.0, iy2 - iy1)
+    intersection = iw * ih
+
+    area_a = max(0.0, ax2 - ax1) * max(0.0, ay2 - ay1)
+    area_b = max(0.0, bx2 - bx1) * max(0.0, by2 - by1)
+    union = area_a + area_b - intersection
+
+    return intersection / union if union > 0.0 else 0.0
+
+
+def _match_detection_boxes(predictions, targets, iou_threshold):
+    """Greedy class-aware one-to-one detection matching."""
+    candidates = []
+
+    for pi, pred in enumerate(predictions):
+        for ti, target in enumerate(targets):
+            if int(pred["class_id"]) != int(target["class_id"]):
+                continue
+
+            iou = _detection_iou(pred["box"], target["box"])
+            if iou >= iou_threshold:
+                candidates.append((iou, pi, ti))
+
+    candidates.sort(key=lambda x: (-x[0], x[1], x[2]))
+
+    used_predictions = set()
+    used_targets = set()
+    matches = []
+
+    for iou, pi, ti in candidates:
+        if pi in used_predictions or ti in used_targets:
+            continue
+
+        used_predictions.add(pi)
+        used_targets.add(ti)
+        matches.append((pi, ti, float(iou)))
+
+    return matches
+
+
+def _render_detection_summary(report):
+    """Render a human-readable summary for detection analyses.
+
+    Detection reports do not use the classification-analysis schema,
+    so they must not be passed through render_summary().
+    """
+    inputs = report.get("inputs", {})
+    overall = report.get("overall", {})
+    categories = report.get("failure_categories", {})
+    per_class = report.get("per_class", {})
+
+    lines = [
+        "ModelLab Detection Failure Analysis",
+        "=" * 60,
+        "",
+        f"task: {report.get('task', 'detection')}",
+        f"evaluation_id: {inputs.get('evaluation_id')}",
+        f"samples: {inputs.get('n_samples', 0)}",
+        f"classes: {inputs.get('n_classes', 0)}",
+        f"IoU threshold: {inputs.get('iou_threshold')}",
+        "",
+        "OVERALL",
+        "-" * 60,
+        f"true positives: {overall.get('true_positives', 0)}",
+        f"false positives: {overall.get('false_positives', 0)}",
+        f"false negatives: {overall.get('false_negatives', 0)}",
+        f"precision: {overall.get('precision', 0.0)}",
+        f"recall: {overall.get('recall', 0.0)}",
+        f"f1: {overall.get('f1', 0.0)}",
+        f"image errors: {overall.get('n_errors', 0)}",
+        f"image accuracy: {overall.get('accuracy')}",
+        f"mean confidence: {overall.get('mean_confidence')}",
+        "",
+        "FAILURE CATEGORIES",
+        "-" * 60,
+    ]
+
+    for category in (
+        "false_positive",
+        "false_negative",
+        "mixed_error",
+        "correct",
+    ):
+        info = categories.get(category, {})
+        lines.append(
+            f"{category}: {info.get('count', 0)}"
+        )
+
+    lines.extend([
+        "",
+        "PER-CLASS",
+        "-" * 60,
+    ])
+
+    for class_id, stats in sorted(
+        per_class.items(),
+        key=lambda item: int(item[0]),
+    ):
+        lines.extend([
+            f"class {class_id}: {stats.get('class')}",
+            f"  support: {stats.get('support', 0)}",
+            f"  TP: {stats.get('true_positives', 0)}",
+            f"  FP: {stats.get('false_positives', 0)}",
+            f"  FN: {stats.get('false_negatives', 0)}",
+            f"  precision: {stats.get('precision', 0.0)}",
+            f"  recall: {stats.get('recall', 0.0)}",
+            f"  f1: {stats.get('f1', 0.0)}",
+            f"  mean IoU: {stats.get('mean_iou', 0.0)}",
+        ])
+
+    warnings = report.get("warnings") or []
+
+    if warnings:
+        lines.extend([
+            "",
+            "WARNINGS",
+            "-" * 60,
+        ])
+        lines.extend(f"- {warning}" for warning in warnings)
+
+    limitations = report.get("limitations") or []
+
+    if limitations:
+        lines.extend([
+            "",
+            "LIMITATIONS",
+            "-" * 60,
+        ])
+        lines.extend(f"- {limitation}" for limitation in limitations)
+
+    return "\n".join(lines) + "\n"
+
+
+
+def _detection_iou(box_a, box_b):
+    ax1, ay1, ax2, ay2 = [float(v) for v in box_a]
+    bx1, by1, bx2, by2 = [float(v) for v in box_b]
+
+    ix1 = max(ax1, bx1)
+    iy1 = max(ay1, by1)
+    ix2 = min(ax2, bx2)
+    iy2 = min(ay2, by2)
+
+    iw = max(0.0, ix2 - ix1)
+    ih = max(0.0, iy2 - iy1)
+    inter = iw * ih
+
+    area_a = max(0.0, ax2 - ax1) * max(0.0, ay2 - ay1)
+    area_b = max(0.0, bx2 - bx1) * max(0.0, by2 - by1)
+
+    union = area_a + area_b - inter
+    return inter / union if union > 0 else 0.0
+
+
+def _match_detection_boxes(predictions, targets, iou_threshold):
+    candidates = []
+
+    for pi, pred in enumerate(predictions):
+        for ti, target in enumerate(targets):
+            if int(pred["class_id"]) != int(target["class_id"]):
+                continue
+
+            iou = _detection_iou(pred["box"], target["box"])
+
+            if iou >= iou_threshold:
+                candidates.append((iou, pi, ti))
+
+    candidates.sort(key=lambda x: (-x[0], x[1], x[2]))
+
+    used_predictions = set()
+    used_targets = set()
+    matches = []
+
+    for iou, pi, ti in candidates:
+        if pi in used_predictions or ti in used_targets:
+            continue
+
+        used_predictions.add(pi)
+        used_targets.add(ti)
+        matches.append((pi, ti, float(iou)))
+
+    return matches
+
+
+def _detection_box_area(box):
+    x1, y1, x2, y2 = [float(v) for v in box]
+    return max(0.0, x2 - x1) * max(0.0, y2 - y1)
+
+
+def _detection_box_size(area):
+    if area < 0.05:
+        return "small"
+    if area < 0.20:
+        return "medium"
+    return "large"
+
+
+def _detection_percentile_bucket(value):
+    value = float(value)
+
+    if value < 0.25:
+        return "low"
+    if value < 0.60:
+        return "medium"
+    if value < 0.90:
+        return "high"
+    return "very_high"
+
+
+def _render_detection_summary(report):
+    overall = report["overall"]
+    lines = [
+        "MODEL LAB DETECTION FAILURE ANALYSIS",
+        "=" * 50,
+        "",
+        f"Analysis ID: {report['inputs']['analysis_id']}",
+        f"Evaluation ID: {report['inputs']['evaluation_id']}",
+        f"Samples: {report['inputs']['n_samples']}",
+        "",
+        "OVERALL",
+        "-" * 50,
+        f"Correct images: {overall['correct_images']}",
+        f"Error images: {overall['error_images']}",
+        f"Image accuracy: {overall['image_accuracy']:.4f}",
+        f"True positives: {overall['true_positives']}",
+        f"False positives: {overall['false_positives']}",
+        f"False negatives: {overall['false_negatives']}",
+        f"Precision: {overall['precision']:.4f}",
+        f"Recall: {overall['recall']:.4f}",
+        f"F1: {overall['f1']:.4f}",
+        f"Mean matched IoU: {overall['mean_iou']:.4f}",
+        "",
+        "FAILURE TYPES",
+        "-" * 50,
+    ]
+
+    for key, value in report["failure_types"].items():
+        lines.append(f"{key}: {value['count']}")
+
+    lines += [
+        "",
+        "PER-CLASS",
+        "-" * 50,
+    ]
+
+    for name, item in report["per_class"].items():
+        lines.append(
+            f"{name}: "
+            f"TP={item['tp']} "
+            f"FP={item['fp']} "
+            f"FN={item['fn']} "
+            f"P={item['precision']:.4f} "
+            f"R={item['recall']:.4f} "
+            f"F1={item['f1']:.4f}"
+        )
+
+    lines += [
+        "",
+        "ACTIONABLE FINDINGS",
+        "-" * 50,
+    ]
+
+    for finding in report["actionable_findings"]:
+        lines.append(f"- {finding}")
+
+    if report.get("warnings"):
+        lines += ["", "WARNINGS", "-" * 50]
+        for warning in report["warnings"]:
+            lines.append(f"- {warning}")
+
+    return "\n".join(lines) + "\n"
+
+
+
+def _detection_localization_candidates(
+    predictions: list[dict],
+    targets: list[dict],
+    iou_threshold: float,
+) -> tuple[list[dict], list[dict]]:
+    """
+    Find same-class prediction/target pairs that overlap but fall below
+    the normal IoU matching threshold.
+
+    These remain FP/FN under the official detection metrics, but are
+    additionally diagnosed as localization errors.
+    """
+    prediction_candidates: list[dict] = []
+    target_candidates: list[dict] = []
+
+    for pi, pred in enumerate(predictions):
+        best_iou = 0.0
+        best_target = None
+
+        for ti, target in enumerate(targets):
+            if pred.get("class_id") != target.get("class_id"):
+                continue
+
+            iou = _detection_iou(pred["box"], target["box"])
+
+            if iou > best_iou:
+                best_iou = iou
+                best_target = ti
+
+        if best_target is not None and 0.0 < best_iou < iou_threshold:
+            prediction_candidates.append(
+                {
+                    "prediction_index": pi,
+                    "target_index": best_target,
+                    "class_id": pred["class_id"],
+                    "iou": float(best_iou),
+                    "confidence": float(pred.get("confidence", 0.0)),
+                }
+            )
+
+    for ti, target in enumerate(targets):
+        best_iou = 0.0
+        best_prediction = None
+
+        for pi, pred in enumerate(predictions):
+            if pred.get("class_id") != target.get("class_id"):
+                continue
+
+            iou = _detection_iou(pred["box"], target["box"])
+
+            if iou > best_iou:
+                best_iou = iou
+                best_prediction = pi
+
+        if best_prediction is not None and 0.0 < best_iou < iou_threshold:
+            target_candidates.append(
+                {
+                    "target_index": ti,
+                    "prediction_index": best_prediction,
+                    "class_id": target["class_id"],
+                    "iou": float(best_iou),
+                    "confidence": float(
+                        predictions[best_prediction].get("confidence", 0.0)
+                    ),
+                }
+            )
+
+    return prediction_candidates, target_candidates
+
+
+def _detection_confidence_calibration(
+    predictions: list[dict],
+    matched_prediction_indices: set[int],
+    bins: list[tuple[float, float]] | None = None,
+) -> dict:
+    """
+    Compute confidence-bin precision and error statistics.
+
+    This is intentionally detection-oriented rather than pretending that
+    object-detection confidence is perfectly calibrated probability.
+    """
+    if bins is None:
+        bins = [
+            (0.00, 0.10),
+            (0.10, 0.20),
+            (0.20, 0.30),
+            (0.30, 0.40),
+            (0.40, 0.50),
+            (0.50, 0.60),
+            (0.60, 0.70),
+            (0.70, 0.80),
+            (0.80, 0.90),
+            (0.90, 1.00),
+        ]
+
+    rows = []
+
+    for lo, hi in bins:
+        bucket = []
+
+        for index, pred in enumerate(predictions):
+            confidence = float(pred.get("confidence", 0.0))
+
+            # Include confidence=1.0 in the final bucket.
+            if (lo <= confidence < hi) or (
+                hi == 1.0 and confidence == 1.0
+            ):
+                bucket.append((index, pred))
+
+        tp = sum(
+            1 for index, _ in bucket
+            if index in matched_prediction_indices
+        )
+        fp = len(bucket) - tp
+
+        precision = tp / (tp + fp) if (tp + fp) else None
+        mean_confidence = (
+            sum(float(pred.get("confidence", 0.0)) for _, pred in bucket)
+            / len(bucket)
+            if bucket
+            else None
+        )
+
+        rows.append(
+            {
+                "range": [lo, hi],
+                "predictions": len(bucket),
+                "tp": tp,
+                "fp": fp,
+                "precision": precision,
+                "mean_confidence": mean_confidence,
+                "false_positive_rate": (
+                    fp / len(bucket) if bucket else None
+                ),
+            }
+        )
+
+    populated = [row for row in rows if row["predictions"] > 0]
+
+    total_predictions = len(predictions)
+    total_tp = len(matched_prediction_indices)
+    total_fp = total_predictions - total_tp
+
+    return {
+        "bins": rows,
+        "populated_bins": len(populated),
+        "predictions": total_predictions,
+        "true_positives": total_tp,
+        "false_positives": total_fp,
+        "overall_precision": (
+            total_tp / total_predictions
+            if total_predictions
+            else 0.0
+        ),
+        "high_confidence_false_positives": sum(
+            row["fp"]
+            for row in rows
+            if row["range"][0] >= 0.60
+        ),
+        "high_confidence_predictions": sum(
+            row["predictions"]
+            for row in rows
+            if row["range"][0] >= 0.60
+        ),
+    }
+
+
+def _detection_threshold_sensitivity(
+    predictions: list[dict],
+    targets_by_sample: list[list[dict]],
+    thresholds: list[float] | None = None,
+    iou_threshold: float = 0.50,
+) -> list[dict]:
+    """
+    Re-evaluate the stored predictions at several confidence thresholds.
+
+    This is diagnostic only. It does not modify the persisted evaluation.
+    """
+    if thresholds is None:
+        thresholds = [
+            0.10,
+            0.20,
+            0.25,
+            0.30,
+            0.40,
+            0.50,
+            0.60,
+            0.70,
+            0.80,
+            0.90,
+        ]
+
+    rows = []
+
+    for threshold in thresholds:
+        total_tp = 0
+        total_fp = 0
+        total_fn = 0
+
+        for sample_predictions, targets in zip(
+            predictions,
+            targets_by_sample,
+        ):
+            filtered = [
+                pred
+                for pred in sample_predictions
+                if float(pred.get("confidence", 0.0)) >= threshold
+            ]
+
+            matches = _match_detection_boxes(
+                filtered,
+                targets,
+                iou_threshold,
+            )
+
+            total_tp += len(matches)
+            total_fp += len(filtered) - len(matches)
+            total_fn += len(targets) - len(matches)
+
+        precision = (
+            total_tp / (total_tp + total_fp)
+            if total_tp + total_fp
+            else 0.0
+        )
+        recall = (
+            total_tp / (total_tp + total_fn)
+            if total_tp + total_fn
+            else 0.0
+        )
+        f1 = (
+            2 * precision * recall / (precision + recall)
+            if precision + recall
+            else 0.0
+        )
+
+        rows.append(
+            {
+                "confidence_threshold": threshold,
+                "true_positives": total_tp,
+                "false_positives": total_fp,
+                "false_negatives": total_fn,
+                "precision": precision,
+                "recall": recall,
+                "f1": f1,
+            }
+        )
+
+    return rows
+
+def analyze_detection_failures(
+    predictions,
+    class_names,
+    config=None,
+    audit_records=None,
+    audit_report=None,
+    store=None,
+    analysis_id=None,
+    evaluation_id=None,
+    audit_id=None,
+    iou_threshold=0.50,
+):
+    """
+    Detection-specific failure analysis.
+
+    This operates on persisted evaluation predictions and does NOT rerun
+    model inference.
+
+    It produces:
+      - image-level failure categories
+      - TP / FP / FN diagnostics
+      - per-class metrics
+      - confidence diagnostics
+      - object-size diagnostics
+      - worst-sample ranking
+      - useful model-behaviour slices
+      - optional audit correlation
+      - actionable findings
+    """
+    names = [str(x) for x in class_names]
+    name_by_id = {i: name for i, name in enumerate(names)}
+
+    if analysis_id is None:
+        analysis_id = (
+            f"{datetime.now(timezone.utc):%Y%m%dT%H%M%S}_"
+            f"{uuid.uuid4().hex[:6]}"
+        )
+
+    rows = []
+
+    # Raw per-sample detection data used by extended diagnostics.
+    #
+    # `rows` intentionally remains an image-level summary because it is
+    # persisted to samples.parquet and used by the existing failure/audit
+    # analysis. Extended detection diagnostics need the original boxes and
+    # predictions, so keep a parallel structure here.
+    detection_rows = []
+
+    total_tp = 0
+    total_fp = 0
+    total_fn = 0
+    matched_ious = []
+
+    per_class = {
+        name: {
+            "class_id": cid,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "matched_ious": [],
+            "confidence_tp": [],
+            "confidence_fp": [],
+            "confidence_fn": [],
+        }
+        for cid, name in enumerate(names)
+    }
+
+    failure_type_counts = {
+        "correct": 0,
+        "false_positive": 0,
+        "false_negative": 0,
+        "mixed_error": 0,
+        "localization_error": 0,
+    }
+
+    confidence_buckets = {
+        "low": {"predictions": 0, "tp": 0, "fp": 0},
+        "medium": {"predictions": 0, "tp": 0, "fp": 0},
+        "high": {"predictions": 0, "tp": 0, "fp": 0},
+        "very_high": {"predictions": 0, "tp": 0, "fp": 0},
+    }
+
+    size_buckets = {
+        "small": {"ground_truth": 0, "matched": 0, "missed": 0},
+        "medium": {"ground_truth": 0, "matched": 0, "missed": 0},
+        "large": {"ground_truth": 0, "matched": 0, "missed": 0},
+    }
+
+    worst_samples = []
+
+    for item in predictions:
+        sample_id = str(item.get("sample_id") or item.get("path") or "")
+        path = str(item.get("path") or sample_id)
+
+        targets = list(item.get("true_boxes") or [])
+        preds = list(item.get("predictions") or [])
+
+        matches = _match_detection_boxes(
+            preds,
+            targets,
+            float(iou_threshold),
+        )
+
+        matched_prediction_ids = {x[0] for x in matches}
+        matched_target_ids = {x[1] for x in matches}
+
+        sample_tp = len(matches)
+        sample_fp = len(preds) - sample_tp
+        sample_fn = len(targets) - len(matches)
+
+        total_tp += sample_tp
+        total_fp += sample_fp
+        total_fn += sample_fn
+
+        sample_ious = []
+
+        for pi, ti, iou in matches:
+            pred = preds[pi]
+            target = targets[ti]
+
+            cid = int(pred["class_id"])
+            if cid not in per_class:
+                per_class[cid] = {
+                    "class_id": cid,
+                    "tp": 0,
+                    "fp": 0,
+                    "fn": 0,
+                    "matched_ious": [],
+                    "confidence_tp": [],
+                    "confidence_fp": [],
+                    "confidence_fn": [],
+                }
+
+            conf = float(pred.get("confidence", 0.0))
+
+            per_class[cid]["tp"] += 1
+            per_class[cid]["matched_ious"].append(float(iou))
+            per_class[cid]["confidence_tp"].append(conf)
+
+            sample_ious.append(float(iou))
+            matched_ious.append(float(iou))
+
+            bucket = _detection_percentile_bucket(conf)
+            confidence_buckets[bucket]["predictions"] += 1
+            confidence_buckets[bucket]["tp"] += 1
+
+        for pi, pred in enumerate(preds):
+            if pi in matched_prediction_ids:
+                continue
+
+            cid = int(pred["class_id"])
+            if cid not in per_class:
+                per_class[cid] = {
+                    "class_id": cid,
+                    "tp": 0,
+                    "fp": 0,
+                    "fn": 0,
+                    "matched_ious": [],
+                    "confidence_tp": [],
+                    "confidence_fp": [],
+                    "confidence_fn": [],
+                }
+
+            conf = float(pred.get("confidence", 0.0))
+
+            per_class[cid]["fp"] += 1
+            per_class[cid]["confidence_fp"].append(conf)
+
+            bucket = _detection_percentile_bucket(conf)
+            confidence_buckets[bucket]["predictions"] += 1
+            confidence_buckets[bucket]["fp"] += 1
+
+        for ti, target in enumerate(targets):
+            if ti in matched_target_ids:
+                continue
+
+            cid = int(target["class_id"])
+
+            if cid not in per_class:
+                per_class[cid] = {
+                    "class_id": cid,
+                    "tp": 0,
+                    "fp": 0,
+                    "fn": 0,
+                    "matched_ious": [],
+                    "confidence_tp": [],
+                    "confidence_fp": [],
+                    "confidence_fn": [],
+                }
+
+            per_class[cid]["fn"] += 1
+            per_class[cid]["confidence_fn"].append(None)
+
+            area = _detection_box_area(target["box"])
+            bucket = _detection_box_size(area)
+
+            size_buckets[bucket]["ground_truth"] += 1
+            size_buckets[bucket]["missed"] += 1
+
+        for ti, target in enumerate(targets):
+            if ti in matched_target_ids:
+                continue
+
+        for ti, target in enumerate(targets):
+            area = _detection_box_area(target["box"])
+            bucket = _detection_box_size(area)
+            if ti in matched_target_ids:
+                size_buckets[bucket]["ground_truth"] += 1
+                size_buckets[bucket]["matched"] += 1
+
+        if sample_fp and sample_fn:
+            failure_type = "mixed_error"
+        elif sample_fp:
+            failure_type = "false_positive"
+        elif sample_fn:
+            failure_type = "false_negative"
+        else:
+            failure_type = "correct"
+
+        if failure_type == "correct" and sample_ious:
+            if min(sample_ious) < float(iou_threshold):
+                failure_type = "localization_error"
+
+        failure_type_counts[failure_type] += 1
+
+        rows.append({
+            "sample_id": sample_id,
+            "path": path,
+            "true_count": len(targets),
+            "predicted_count": len(preds),
+            "tp": sample_tp,
+            "fp": sample_fp,
+            "fn": sample_fn,
+            "matched_iou_mean": (
+                float(np.mean(sample_ious)) if sample_ious else None
+            ),
+            "max_prediction_confidence": (
+                max(
+                    [float(p.get("confidence", 0.0)) for p in preds],
+                    default=None,
+                )
+            ),
+            "failure_type": failure_type,
+            "is_error": failure_type != "correct",
+        })
+
+        # Preserve the raw detection objects for extended diagnostics.
+        # Do not put these into `rows`: `rows` is intentionally the
+        # image-level persisted summary used by the existing analysis.
+        detection_rows.append({
+            "sample_id": sample_id,
+            "path": path,
+            "true_boxes": targets,
+            "predictions": preds,
+            "failure_type": failure_type,
+            "tp": sample_tp,
+            "fp": sample_fp,
+            "fn": sample_fn,
+        })
+
+        severity = (
+            sample_fp * 1.0
+            + sample_fn * 1.0
+            + max(0, sample_fp - sample_tp) * 0.5
+            + max(0, sample_fn - sample_tp) * 0.5
+        )
+
+        worst_samples.append({
+            "sample_id": sample_id,
+            "path": path,
+            "failure_type": failure_type,
+            "tp": sample_tp,
+            "fp": sample_fp,
+            "fn": sample_fn,
+            "severity": float(severity),
+        })
+
+    n_samples = len(rows)
+    error_images = sum(1 for r in rows if r["is_error"])
+    correct_images = n_samples - error_images
+
+    precision = (
+        total_tp / (total_tp + total_fp)
+        if total_tp + total_fp
+        else 0.0
+    )
+
+    recall = (
+        total_tp / (total_tp + total_fn)
+        if total_tp + total_fn
+        else 0.0
+    )
+
+    f1 = (
+        2.0 * precision * recall / (precision + recall)
+        if precision + recall
+        else 0.0
+    )
+
+    mean_iou = (
+        float(np.mean(matched_ious))
+        if matched_ious
+        else 0.0
+    )
+
+    for cid, item in list(per_class.items()):
+        name = name_by_id.get(cid, str(cid))
+
+        tp = int(item["tp"])
+        fp = int(item["fp"])
+        fn = int(item["fn"])
+
+        p = tp / (tp + fp) if tp + fp else 0.0
+        r = tp / (tp + fn) if tp + fn else 0.0
+        f = 2.0 * p * r / (p + r) if p + r else 0.0
+
+        item["precision"] = p
+        item["recall"] = r
+        item["f1"] = f
+        item["mean_iou"] = (
+            float(np.mean(item["matched_ious"]))
+            if item["matched_ious"]
+            else 0.0
+        )
+        item["name"] = name
+
+        del item["matched_ious"]
+        del item["confidence_tp"]
+        del item["confidence_fp"]
+        del item["confidence_fn"]
+
+    per_class = {
+        str(item["name"]): item
+        for item in per_class.values()
+    }
+
+    worst_samples.sort(
+        key=lambda x: (
+            -x["severity"],
+            -x["fn"],
+            -x["fp"],
+            x["sample_id"],
+        )
+    )
+
+    worst_samples = worst_samples[:50]
+
+    actionable_findings = []
+
+    if total_fn > total_tp:
+        actionable_findings.append(
+            "False negatives exceed true positives; missed-object detection "
+            "is a major bottleneck."
+        )
+
+    if total_fp > total_tp:
+        actionable_findings.append(
+            "False positives exceed true positives; the detector is producing "
+            "many incorrect detections."
+        )
+
+    if mean_iou >= 0.70 and total_tp > 0:
+        actionable_findings.append(
+            f"Matched detections have relatively strong localization "
+            f"(mean IoU={mean_iou:.3f}); localization is not the primary "
+            "failure bottleneck."
+        )
+
+    ranked_classes = sorted(
+        per_class.items(),
+        key=lambda kv: (
+            kv[1]["recall"],
+            kv[1]["f1"],
+            kv[1]["tp"],
+        ),
+    )
+
+    for name, item in ranked_classes[:3]:
+        support = item["tp"] + item["fn"]
+
+        if support > 0 and item["recall"] < 0.50:
+            actionable_findings.append(
+                f"{name} recall is low at {item['recall']:.1%} "
+                f"({item['fn']} missed objects out of {support})."
+            )
+
+    high_conf_fp = confidence_buckets["high"]["fp"]
+    very_high_conf_fp = confidence_buckets["very_high"]["fp"]
+
+    if very_high_conf_fp > 0:
+        actionable_findings.append(
+            f"{very_high_conf_fp} false-positive detections have very high "
+            "confidence (>=0.90); these are high-priority samples for "
+            "hard-negative or label investigation."
+        )
+
+    if high_conf_fp > 0:
+        actionable_findings.append(
+            f"{high_conf_fp} false-positive detections have high confidence "
+            "(0.60-0.90)."
+        )
+
+    if not actionable_findings:
+        actionable_findings.append(
+            "No dominant actionable pattern was detected beyond the "
+            "aggregate detection metrics."
+        )
+
+    audit_correlation = None
+
+    if audit_records is not None and len(audit_records):
+        try:
+            audit_df = audit_records.copy()
+
+            if "sample_id" in audit_df.columns:
+                sample_df = pd.DataFrame(rows)
+
+                merged = sample_df.merge(
+                    audit_df,
+                    on="sample_id",
+                    how="left",
+                    suffixes=("", "_audit"),
+                )
+
+                error_mask = merged["is_error"].astype(bool)
+
+                candidate_columns = [
+                    c for c in merged.columns
+                    if (
+                        c.startswith("flag")
+                        or c.startswith("audit")
+                        or c.endswith("_flag")
+                        or c.endswith("_status")
+                    )
+                ]
+
+                flagged_errors = 0
+                flagged_all = 0
+
+                if candidate_columns:
+                    flags = merged[candidate_columns].fillna(False)
+
+                    flag_mask = flags.astype(str).apply(
+                        lambda col: col.str.lower().isin(
+                            {"true", "1", "yes", "flagged", "error"}
+                        )
+                    ).any(axis=1)
+
+                    flagged_errors = int(
+                        (flag_mask & error_mask).sum()
+                    )
+                    flagged_all = int(flag_mask.sum())
+
+                audit_correlation = {
+                    "joined_samples": int(len(merged)),
+                    "flagged_samples": flagged_all,
+                    "flagged_error_samples": flagged_errors,
+                    "flagged_error_rate": (
+                        flagged_errors / error_images
+                        if error_images
+                        else 0.0
+                    ),
+                    "flag_columns": candidate_columns,
+                }
+
+                if flagged_errors:
+                    actionable_findings.append(
+                        f"{flagged_errors} error images overlap with "
+                        "available dataset-audit flags; inspect those "
+                        "samples before treating the model error as purely "
+                        "a model problem."
+                    )
+
+        except Exception as exc:
+            audit_correlation = {
+                "error": f"audit correlation unavailable: {exc}"
+            }
+
+    confidence_slices = {}
+
+    for bucket, values in confidence_buckets.items():
+        total = values["predictions"]
+        confidence_slices[bucket] = {
+            **values,
+            "false_positive_rate": (
+                values["fp"] / total if total else 0.0
+            ),
+            "true_positive_rate": (
+                values["tp"] / total if total else 0.0
+            ),
+        }
+
+    size_slices = {}
+
+    for bucket, values in size_buckets.items():
+        gt = values["ground_truth"]
+        size_slices[bucket] = {
+            **values,
+            "miss_rate": (
+                values["missed"] / gt if gt else 0.0
+            ),
+            "recall": (
+                values["matched"] / gt if gt else 0.0
+            ),
+        }
+
+    report = {
+        "schema_version": 2,
+        "analysis_type": "detection",
+        "inputs": {
+            "analysis_id": analysis_id,
+            "evaluation_id": evaluation_id,
+            "audit_id": audit_id,
+            "n_samples": n_samples,
+            "n_classes": len(names),
+            "class_names": names,
+            "iou_threshold": float(iou_threshold),
+        },
+        "overall": {
+            "correct_images": correct_images,
+            "error_images": error_images,
+            "image_accuracy": (
+                correct_images / n_samples if n_samples else 0.0
+            ),
+            "true_positives": total_tp,
+            "false_positives": total_fp,
+            "false_negatives": total_fn,
+            "precision": precision,
+            "recall": recall,
+            "f1": f1,
+            "mean_iou": mean_iou,
+        },
+        "failure_types": {
+            key: {"count": int(value)}
+            for key, value in failure_type_counts.items()
+        },
+        "per_class": per_class,
+        "confidence": confidence_slices,
+        "object_size": size_slices,
+        "worst_samples": worst_samples,
+        "audit_correlation": audit_correlation,
+        "actionable_findings": actionable_findings,
+        "warnings": [],
+        "limitations": [
+            "Failure slices are observed associations, not causal explanations.",
+            "Confidence describes model behaviour and does not prove data quality problems.",
+            "Object-size thresholds use normalized box area and are heuristic.",
+            "Audit correlation depends on the audit records exposing sample-level identifiers."
+        ],
+    }
+
+
+    # ========================================================
+    # EXTENDED DETECTION DIAGNOSTICS
+    # ========================================================
+    #
+    # These diagnostics complement the official TP/FP/FN
+    # accounting. They do not alter evaluator metrics.
+
+    # --------------------------------------------------------
+    # Build the exact structures expected by the helpers.
+    # --------------------------------------------------------
+
+    predictions_by_sample = [
+        list(row.get("predictions", []))
+        for row in detection_rows
+    ]
+
+    targets_by_sample = [
+        list(row.get("true_boxes", []))
+        for row in detection_rows
+    ]
+
+    # Flatten predictions once. The confidence helper uses
+    # global integer indices into this flattened list.
+    flat_predictions = []
+
+    prediction_offsets = []
+
+    for sample_predictions in predictions_by_sample:
+        offset = len(flat_predictions)
+        prediction_offsets.append(offset)
+        flat_predictions.extend(sample_predictions)
+
+    # Determine which global prediction indices are matched.
+    matched_prediction_indices: set[int] = set()
+
+    for sample_index, (
+        sample_predictions,
+        sample_targets,
+    ) in enumerate(
+        zip(predictions_by_sample, targets_by_sample)
+    ):
+        matches = _match_detection_boxes(
+            sample_predictions,
+            sample_targets,
+            iou_threshold,
+        )
+
+        offset = prediction_offsets[sample_index]
+
+        for prediction_index, _target_index, _iou in matches:
+            matched_prediction_indices.add(
+                offset + int(prediction_index)
+            )
+
+    # --------------------------------------------------------
+    # Localization diagnostics.
+    #
+    # This is deliberately orthogonal to failure_types because
+    # a below-threshold same-class overlap is represented as
+    # both an official FP and FN.
+    # --------------------------------------------------------
+
+    localization_prediction_candidates = []
+    localization_target_candidates = []
+
+    for sample_index, (
+        sample_predictions,
+        sample_targets,
+    ) in enumerate(
+        zip(predictions_by_sample, targets_by_sample)
+    ):
+        prediction_candidates, target_candidates = (
+            _detection_localization_candidates(
+                predictions=sample_predictions,
+                targets=sample_targets,
+                iou_threshold=iou_threshold,
+            )
+        )
+
+        for candidate in prediction_candidates:
+            candidate = dict(candidate)
+            candidate["sample_index"] = sample_index
+            localization_prediction_candidates.append(candidate)
+
+        for candidate in target_candidates:
+            candidate = dict(candidate)
+            candidate["sample_index"] = sample_index
+            localization_target_candidates.append(candidate)
+
+    localization_diagnostics = {
+        "count": len(localization_prediction_candidates),
+        "prediction_candidates": localization_prediction_candidates,
+        "target_candidates": localization_target_candidates,
+        "iou_threshold": float(iou_threshold),
+    }
+
+    # --------------------------------------------------------
+    # Confidence diagnostics.
+    # --------------------------------------------------------
+
+    confidence_calibration = _detection_confidence_calibration(
+        predictions=flat_predictions,
+        matched_prediction_indices=matched_prediction_indices,
+    )
+
+    # --------------------------------------------------------
+    # Confidence-threshold sensitivity.
+    # --------------------------------------------------------
+
+    threshold_sensitivity = _detection_threshold_sensitivity(
+        predictions=predictions_by_sample,
+        targets_by_sample=targets_by_sample,
+        thresholds=[
+            0.10,
+            0.20,
+            0.25,
+            0.30,
+            0.40,
+            0.50,
+            0.60,
+            0.70,
+            0.80,
+            0.90,
+        ],
+        iou_threshold=iou_threshold,
+    )
+
+    # --------------------------------------------------------
+    # Extended failure slices.
+    # --------------------------------------------------------
+
+    extended_slices = {}
+
+    def _slice_stats(selected_rows):
+        total = len(selected_rows)
+
+        tp = sum(int(r.get("tp", 0)) for r in selected_rows)
+        fp = sum(int(r.get("fp", 0)) for r in selected_rows)
+        fn = sum(int(r.get("fn", 0)) for r in selected_rows)
+
+        precision_value = (
+            tp / (tp + fp)
+            if (tp + fp)
+            else 0.0
+        )
+
+        recall_value = (
+            tp / (tp + fn)
+            if (tp + fn)
+            else 0.0
+        )
+
+        f1_value = (
+            2.0 * precision_value * recall_value
+            / (precision_value + recall_value)
+            if (precision_value + recall_value)
+            else 0.0
+        )
+
+        error_count = sum(
+            1
+            for r in selected_rows
+            if r.get("failure_type") != "correct"
+        )
+
+        return {
+            "support": total,
+            "errors": error_count,
+            "error_rate": (
+                error_count / total
+                if total
+                else 0.0
+            ),
+            "true_positives": tp,
+            "false_positives": fp,
+            "false_negatives": fn,
+            "precision": precision_value,
+            "recall": recall_value,
+            "f1": f1_value,
+        }
+
+    failure_type_names = (
+        "correct",
+        "false_positive",
+        "false_negative",
+        "mixed_error",
+    )
+
+    for failure_type_name in failure_type_names:
+        selected = [
+            r
+            for r in rows
+            if r.get("failure_type") == failure_type_name
+        ]
+
+        extended_slices[f"failure_type:{failure_type_name}"] = {
+            "slice_type": "failure_type",
+            "slice_value": failure_type_name,
+            **_slice_stats(selected),
+        }
+
+    # Class slices must operate on raw detection rows. Unlike the
+    # image-level failure-type slices above, class support is object-level:
+    # TP + FN for the requested class.
+    for class_id, class_name in enumerate(class_names):
+        class_tp = 0
+        class_fp = 0
+        class_fn = 0
+
+        class_image_ids = set()
+
+        for row in detection_rows:
+            sample_predictions = [
+                pred
+                for pred in row.get("predictions", [])
+                if int(pred.get("class_id", -1)) == class_id
+            ]
+
+            sample_targets = [
+                target
+                for target in row.get("true_boxes", [])
+                if int(target.get("class_id", -1)) == class_id
+            ]
+
+            if not sample_predictions and not sample_targets:
+                continue
+
+            class_image_ids.add(row.get("sample_id"))
+
+            class_matches = _match_detection_boxes(
+                sample_predictions,
+                sample_targets,
+                iou_threshold,
+            )
+
+            class_tp += len(class_matches)
+            class_fp += len(sample_predictions) - len(class_matches)
+            class_fn += len(sample_targets) - len(class_matches)
+
+        class_support = class_tp + class_fn
+        class_errors = class_fp + class_fn
+
+        class_precision = (
+            class_tp / (class_tp + class_fp)
+            if class_tp + class_fp
+            else 0.0
+        )
+
+        class_recall = (
+            class_tp / (class_tp + class_fn)
+            if class_tp + class_fn
+            else 0.0
+        )
+
+        class_f1 = (
+            2.0 * class_precision * class_recall
+            / (class_precision + class_recall)
+            if class_precision + class_recall
+            else 0.0
+        )
+
+        extended_slices[f"class:{class_name}"] = {
+            "slice_type": "class",
+            "slice_value": class_name,
+            "class_id": class_id,
+            "support": class_support,
+            "errors": class_errors,
+            "error_rate": (
+                class_errors / class_support
+                if class_support
+                else 0.0
+            ),
+            "true_positives": class_tp,
+            "false_positives": class_fp,
+            "false_negatives": class_fn,
+            "precision": class_precision,
+            "recall": class_recall,
+            "f1": class_f1,
+            "images": len(class_image_ids),
+        }
+
+    high_confidence_rows = [
+        row
+        for row in detection_rows
+        if any(
+            float(pred.get("confidence", 0.0)) >= 0.90
+            for pred in row.get("predictions", [])
+        )
+    ]
+
+    extended_slices["confidence:>=0.90"] = {
+        "slice_type": "confidence",
+        "slice_value": ">=0.90",
+        **_slice_stats(high_confidence_rows),
+    }
+
+    multiple_prediction_rows = [
+        row
+        for row in detection_rows
+        if len(row.get("predictions", [])) >= 2
+    ]
+
+    extended_slices["predictions:multiple"] = {
+        "slice_type": "prediction_count",
+        "slice_value": ">=2",
+        **_slice_stats(multiple_prediction_rows),
+    }
+
+    # --------------------------------------------------------
+    # Diagnostic findings.
+    # --------------------------------------------------------
+
+    diagnostic_findings = []
+
+    total_tp = sum(int(r.get("tp", 0)) for r in rows)
+    total_fp = sum(int(r.get("fp", 0)) for r in rows)
+    total_fn = sum(int(r.get("fn", 0)) for r in rows)
+
+    mixed_count = sum(
+        1
+        for r in rows
+        if r.get("failure_type") == "mixed_error"
+    )
+
+    if total_fn > total_tp:
+        diagnostic_findings.append({
+            "type": "recall_bottleneck",
+            "severity": "high",
+            "finding": (
+                "False negatives exceed true positives."
+            ),
+            "evidence": {
+                "false_negatives": total_fn,
+                "true_positives": total_tp,
+            },
+        })
+
+    if total_fp > total_tp:
+        diagnostic_findings.append({
+            "type": "precision_bottleneck",
+            "severity": "high",
+            "finding": (
+                "False positives exceed true positives."
+            ),
+            "evidence": {
+                "false_positives": total_fp,
+                "true_positives": total_tp,
+            },
+        })
+
+    if mixed_count:
+        diagnostic_findings.append({
+            "type": "mixed_detection_errors",
+            "severity": "medium",
+            "finding": (
+                "Some images contain both missed ground-truth "
+                "objects and unmatched predictions."
+            ),
+            "evidence": {
+                "mixed_error_images": mixed_count,
+            },
+        })
+
+    localization_count = len(
+        localization_prediction_candidates
+    )
+
+    if localization_count:
+        diagnostic_findings.append({
+            "type": "localization",
+            "severity": "medium",
+            "finding": (
+                "Some predictions overlap the correct class but "
+                "fall below the configured IoU matching threshold."
+            ),
+            "evidence": {
+                "localization_errors": localization_count,
+                "iou_threshold": float(iou_threshold),
+            },
+        })
+
+    high_conf_fp = int(
+        confidence_calibration.get(
+            "high_confidence_false_positives",
+            0,
+        )
+    )
+
+    if high_conf_fp:
+        diagnostic_findings.append({
+            "type": "high_confidence_false_positives",
+            "severity": "high",
+            "finding": (
+                "False-positive predictions remain at high confidence."
+            ),
+            "evidence": {
+                "high_confidence_false_positives": high_conf_fp,
+            },
+        })
+
+    # --------------------------------------------------------
+    # Attach extended diagnostics to report.
+    # --------------------------------------------------------
+
+    report["localization"] = localization_diagnostics
+    report["confidence_calibration"] = confidence_calibration
+    report["threshold_sensitivity"] = threshold_sensitivity
+    report["extended_slices"] = extended_slices
+    report["diagnostic_findings"] = diagnostic_findings
+
+    report["confidence_calibration_note"] = (
+        "Confidence calibration here is empirical confidence "
+        "behaviour and threshold sensitivity; it does not "
+        "claim probabilistic calibration."
+    )
+
+    samples = pd.DataFrame(rows)
+
+    if store is not None:
+        relative = Path("failure_analyses") / analysis_id
+        directory = store.resolve(relative)
+
+        if directory.exists():
+            raise ArtifactError(
+                f"analysis '{analysis_id}' already exists in {store.root}"
+            )
+
+        directory.mkdir(parents=True)
+
+        metadata = {
+            "analysis_id": analysis_id,
+            "analysis_type": "detection",
+            "evaluation_id": evaluation_id,
+            "audit_id": audit_id,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "n_samples": n_samples,
+            "versions": {
+                "modellab": modellab.__version__,
+                "numpy": np.__version__,
+                "pandas": pd.__version__,
+            },
+        }
+
+        try:
+            store.write_json(relative / "report.json", report)
+            store.write_json(
+                relative / "per_class.json",
+                per_class,
+            )
+            store.write_json(
+                relative / "failure_types.json",
+                report["failure_types"],
+            )
+            store.write_json(
+                relative / "top_samples.json",
+                worst_samples,
+            )
+            store.write_json(
+                relative / "confidence_slices.json",
+                confidence_slices,
+            )
+            store.write_json(
+                relative / "size_slices.json",
+                size_slices,
+            )
+            store.write_json(
+                relative / "localization.json",
+                localization_diagnostics,
+            )
+            store.write_json(
+                relative / "confidence_calibration.json",
+                confidence_calibration,
+            )
+            store.write_json(
+                relative / "threshold_sensitivity.json",
+                threshold_sensitivity,
+            )
+            store.write_json(
+                relative / "extended_slices.json",
+                extended_slices,
+            )
+            store.write_json(
+                relative / "diagnostic_findings.json",
+                diagnostic_findings,
+            )
+            store.write_text(
+                relative / "summary.txt",
+                _render_detection_summary(report),
+            )
+            store.write_bytes(
+                relative / "samples.parquet",
+                _parquet(samples),
+            )
+            store.write_json(
+                relative / "metadata.json",
+                metadata,
+            )
+
+        except BaseException:
+            shutil.rmtree(directory, ignore_errors=True)
+            raise
+
+    return FailureAnalysis(
+        analysis_id=analysis_id,
+        directory=(
+            store.resolve(Path("failure_analyses") / analysis_id)
+            if store is not None
+            else None
+        ),
+        samples=samples,
+        slices=pd.DataFrame(
+            columns=[
+                "slice_id",
+                "slice_type",
+                "support",
+                "errors",
+                "error_rate",
+            ]
+        ),
+        report=report,
+    )
+
 def _category_summary(samples, cfg):
     out = {}
     for name in CATEGORIES:

@@ -1,127 +1,64 @@
-INFO:     Started server process [942]
+INFO:     Started server process [2350]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
-INFO:     127.0.0.1:43586 - "GET /health HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34000 - "GET /health HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34006 - "GET /architectures HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34020 - "GET /model-artifacts/probe_model.pt HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:34030 - "GET /health HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /health HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "POST /datasets/register HTTP/1.1" 409 Conflict
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "POST /datasets/register HTTP/1.1" 201 Created
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "POST /model-artifacts HTTP/1.1" 422 Unprocessable Content
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "POST /model-artifacts HTTP/1.1" 201 Created
-09:36:49 WARNING modellab.model: unpickling a full model from /kaggle/working/modellab/workspace/model_artifacts/artifact_f9423f858abb45a594175d5f3f6494cb/best.pt, only do this for files you trust
-Creating new Ultralytics Settings v0.0.8 file ✅ 
-View Ultralytics Settings with 'yolo settings' or at '/root/.config/Ultralytics/settings.json'
-Update Settings with 'yolo settings key=value', i.e. 'yolo settings runs_dir=path/to/dir'. For help see https://docs.ultralytics.com/usage/settings.
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "POST /models/resolve HTTP/1.1" 200 OK
-09:36:51 WARNING modellab.model: unpickling a full model from /kaggle/working/modellab/workspace/model_artifacts/artifact_f9423f858abb45a594175d5f3f6494cb/best.pt, only do this for files you trust
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "POST /models/register HTTP/1.1" 201 Created
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "POST /evaluations HTTP/1.1" 202 Accepted
-09:37:38 WARNING modellab.model: unpickling a full model from /kaggle/working/modellab/workspace/model_artifacts/artifact_f9423f858abb45a594175d5f3f6494cb/best.pt, only do this for files you trust
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "POST /evaluations HTTP/1.1" 409 Conflict
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "POST /evaluations HTTP/1.1" 202 Accepted
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "POST /model-artifacts HTTP/1.1" 422 Unprocessable Content
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "POST /model-artifacts HTTP/1.1" 201 Created
-09:41:15 WARNING modellab.model: unpickling a full model from /kaggle/working/modellab/workspace/model_artifacts/artifact_6beb6da6e93e4c2ba2d9156983cca5ee/best.pt, only do this for files you trust
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "POST /models/resolve HTTP/1.1" 200 OK
-09:41:17 WARNING modellab.model: unpickling a full model from /kaggle/working/modellab/workspace/model_artifacts/artifact_6beb6da6e93e4c2ba2d9156983cca5ee/best.pt, only do this for files you trust
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "POST /models/register HTTP/1.1" 201 Created
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /jobs HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "POST /model-artifacts HTTP/1.1" 422 Unprocessable Content
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "POST /model-artifacts HTTP/1.1" 201 Created
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "POST /models/resolve HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /jobs HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /jobs HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /jobs HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /jobs HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "POST /model-artifacts HTTP/1.1" 422 Unprocessable Content
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "POST /model-artifacts HTTP/1.1" 201 Created
-/usr/local/lib/python3.13/dist-packages/torchvision/models/googlenet.py:47: FutureWarning: The default weight initialization of GoogleNet will be changed in future releases of torchvision. If you wish to keep the old behavior (which leads to long initialization times due to scipy/scipy#11299), please set init_weights=True.
-  warnings.warn(
-/usr/local/lib/python3.13/dist-packages/torchvision/models/inception.py:43: FutureWarning: The default weight initialization of inception_v3 will be changed in future releases of torchvision. If you wish to keep the old behavior (which leads to long initialization times due to scipy/scipy#11299), please set init_weights=True.
-  warnings.warn(
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "POST /models/resolve HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "POST /model-artifacts HTTP/1.1" 201 Created
-10:09:10 WARNING modellab.model: unpickling a full model from /kaggle/working/modellab/workspace/model_artifacts/artifact_b39f08a0c81f4e088d2154fbec2c244c/last.pt, only do this for files you trust
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "POST /models/resolve HTTP/1.1" 200 OK
-10:09:12 WARNING modellab.model: unpickling a full model from /kaggle/working/modellab/workspace/model_artifacts/artifact_b39f08a0c81f4e088d2154fbec2c244c/last.pt, only do this for files you trust
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "POST /models/register HTTP/1.1" 201 Created
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "POST /model-artifacts HTTP/1.1" 201 Created
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "POST /models/resolve HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "POST /model-artifacts HTTP/1.1" 201 Created
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "POST /models/resolve HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "POST /model-artifacts HTTP/1.1" 201 Created
-10:10:14 WARNING modellab.model: unpickling a full model from /kaggle/working/modellab/workspace/model_artifacts/artifact_b889cd3837174730b4d756b17f4afe40/last.pt, only do this for files you trust
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "POST /models/resolve HTTP/1.1" 200 OK
-10:10:15 WARNING modellab.model: unpickling a full model from /kaggle/working/modellab/workspace/model_artifacts/artifact_b889cd3837174730b4d756b17f4afe40/last.pt, only do this for files you trust
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "POST /models/register HTTP/1.1" 201 Created
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /jobs HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /jobs HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "POST /model-artifacts HTTP/1.1" 422 Unprocessable Content
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "POST /model-artifacts HTTP/1.1" 201 Created
-INFO:     2c0f:fc89:f0:c859:e003:c6cf:b0e5:ae1:0 - "POST /models/resolve HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56272 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60626 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60632 - "GET /architectures HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60646 - "GET /model-artifacts/probe_model.pt HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:60662 - "GET /health HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /health HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /datasets HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "POST /analyses HTTP/1.1" 202 Accepted
+INFO:     196.128.199.81:0 - "GET /jobs HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /jobs HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /jobs/843a418123b8/log HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /health HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /health HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /system HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /datasets HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "POST /analyses HTTP/1.1" 202 Accepted
+INFO:     196.128.199.81:0 - "GET /jobs HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /jobs HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /jobs HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /jobs/5f1afac43666/log HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /jobs HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /jobs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55864 - "GET /jobs/84eb8baab98a HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /datasets HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /jobs HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /datasets HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /health HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /health HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /system HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /datasets HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /datasets HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "POST /analyses HTTP/1.1" 202 Accepted
+INFO:     196.128.199.81:0 - "GET /jobs HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /jobs HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /jobs HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /jobs/fdd5843392ca/log HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /health HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /health HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /system HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /datasets HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /jobs HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /datasets HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "POST /analyses HTTP/1.1" 202 Accepted
+INFO:     196.128.199.81:0 - "GET /jobs HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /jobs HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /jobs/06f73ac3dff1/log HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /jobs HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /jobs/06f73ac3dff1 HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /jobs HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.199.81:0 - "GET /datasets HTTP/1.1" 200 OK

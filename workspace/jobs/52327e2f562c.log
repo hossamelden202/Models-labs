@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/kaggle/working/modellab/src/modellab/server/jobs.py", line 96, in _run
+    update = {"status": "completed", "result": fn()}
+                                               ~~^^
+  File "/kaggle/working/modellab/src/modellab/server/app.py", line 466, in <lambda>
+    return enqueue("analysis", params, lambda: services.analyze(ws, store, params), wait, timeout)
+                                               ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/modellab/src/modellab/server/services.py", line 315, in analyze
+    "num_tested_slices": rep["slices"]["info"]["num_tested"],
+                         ~~~^^^^^^^^^^
+KeyError: 'slices'
+

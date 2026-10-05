@@ -1,0 +1,23 @@
+{
+  "created_at": "2026-10-05T19:46:44.322722+00:00",
+  "csv": null,
+  "dataset_id": "weapons-small",
+  "kind": "folder",
+  "label_column": "label",
+  "path_column": "path",
+  "root": "/kaggle/working/weapons",
+  "source": "local",
+  "summary": {
+    "classes": {
+      "images": 472
+    },
+    "declared_classes": [
+      "images",
+      "labels"
+    ],
+    "layout": "class_only",
+    "num_excluded": 472,
+    "num_samples": 472,
+    "splits": {}
+  }
+}

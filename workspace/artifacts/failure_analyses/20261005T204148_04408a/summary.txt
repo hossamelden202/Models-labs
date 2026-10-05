@@ -1,0 +1,87 @@
+ModelLab Detection Failure Analysis
+============================================================
+
+task: detection
+evaluation_id: weapons-final7632478
+samples: 472
+classes: 5
+IoU threshold: 0.5
+
+OVERALL
+------------------------------------------------------------
+true positives: 49
+false positives: 248
+false negatives: 267
+precision: 0.16498316498316498
+recall: 0.1550632911392405
+f1: 0.15986949429037522
+image errors: 311
+image accuracy: 0.3411016949152542
+mean confidence: 0.5621264562168727
+
+FAILURE CATEGORIES
+------------------------------------------------------------
+false_positive: 44
+false_negative: 72
+mixed_error: 195
+correct: 161
+
+PER-CLASS
+------------------------------------------------------------
+class 0: handgun
+  support: 78
+  TP: 1
+  FP: 81
+  FN: 77
+  precision: 0.012195121951219513
+  recall: 0.01282051282051282
+  f1: 0.0125
+  mean IoU: 0.7409917415316905
+class 1: long_gun
+  support: 0
+  TP: 0
+  FP: 4
+  FN: 0
+  precision: 0.0
+  recall: 0.0
+  f1: 0.0
+  mean IoU: 0.0
+class 2: knife
+  support: 238
+  TP: 48
+  FP: 145
+  FN: 190
+  precision: 0.24870466321243523
+  recall: 0.20168067226890757
+  f1: 0.22273781902552206
+  mean IoU: 0.756237244098419
+class 3: sword
+  support: 0
+  TP: 0
+  FP: 9
+  FN: 0
+  precision: 0.0
+  recall: 0.0
+  f1: 0.0
+  mean IoU: 0.0
+class 4: explosive
+  support: 0
+  TP: 0
+  FP: 9
+  FN: 0
+  precision: 0.0
+  recall: 0.0
+  f1: 0.0
+  mean IoU: 0.0
+
+WARNINGS
+------------------------------------------------------------
+- Detection analysis uses class-aware one-to-one box matching.
+- A sample is considered erroneous when it contains at least one false positive or false negative.
+- Detection box IoU threshold is taken from the evaluation metadata.
+
+LIMITATIONS
+------------------------------------------------------------
+- Detection analysis reports image-level failure categories and per-class box metrics.
+- Image-level accuracy means all ground-truth boxes were matched and no false-positive boxes remained.
+- Slices requiring classification probabilities are not generated for detection evaluations.

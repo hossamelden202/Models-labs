@@ -1,0 +1,45 @@
+[
+  {
+    "evidence": {
+      "false_negatives": 267,
+      "true_positives": 49
+    },
+    "finding": "False negatives exceed true positives.",
+    "severity": "high",
+    "type": "recall_bottleneck"
+  },
+  {
+    "evidence": {
+      "false_positives": 248,
+      "true_positives": 49
+    },
+    "finding": "False positives exceed true positives.",
+    "severity": "high",
+    "type": "precision_bottleneck"
+  },
+  {
+    "evidence": {
+      "mixed_error_images": 195
+    },
+    "finding": "Some images contain both missed ground-truth objects and unmatched predictions.",
+    "severity": "medium",
+    "type": "mixed_detection_errors"
+  },
+  {
+    "evidence": {
+      "iou_threshold": 0.5,
+      "localization_errors": 190
+    },
+    "finding": "Some predictions overlap the correct class but fall below the configured IoU matching threshold.",
+    "severity": "medium",
+    "type": "localization"
+  },
+  {
+    "evidence": {
+      "high_confidence_false_positives": 103
+    },
+    "finding": "False-positive predictions remain at high confidence.",
+    "severity": "high",
+    "type": "high_confidence_false_positives"
+  }
+]

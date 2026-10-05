@@ -1,0 +1,29 @@
+{
+  "created_at": "2026-10-05T21:32:34.717559+00:00",
+  "error": {
+    "message": "'slices'",
+    "traceback": "Traceback (most recent call last):\n  File \"/kaggle/working/modellab/src/modellab/server/jobs.py\", line 96, in _run\n    update = {\"status\": \"completed\", \"result\": fn()}\n                                               ~~^^\n  File \"/kaggle/working/modellab/src/modellab/server/app.py\", line 466, in <lambda>\n    return enqueue(\"analysis\", params, lambda: services.analyze(ws, store, params), wait, timeout)\n                                               ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^\n  File \"/kaggle/working/modellab/src/modellab/server/services.py\", line 315, in analyze\n    \"num_tested_slices\": rep[\"slices\"][\"info\"][\"num_tested\"],\n                         ~~~^^^^^^^^^^\nKeyError: 'slices'\n",
+    "type": "KeyError"
+  },
+  "finished_at": "2026-10-05T21:32:34.760588+00:00",
+  "job_id": "52327e2f562c",
+  "kind": "analysis",
+  "params": {
+    "analysis_id": null,
+    "audit_id": null,
+    "config": {
+      "alpha": 0.05,
+      "high_confidence_threshold": 0.9,
+      "low_confidence_threshold": 0.6,
+      "max_evidence": 20,
+      "max_listed_slices": 100,
+      "min_risk_difference": 0.05,
+      "min_support": 20,
+      "top_confusions": 5
+    },
+    "evaluation_id": "weapons-final7632478"
+  },
+  "result": null,
+  "started_at": "2026-10-05T21:32:34.719040+00:00",
+  "status": "failed"
+}

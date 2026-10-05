@@ -1,0 +1,20 @@
+{
+  "created_at": "2026-10-05T20:42:41.579602+00:00",
+  "error": {
+    "message": "evaluation 'weapons-final7632478' not found under <workspace>/artifacts",
+    "traceback": "Traceback (most recent call last):\n  File \"/kaggle/working/modellab/src/modellab/server/jobs.py\", line 96, in _run\n    update = {\"status\": \"completed\", \"result\": fn()}\n                                               ~~^^\n  File \"/kaggle/working/modellab/src/modellab/server/app.py\", line 466, in <lambda>\n    return enqueue(\"analysis\", params, lambda: services.analyze(ws, store, params), wait, timeout)\n                                               ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^\n  File \"/kaggle/working/modellab/src/modellab/server/services.py\", line 233, in analyze\n    FailureConfig,\n    \n  File \"/kaggle/working/modellab/src/modellab/analysis/engine.py\", line 67, in load_evaluation\n    raise EvaluationError(f\"evaluation '{evaluation_id}' not found under {root}\")\nmodellab.core.errors.EvaluationError: evaluation 'weapons-final7632478' not found under <workspace>/artifacts\n",
+    "type": "EvaluationError"
+  },
+  "finished_at": "2026-10-05T20:42:41.582306+00:00",
+  "job_id": "295ca7537f4a",
+  "kind": "analysis",
+  "params": {
+    "analysis_id": null,
+    "audit_id": null,
+    "config": {},
+    "evaluation_id": "weapons-final7632478"
+  },
+  "result": null,
+  "started_at": "2026-10-05T20:42:41.580682+00:00",
+  "status": "failed"
+}

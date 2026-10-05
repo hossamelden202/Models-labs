@@ -1,0 +1,244 @@
+{
+  "clusters": null,
+  "config": {
+    "alpha": 0.05,
+    "ambiguous_margin": 0.2,
+    "beam_width": 20,
+    "cluster_seed": 0,
+    "clusters": false,
+    "exclude_model_output_features": false,
+    "high_confidence_threshold": 0.9,
+    "low_confidence_threshold": 0.6,
+    "max_candidates": 20000,
+    "max_categories": 20,
+    "max_depth": 2,
+    "max_evidence": 20,
+    "max_listed_slices": 100,
+    "min_risk_difference": 0.05,
+    "min_support": 20,
+    "n_bins": 4,
+    "n_clusters": 4,
+    "rank_by": "excess_errors",
+    "top_confusions": 5
+  },
+  "failure_categories": {
+    "correct": {
+      "count": 161,
+      "sample_ids": [
+        "knife_132.jpg",
+        "knife_135.jpg",
+        "knife_139.jpg",
+        "knife_16.jpg",
+        "knife_160.jpg",
+        "knife_163.jpg",
+        "knife_167.jpg",
+        "knife_195.jpg",
+        "knife_227.jpg",
+        "knife_235.jpg",
+        "knife_236.jpg",
+        "knife_247.jpg",
+        "knife_25.jpg",
+        "knife_257.jpg",
+        "knife_272.jpg",
+        "knife_29.jpg",
+        "knife_294.jpg",
+        "knife_309.jpg",
+        "knife_34.jpg",
+        "knife_349.jpg"
+      ],
+      "truncated": true
+    },
+    "false_negative": {
+      "count": 72,
+      "sample_ids": [
+        "knife_1144.jpg",
+        "knife_1157.jpg",
+        "knife_1166.jpg",
+        "knife_1168.jpg",
+        "knife_1171.jpg",
+        "knife_1190.jpg",
+        "knife_1209.jpg",
+        "knife_1212.jpg",
+        "knife_1214.jpg",
+        "knife_1218.jpg",
+        "knife_123.jpg",
+        "knife_1242.jpg",
+        "knife_1261.jpg",
+        "knife_1268.jpg",
+        "knife_1270.jpg",
+        "knife_1287.jpg",
+        "knife_1289.jpg",
+        "knife_1297.jpg",
+        "knife_1298.jpg",
+        "knife_1318.jpg"
+      ],
+      "truncated": true
+    },
+    "false_positive": {
+      "count": 44,
+      "sample_ids": [
+        "knife_282.jpg",
+        "knife_361.jpg",
+        "knife_393.jpg",
+        "knife_412.jpg",
+        "knife_442.jpg",
+        "monedero_1575.jpg",
+        "monedero_1583.jpg",
+        "monedero_1585.jpg",
+        "smartphone_0801.JPG",
+        "smartphone_0805.JPG",
+        "smartphone_1007.jpg",
+        "smartphone_1010.jpg",
+        "smartphone_1012.jpg",
+        "smartphone_1022.jpg",
+        "smartphone_1024.jpg",
+        "smartphone_1025.jpg",
+        "smartphone_1036.jpg",
+        "smartphone_1037.jpg",
+        "smartphone_1038.jpg",
+        "smartphone_1040.jpg"
+      ],
+      "truncated": true
+    },
+    "mixed_error": {
+      "count": 195,
+      "sample_ids": [
+        "knife_1127.jpg",
+        "knife_113.jpg",
+        "knife_1136.jpg",
+        "knife_1137.jpg",
+        "knife_115.jpg",
+        "knife_1153.jpg",
+        "knife_1164.jpg",
+        "knife_1173.jpg",
+        "knife_1186.jpg",
+        "knife_1215.jpg",
+        "knife_1236.jpg",
+        "knife_1237.jpg",
+        "knife_1239.jpg",
+        "knife_1253.jpg",
+        "knife_1258.jpg",
+        "knife_1272.jpg",
+        "knife_1286.jpg",
+        "knife_1288.jpg",
+        "knife_1293.jpg",
+        "knife_13.jpg"
+      ],
+      "truncated": true
+    }
+  },
+  "inputs": {
+    "audit_id": null,
+    "class_names": [
+      "handgun",
+      "long_gun",
+      "knife",
+      "sword",
+      "explosive"
+    ],
+    "evaluation_id": "weapons-final7632478",
+    "iou_threshold": 0.5,
+    "n_classes": 5,
+    "n_samples": 472
+  },
+  "limitations": [
+    "Detection analysis reports image-level failure categories and per-class box metrics.",
+    "Image-level accuracy means all ground-truth boxes were matched and no false-positive boxes remained.",
+    "Slices requiring classification probabilities are not generated for detection evaluations."
+  ],
+  "overall": {
+    "accuracy": 0.3411016949152542,
+    "f1": 0.15986949429037522,
+    "false_negatives": 267,
+    "false_positives": 248,
+    "mean_confidence": 0.5621264562168727,
+    "n_errors": 311,
+    "precision": 0.16498316498316498,
+    "recall": 0.1550632911392405,
+    "true_positives": 49
+  },
+  "per_class": {
+    "0": {
+      "class": "handgun",
+      "class_id": 0,
+      "f1": 0.0125,
+      "false_negatives": 77,
+      "false_positives": 81,
+      "mean_iou": 0.7409917415316905,
+      "precision": 0.012195121951219513,
+      "recall": 0.01282051282051282,
+      "support": 78,
+      "true_positives": 1
+    },
+    "1": {
+      "class": "long_gun",
+      "class_id": 1,
+      "f1": 0.0,
+      "false_negatives": 0,
+      "false_positives": 4,
+      "mean_iou": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "support": 0,
+      "true_positives": 0
+    },
+    "2": {
+      "class": "knife",
+      "class_id": 2,
+      "f1": 0.22273781902552206,
+      "false_negatives": 190,
+      "false_positives": 145,
+      "mean_iou": 0.756237244098419,
+      "precision": 0.24870466321243523,
+      "recall": 0.20168067226890757,
+      "support": 238,
+      "true_positives": 48
+    },
+    "3": {
+      "class": "sword",
+      "class_id": 3,
+      "f1": 0.0,
+      "false_negatives": 0,
+      "false_positives": 9,
+      "mean_iou": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "support": 0,
+      "true_positives": 0
+    },
+    "4": {
+      "class": "explosive",
+      "class_id": 4,
+      "f1": 0.0,
+      "false_negatives": 0,
+      "false_positives": 9,
+      "mean_iou": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "support": 0,
+      "true_positives": 0
+    }
+  },
+  "schema_version": 1,
+  "slices": {
+    "features": {},
+    "info": {
+      "alpha": 0.05,
+      "correction": "not_applicable",
+      "max_depth": 2,
+      "num_candidates_generated": 0,
+      "num_duplicates_dropped": 0,
+      "num_pruned_min_support": 0,
+      "num_tested": 0,
+      "truncated": false
+    },
+    "skipped_features": [],
+    "top": []
+  },
+  "task": "detection",
+  "warnings": [
+    "Detection analysis uses class-aware one-to-one box matching.",
+    "A sample is considered erroneous when it contains at least one false positive or false negative.",
+    "Detection box IoU threshold is taken from the evaluation metadata."
+  ]
+}

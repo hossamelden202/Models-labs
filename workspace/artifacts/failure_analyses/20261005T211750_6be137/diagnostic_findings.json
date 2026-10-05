@@ -1,0 +1,20 @@
+[
+  {
+    "evidence": {
+      "false_negatives": 267,
+      "true_positives": 49
+    },
+    "finding": "False negatives exceed true positives.",
+    "severity": "high",
+    "type": "recall_bottleneck"
+  },
+  {
+    "evidence": {
+      "false_positives": 248,
+      "true_positives": 49
+    },
+    "finding": "False positives exceed true positives.",
+    "severity": "high",
+    "type": "precision_bottleneck"
+  }
+]
