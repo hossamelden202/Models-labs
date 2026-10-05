@@ -8,6 +8,7 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_valida
 
 from modellab.experiments.errors import ExperimentConfigError
 from modellab.experiments.transforms import REGISTRY
+from modellab.experiments.training_config import TrainingIntervention
 
 MetricName = Literal[
     "accuracy", "macro_f1", "macro_precision", "macro_recall", "weighted_f1",
@@ -94,7 +95,12 @@ class DataIntervention(_Strict):
 
 
 Intervention = Annotated[
-    ImageTransform | Preprocessing | Inference | DataIntervention, Field(discriminator="kind")
+    ImageTransform
+    | Preprocessing
+    | Inference
+    | DataIntervention
+    | TrainingIntervention,
+    Field(discriminator="kind"),
 ]
 
 
