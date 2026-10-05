@@ -91,20 +91,115 @@ def build_dataset(ws, dataset_id, subpath, class_names, preprocess):
 
 
 def evaluate(ws, cache, store, p):
+    model, pre, _ = cache.get(ws, p["model_id"], device=p["device"])
+
+    # --------------------------------------------------------
+    # Detection models use YOLO-style image/label datasets.
+    # Classification models keep the existing path unchanged.
+    # --------------------------------------------------------
+    if model.spec.task == "detection":
+        from modellab.evaluation.detection_dataset import YOLODetectionDataset
+        from modellab.evaluation.detection_engine import (
+            DetectionEvalConfig,
+            run_detection_evaluation,
+        )
+
+        rec = ws.get_dataset(p["dataset_id"])
+
+        if rec["kind"] != "folder":
+            raise ApiError(
+                422,
+                "detection evaluation requires a folder dataset "
+                "with YOLO images/labels",
+            )
+
+        root = dataset_root(ws, rec, p.get("subpath"))
+
+        # Detection batches must have a consistent tensor shape.
+        # If the registered model declares an input_size but the stored
+        # preprocessing config does not specify resize, inherit the model
+        # input size without changing the global preprocessing behavior.
+        detection_pre = pre
+        if detection_pre.resize is None and model.spec.input_size is not None:
+            from modellab.evaluation.preprocessing import PreprocessConfig
+
+            detection_pre = detection_pre.model_copy(
+                update={"resize": tuple(model.spec.input_size)}
+            )
+
+        dataset = YOLODetectionDataset(
+            root=root,
+            class_names=model.spec.class_names,
+            dataset_id=dataset_label(rec, p["dataset_id"]),
+            preprocess=detection_pre,
+        )
+
+        config = DetectionEvalConfig(
+            batch_size=p["batch_size"],
+            num_workers=p["num_workers"],
+            seed=p["seed"],
+        )
+
+        result = run_detection_evaluation(
+            model=model,
+            dataset=dataset,
+            store=store,
+            config=config,
+            evaluation_id=p.get("evaluation_id"),
+        )
+
+        return {
+            "evaluation_id": p.get("evaluation_id"),
+            "model_id": result.model_id,
+            "dataset_id": result.dataset_id,
+            "num_samples": len(dataset),
+            "precision": result.metrics.get("precision"),
+            "recall": result.metrics.get("recall"),
+            "f1": result.metrics.get("f1"),
+            "mean_iou": result.metrics.get("mean_iou"),
+            "true_positives": result.metrics.get("true_positives"),
+            "false_positives": result.metrics.get("false_positives"),
+            "false_negatives": result.metrics.get("false_negatives"),
+            "device": p["device"],
+        }
+
+    # --------------------------------------------------------
+    # Existing classification evaluation path.
+    # --------------------------------------------------------
+    dataset = build_dataset(
+        ws,
+        p["dataset_id"],
+        p.get("subpath"),
+        model.spec.class_names,
+        pre,
+    )
+
     from modellab.evaluation.engine import EvalConfig, run_evaluation
 
-    model, pre, _ = cache.get(ws, p["model_id"], p["device"])
-    dataset = build_dataset(ws, p["dataset_id"], p.get("subpath"), model.spec.class_names, pre)
-    config = EvalConfig(batch_size=p["batch_size"], num_workers=p["num_workers"], seed=p["seed"])
-    result = run_evaluation(model, dataset, store, config, evaluation_id=p.get("evaluation_id"))
-    m = result.metrics
+    config = EvalConfig(
+        batch_size=p["batch_size"],
+        num_workers=p["num_workers"],
+        device=p["device"],
+        seed=p["seed"],
+    )
+
+    result = run_evaluation(
+        model=model,
+        dataset=dataset,
+        config=config,
+        store=store,
+        model_id=p["model_id"],
+        dataset_id=p["dataset_id"],
+        evaluation_id=p.get("evaluation_id"),
+    )
+
     return {
-        "evaluation_id": result.configuration["evaluation_id"],
-        "num_samples": m["num_samples"],
-        "accuracy": m["accuracy"],
-        "macro_f1": m["macro_f1"],
-        "weighted_f1": m["weighted_f1"],
-        "device": result.configuration["device"],
+        "evaluation_id": result.evaluation_id,
+        "num_samples": len(dataset),
+        "accuracy": result.metrics.get("accuracy"),
+        "macro_f1": result.metrics.get("macro_f1"),
+        "weighted_f1": result.metrics.get("weighted_f1"),
+        "device": p["device"],
     }
 
 
