@@ -1,0 +1,23 @@
+{
+  "created_at": "2026-10-05T09:31:02.276104+00:00",
+  "csv": null,
+  "dataset_id": "demo_datasetweapons",
+  "kind": "folder",
+  "label_column": "label",
+  "path_column": "path",
+  "root": "/kaggle/input/datasets/hossameldenmohamed/weapons-continue-v3/unified",
+  "source": "local",
+  "summary": {
+    "classes": {
+      "images": 57864
+    },
+    "declared_classes": [
+      "images",
+      "labels"
+    ],
+    "layout": "class_only",
+    "num_excluded": 63653,
+    "num_samples": 57864,
+    "splits": {}
+  }
+}

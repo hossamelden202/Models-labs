@@ -200,14 +200,11 @@ class _Resolver:
             if r.architecture_source not in {
                 "local",
                 "huggingface",
-                "hf",
-                "transformers",
                 "registered",
             }:
                 self.err(
                     "architecture_source must be one of: "
-                    "'local', 'huggingface', 'hf', "
-                    "'transformers', 'registered'"
+                    "'local', 'huggingface', 'registered'"
                 )
                 return
 
@@ -478,18 +475,8 @@ class _Resolver:
         """
         Resolve an architecture through the generic provider layer.
 
-        External architecture providers are intentionally separate
-        from ModelLab's registered architecture registry.
-
-        Supported external source aliases:
-          - huggingface
-          - hf
-          - transformers
-          - local
-
-        The architecture name itself is preserved as the external
-        provider identifier. It is never treated as a ModelLab
-        registered architecture when an external source is supplied.
+        Provider architecture identifiers remain separate from
+        ModelLab registered architecture identifiers.
         """
 
         r = self.req
@@ -498,12 +485,20 @@ class _Resolver:
         source_path = r.architecture_path
         source_identifier = r.architecture_identifier
 
-        # --------------------------------------------------------
-        # Infer the provider when the request gives enough evidence.
-        # --------------------------------------------------------
-
-        if source_type in {"hf", "transformers"}:
-            source_type = "huggingface"
+        # An explicit external architecture source takes precedence
+        # over ModelLab's registered architecture registry.
+        #
+        # `architecture` is allowed here because external providers
+        # may use it as their architecture/model identifier. It must
+        # NOT be interpreted as a registered architecture name when
+        # architecture_source / architecture_path /
+        # architecture_identifier is also supplied.
+        if (
+            not source_type
+            and not source_path
+            and not source_identifier
+        ):
+            return False
 
         if source_path and not source_type:
             source_type = "local"
@@ -511,44 +506,15 @@ class _Resolver:
         if source_identifier and not source_type:
             source_type = "huggingface"
 
-        # A Hugging Face-style repository identifier such as
-        # "facebook/dinov3-..." is an external architecture
-        # identifier, not a ModelLab registered architecture.
-        #
-        # Do this only when no explicit source was supplied and the
-        # architecture clearly looks like an external HF identifier.
-        if (
-            not source_type
-            and r.architecture
-            and "/" in r.architecture
-            and not r.factory
-        ):
-            source_type = "huggingface"
-            source_identifier = r.architecture
-
-        # No external/provider information at all.
-        if not source_type:
-            return False
-
-        # --------------------------------------------------------
-        # Build the provider source.
-        # --------------------------------------------------------
-
         source = ArchitectureSource(
-            source_type=source_type,
+            source_type=source_type or "registered",
             identifier=source_identifier,
             path=source_path,
-            config=dict(r.architecture_config or {}),
         )
-
-        # For explicit external architectures, preserve the
-        # architecture identifier while preventing the registered
-        # architecture registry from seeing it.
-        provider_architecture = r.architecture
 
         try:
             result = resolve_provider(
-                architecture=provider_architecture,
+                architecture=None,
                 source=source,
                 artifact=self.path,
                 context={
@@ -584,7 +550,9 @@ class _Resolver:
                     "source_type": provider_source.source_type,
                     "identifier": provider_source.identifier,
                     "path": provider_source.path,
-                    "config": dict(provider_source.config),
+                    "config": dict(
+                        provider_source.config
+                    ),
                 },
                 "config": dict(result.config or {}),
             }

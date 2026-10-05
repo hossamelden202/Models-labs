@@ -1,0 +1,20 @@
+{
+  "created_at": "2026-10-05T09:37:57.117942+00:00",
+  "error": null,
+  "finished_at": null,
+  "job_id": "e8ad9a342fd4",
+  "kind": "evaluation",
+  "params": {
+    "batch_size": 128,
+    "dataset_id": "demo_datasetweapons",
+    "device": "cpu",
+    "evaluation_id": "weapons123",
+    "model_id": "weapons-model",
+    "num_workers": 4,
+    "seed": 42,
+    "subpath": null
+  },
+  "result": null,
+  "started_at": "2026-10-05T09:37:57.119596+00:00",
+  "status": "running"
+}

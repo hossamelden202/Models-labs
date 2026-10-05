@@ -1,0 +1,65 @@
+{
+  "check": {
+    "loaded": true,
+    "metadata": {
+      "class_names": [
+        "handgun",
+        "long_gun",
+        "knife",
+        "sword",
+        "explosive"
+      ],
+      "details": {
+        "mixed_precision": false,
+        "source": "module",
+        "task": "detection"
+      },
+      "device": "cpu",
+      "framework": "pytorch",
+      "input_size": [
+        224,
+        224
+      ],
+      "model_id": "tranformer-test",
+      "num_classes": 5
+    }
+  },
+  "created_at": "2026-10-05T10:09:12.290525+00:00",
+  "files": [],
+  "model_id": "tranformer-test",
+  "preprocess": {
+    "center_crop": null,
+    "color_mode": "RGB",
+    "interpolation": "bilinear",
+    "mean": null,
+    "resize": null,
+    "std": null
+  },
+  "source": "local",
+  "spec": {
+    "class_names": [
+      "handgun",
+      "long_gun",
+      "knife",
+      "sword",
+      "explosive"
+    ],
+    "factory": null,
+    "factory_kwargs": {},
+    "input_size": [
+      224,
+      224
+    ],
+    "mixed_precision": false,
+    "model_id": "tranformer-test",
+    "num_classes": 5,
+    "output_index": 0,
+    "output_key": null,
+    "path": "/kaggle/working/modellab/workspace/model_artifacts/artifact_b39f08a0c81f4e088d2154fbec2c244c/last.pt",
+    "single_logit_binary": false,
+    "source": "module",
+    "state_dict_key": null,
+    "strip_prefix": null,
+    "task": "detection"
+  }
+}

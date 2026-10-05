@@ -1,0 +1,75 @@
+{
+  "check": {
+    "loaded": true,
+    "metadata": {
+      "class_names": [
+        "Hardhat",
+        "Mask",
+        "NO-Hardhat",
+        "NO-Mask",
+        "NO-Safety Vest",
+        "Person",
+        "Safety Cone",
+        "Safety Vest",
+        "Machinery",
+        "Vehicle"
+      ],
+      "details": {
+        "mixed_precision": false,
+        "source": "module",
+        "task": "detection"
+      },
+      "device": "cpu",
+      "framework": "pytorch",
+      "input_size": [
+        640,
+        640
+      ],
+      "model_id": "pipe",
+      "num_classes": 10
+    }
+  },
+  "created_at": "2026-10-05T09:41:17.505279+00:00",
+  "files": [],
+  "model_id": "pipe",
+  "preprocess": {
+    "center_crop": null,
+    "color_mode": "RGB",
+    "interpolation": "bilinear",
+    "mean": null,
+    "resize": null,
+    "std": null
+  },
+  "source": "local",
+  "spec": {
+    "class_names": [
+      "Hardhat",
+      "Mask",
+      "NO-Hardhat",
+      "NO-Mask",
+      "NO-Safety Vest",
+      "Person",
+      "Safety Cone",
+      "Safety Vest",
+      "Machinery",
+      "Vehicle"
+    ],
+    "factory": null,
+    "factory_kwargs": {},
+    "input_size": [
+      640,
+      640
+    ],
+    "mixed_precision": false,
+    "model_id": "pipe",
+    "num_classes": 10,
+    "output_index": 0,
+    "output_key": null,
+    "path": "/kaggle/working/modellab/workspace/model_artifacts/artifact_6beb6da6e93e4c2ba2d9156983cca5ee/best.pt",
+    "single_logit_binary": false,
+    "source": "module",
+    "state_dict_key": null,
+    "strip_prefix": null,
+    "task": "detection"
+  }
+}
