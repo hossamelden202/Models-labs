@@ -179,7 +179,6 @@ def evaluate(ws, cache, store, p):
     config = EvalConfig(
         batch_size=p["batch_size"],
         num_workers=p["num_workers"],
-        device=p["device"],
         seed=p["seed"],
     )
 
@@ -188,13 +187,11 @@ def evaluate(ws, cache, store, p):
         dataset=dataset,
         config=config,
         store=store,
-        model_id=p["model_id"],
-        dataset_id=p["dataset_id"],
         evaluation_id=p.get("evaluation_id"),
     )
 
     return {
-        "evaluation_id": result.evaluation_id,
+        "evaluation_id": p.get("evaluation_id"),
         "num_samples": len(dataset),
         "accuracy": result.metrics.get("accuracy"),
         "macro_f1": result.metrics.get("macro_f1"),

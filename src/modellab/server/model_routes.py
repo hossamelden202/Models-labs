@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Annotated, Any
 
 from fastapi import APIRouter, File, Form, Request, UploadFile
+from uuid import uuid4
 from fastapi.responses import JSONResponse
 
 from modellab.loading import (
@@ -171,7 +172,18 @@ async def upload_model_artifact(
         ).name
 
     if public_id is None:
-        public_id = filename
+        # The source filename is metadata, NOT identity.
+        #
+        # Multiple models/artifacts may legitimately have the same
+        # filename, for example:
+        #
+        #   /run/a/last.pt
+        #   /run/b/last.pt
+        #   /run/c/last.pt
+        #
+        # Generate a unique staging ID when the caller does not
+        # explicitly provide one.
+        public_id = f"artifact_{uuid4().hex}"
 
     # ---------------------------------------------------------
     # One staged artifact = one directory:
