@@ -49,11 +49,16 @@ src/modellab/evaluation/preprocessing.py
 src/modellab/evaluation/torch_model.py
 src/modellab/experiments/__init__.py
 src/modellab/experiments/baseline.py
+src/modellab/experiments/detection_training.py
 src/modellab/experiments/errors.py
 src/modellab/experiments/inference.py
 src/modellab/experiments/runner.py
 src/modellab/experiments/spec.py
 src/modellab/experiments/stats.py
+src/modellab/experiments/training_adapter.py
+src/modellab/experiments/training_config.py
+src/modellab/experiments/training_engine.py
+src/modellab/experiments/training_runner.py
 src/modellab/experiments/transforms.py
 src/modellab/hypotheses/__init__.py
 src/modellab/hypotheses/config.py

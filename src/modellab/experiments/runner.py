@@ -24,7 +24,6 @@ from modellab.experiments.inference import apply_inference
 from modellab.experiments.spec import ExperimentSpec, canonical_json, experiment_id, sha256_text
 from modellab.experiments.stats import bootstrap_diff_ci, paired_summary
 from modellab.experiments.transforms import REGISTRY, InterventionDataset, make_image_fn
-from modellab.experiments.training_runner import run_training_experiment
 
 CI_METRICS = {"accuracy", "macro_f1", "balanced_accuracy"}
 NOTE = (
@@ -55,6 +54,13 @@ class _Plan:
     slices: dict
     image_params: object = None
     new_preprocess: object = None
+
+
+def _load_generic_training_runner():
+    from modellab.experiments.training_runner import (
+        run_training_experiment,
+    )
+    return run_training_experiment
 
 
 def _env() -> dict:
@@ -1064,15 +1070,184 @@ def _run_training_experiment(
             "=" * 70
         )
 
-        trained_evaluation = (
-            run_detection_evaluation(
-                trained_model,
-                dataset,
-                store,
-                detection_config,
-                evaluation_id=evaluation_id,
+        # ----------------------------------------------------
+        # Phase 5 evaluation dataset.
+        #
+        # The original dataset object is intentionally preserved.
+        # It may have no preprocessing configuration because it is
+        # also used as the source dataset for training preparation.
+        #
+        # ModelLab's detection evaluator requires every image in a
+        # batch to have the same tensor shape. Therefore Phase 5
+        # creates a separate evaluation-only dataset with the
+        # training resolution.
+        # ----------------------------------------------------
+
+        from modellab.evaluation.preprocessing import PreprocessConfig
+
+        from modellab.experiments.training_config import (
+            TrainingConfig,
+            apply_training_changes,
+        )
+
+        evaluation_training_config = apply_training_changes(
+            TrainingConfig(),
+            spec.intervention,
+        )
+
+        evaluation_preprocess = PreprocessConfig(
+            resize=(
+                int(evaluation_training_config.data.input_width),
+                int(evaluation_training_config.data.input_height),
             )
         )
+
+        evaluation_dataset = YOLODetectionDataset(
+            root=dataset.root,
+            class_names=list(class_names),
+            dataset_id=f"{dataset.dataset_id}-phase5-eval",
+            preprocess=evaluation_preprocess,
+        )
+
+        print()
+        print("PHASE 5 — EVALUATION DATASET")
+        print(
+            "  root     : "
+            f"{evaluation_dataset.root}"
+        )
+        print(
+            "  dataset  : "
+            f"{evaluation_dataset.dataset_id}"
+        )
+        print(
+            "  resize   : "
+            f"{evaluation_training_config.data.input_width}x"
+            f"{evaluation_training_config.data.input_height}"
+        )
+        print(
+            "  samples  : "
+            f"{len(evaluation_dataset)}"
+        )
+
+        # ----------------------------------------------------
+        # Resume-safe trained evaluation.
+        #
+        # A previous Phase 5 attempt may have completed and
+        # persisted this evaluation before failing later in the
+        # experiment finalization/report path. In that case,
+        # reusing the persisted evaluation is required instead
+        # of creating the same evaluation ID again.
+        # ----------------------------------------------------
+
+        evaluation_dir = (
+            store.root
+            / "evaluations"
+            / evaluation_id
+        )
+
+        required_evaluation_files = (
+            evaluation_dir / "metadata.json",
+            evaluation_dir / "metrics.json",
+            evaluation_dir / "predictions.json",
+        )
+
+        existing_evaluation = all(
+            path.exists() and path.stat().st_size > 0
+            for path in required_evaluation_files
+        )
+
+        if existing_evaluation:
+            print()
+            print("=" * 70)
+            print("PHASE 5 — REUSING EXISTING TRAINED EVALUATION")
+            print("=" * 70)
+            print(f"evaluation_id: {evaluation_id}")
+            print(f"evaluation_dir: {evaluation_dir}")
+            print("status: persisted evaluation artifacts found")
+
+            # ------------------------------------------------
+            # Reconstruct the same EvaluationResult shape used
+            # by run_detection_evaluation, using the persisted
+            # evaluation artifacts.
+            # ------------------------------------------------
+            from modellab.evaluation.detection_engine import (
+                EvaluationResult,
+            )
+
+            _metadata = json.loads(
+                (evaluation_dir / "metadata.json").read_text()
+            )
+            _metrics = json.loads(
+                (evaluation_dir / "metrics.json").read_text()
+            )
+
+            _prediction_artifact = (
+                _metadata.get("prediction_artifact")
+                or f"evaluations/{evaluation_id}/predictions.json"
+            )
+
+            _model_id = (
+                _metadata.get("model_id")
+                or getattr(
+                    getattr(trained_model, "spec", None),
+                    "model_id",
+                    None,
+                )
+                or getattr(
+                    getattr(model, "spec", None),
+                    "model_id",
+                    None,
+                )
+                or "unknown"
+            )
+
+            _dataset_id = (
+                _metadata.get("dataset_id")
+                or getattr(
+                    evaluation_dataset,
+                    "dataset_id",
+                    None,
+                )
+                or getattr(
+                    dataset,
+                    "dataset_id",
+                    None,
+                )
+                or "unknown"
+            )
+
+            if _model_id == "unknown" or _dataset_id == "unknown":
+                raise ExperimentConfigError(
+                    "Existing trained evaluation is missing required "
+                    "model_id/dataset_id metadata and the current Phase 5 "
+                    "model/dataset objects do not provide them."
+                )
+
+            trained_evaluation = EvaluationResult(
+                evaluation_id=evaluation_id,
+                model_id=str(_model_id),
+                dataset_id=str(_dataset_id),
+                metrics=_metrics,
+                prediction_artifact=_prediction_artifact,
+            )
+
+            print("status: existing evaluation reused")
+
+        else:
+            print()
+            print("=" * 70)
+            print("PHASE 5 — EVALUATING TRAINED CHECKPOINT")
+            print("=" * 70)
+
+            trained_evaluation = (
+                run_detection_evaluation(
+                    trained_model,
+                    evaluation_dataset,
+                    store,
+                    detection_config,
+                    evaluation_id=evaluation_id,
+                )
+            )
 
         trained_metrics = dict(
             trained_evaluation.metrics
@@ -1236,7 +1411,7 @@ def _run_training_experiment(
         run_training_experiment,
     )
 
-    training_result = run_training_experiment(
+    training_result = _load_generic_training_runner()(
         model_spec=model.spec,
         train_dataset=dataset,
         validation_dataset=dataset,
@@ -1551,63 +1726,345 @@ def run_experiment(
     return ExperimentOutcome(exp_id, status, directory, result)
 
 
-def _family_report(store, family_id, baseline, outcomes, alpha):
-    done = [o for o in outcomes if o.status in ("completed", "cached")]
-    failed = [o for o in outcomes if o.status == "failed"]
-    p = [o.result["statistics"]["affected"]["primary_p"] for o in done]
-    bh, hm = benjamini_hochberg(p), holm(p)
-    rows = []
-    for o, q, h in zip(done, bh, hm, strict=True):
-        r = o.result
-        st = r["statistics"]["affected"]
-        spec = r["spec"]
-        d = st["accuracy_difference"]
-        significant = bool(q <= alpha)
-        label = _label(significant, d, spec["practical_threshold"], st["ci_low"], st["ci_high"])
-        expected = spec["hypothesis"]["expected_direction"]
-        wanted = {"improve": "improved", "degrade": "degraded", "no_change": "no_practical_difference"}
-        rows.append(
-            {
-                "experiment_id": o.experiment_id, "name": spec["name"],
-                "intervention": spec["intervention"], "n_affected": r["population"]["num_affected"],
-                "accuracy_difference": d, "ci_low": st["ci_low"], "ci_high": st["ci_high"],
-                "primary_test": st["primary_test"], "primary_p": st["primary_p"],
-                "p_benjamini_hochberg": float(q), "p_holm": float(h),
-                "significant_after_correction": significant, "family_label": label,
-                "matches_expected": None if expected is None else label == wanted[expected],
-            }
+def _family_report(
+    store: ArtifactStore,
+    family_id: str,
+    baseline: dict,
+    outcomes: list[ExperimentOutcome],
+    alpha: float,
+) -> dict:
+    """Build the persisted Phase 5 family report.
+
+    This implementation is task/schema aware:
+      - detection results primarily use ``comparison``
+      - legacy classification results may use ``statistics``
+      - missing optional statistical fields never crash report generation
+    """
+
+    done = [
+        o
+        for o in outcomes
+        if o.status == "completed" and isinstance(o.result, dict)
+    ]
+
+    failed = [
+        o
+        for o in outcomes
+        if o.status == "failed"
+    ]
+
+    # --------------------------------------------------------------
+    # Multiple-testing correction.
+    # Only experiments that actually expose primary_p participate.
+    # --------------------------------------------------------------
+    p_rows = []
+    p_values = []
+
+    for o in done:
+        result = o.result
+
+        comparison = result.get("comparison", {})
+        if not isinstance(comparison, dict):
+            comparison = {}
+
+        primary_p = comparison.get("primary_p")
+
+        if primary_p is None:
+            statistics = result.get("statistics", {})
+            if isinstance(statistics, dict):
+                affected = statistics.get("affected", {})
+                if isinstance(affected, dict):
+                    primary_p = affected.get("primary_p")
+
+        if primary_p is None:
+            continue
+
+        try:
+            p_value = float(primary_p)
+        except (TypeError, ValueError):
+            continue
+
+        p_values.append(p_value)
+        p_rows.append(o)
+
+    bh_values = benjamini_hochberg(p_values)
+    holm_values = holm(p_values)
+
+    correction_by_experiment = {
+        id(o): (bh_value, holm_value)
+        for o, bh_value, holm_value in zip(
+            p_rows,
+            bh_values,
+            holm_values,
+            strict=True,
         )
-    rows.sort(key=lambda row: row["experiment_id"])
-    return {
-        "schema_version": 1, "family_id": family_id,
-        "baseline": {
-            "evaluation_id": baseline["evaluation_id"],
-            "fingerprint": sha256_text(
-                canonical_json(baseline)
-            ),
-        },
-        "alpha": alpha, "correction": "benjamini_hochberg and holm across completed experiments",
-        "num_completed": len(done), "num_failed": len(failed), "experiments": rows,
-        "failed": sorted(
-            ({"experiment_id": o.experiment_id, "name": o.result["spec"]["name"], "error": o.result["error"]} for o in failed),
-            key=lambda row: row["experiment_id"],
-        ),
-        "note": NOTE + " Statistical significance is reported separately from practical significance.",
     }
+
+    # --------------------------------------------------------------
+    # Build experiment rows.
+    # --------------------------------------------------------------
+    rows = []
+
+    for o in done:
+        result = o.result
+
+        comparison = result.get("comparison", {})
+        if not isinstance(comparison, dict):
+            comparison = {}
+
+        statistics = result.get("statistics", {})
+        if not isinstance(statistics, dict):
+            statistics = {}
+
+        affected = statistics.get("affected", {})
+        if not isinstance(affected, dict):
+            affected = {}
+
+        spec = result.get("spec", {})
+        if not isinstance(spec, dict):
+            spec = {}
+
+        # Current Phase 5 detection comparison schema.
+        delta = comparison.get("primary_delta")
+
+        if delta is None:
+            delta = comparison.get("delta")
+
+        if delta is None:
+            delta = comparison.get("f1_difference")
+
+        # Legacy classification schema.
+        if delta is None:
+            delta = affected.get("accuracy_difference")
+
+        try:
+            delta = float(delta) if delta is not None else None
+        except (TypeError, ValueError):
+            delta = None
+
+        primary_p = comparison.get("primary_p")
+
+        if primary_p is None:
+            primary_p = affected.get("primary_p")
+
+        try:
+            primary_p = float(primary_p) if primary_p is not None else None
+        except (TypeError, ValueError):
+            primary_p = None
+
+        bh_value, holm_value = correction_by_experiment.get(
+            id(o),
+            (None, None),
+        )
+
+        row = {
+            "experiment_id": result.get(
+                "experiment_id",
+                getattr(o, "experiment_id", None),
+            ),
+            "name": spec.get("name"),
+            "status": o.status,
+            "primary_metric": comparison.get(
+                "primary_metric",
+                result.get("primary_metric"),
+            ),
+            "baseline_value": comparison.get("baseline_value"),
+            "trained_value": comparison.get("trained_value"),
+            "primary_delta": delta,
+            "primary_p": primary_p,
+            "benjamini_hochberg_q": bh_value,
+            "holm_p": holm_value,
+            "improved": comparison.get("improved"),
+            "hypothesis": spec.get("hypothesis"),
+        }
+
+        rows.append(row)
+
+    # --------------------------------------------------------------
+    # Determine best experiment using available primary deltas.
+    # --------------------------------------------------------------
+    candidates = [
+        row
+        for row in rows
+        if isinstance(row.get("primary_delta"), (int, float))
+    ]
+
+    best = None
+
+    if candidates:
+        best = max(
+            candidates,
+            key=lambda row: row["primary_delta"],
+        )
+
+    # --------------------------------------------------------------
+    # Preserve the important family metadata.
+    # --------------------------------------------------------------
+    report = {
+        "family_id": family_id,
+        "baseline_evaluation_id": baseline.get("evaluation_id"),
+        "baseline": baseline,
+        "alpha": alpha,
+        "num_experiments": len(outcomes),
+        "num_completed": len(done),
+        "num_failed": len(failed),
+        "experiments": rows,
+        "best_experiment": best,
+        "failed_experiments": [
+            {
+                "experiment_id": getattr(o, "experiment_id", None),
+                "error": (
+                    o.result.get("error")
+                    if isinstance(o.result, dict)
+                    else None
+                ),
+            }
+            for o in failed
+        ],
+        "multiple_testing": {
+            "num_tests": len(p_values),
+            "alpha": alpha,
+        },
+        "note": (
+            "Statistical significance is reported separately from "
+            "practical significance."
+        ),
+    }
+
+    return report
 
 
 def render_family(report: dict) -> str:
-    lines = [f"Experiment family {report['family_id']}",
-             f"baseline evaluation: {report['baseline']['evaluation_id']}",
-             f"completed: {report['num_completed']}   failed: {report['num_failed']}", ""]
-    for row in report["experiments"]:
-        lines.append(
-            f"{row['name']}: difference {row['accuracy_difference']:+.4f}, p={row['primary_p']:.3g}, "
-            f"BH={row['p_benjamini_hochberg']:.3g}, {row['family_label']}"
+    """Render a task/schema-safe Phase 5 family summary."""
+
+    lines = []
+
+    family_id = report.get("family_id", "unknown")
+    baseline_id = report.get("baseline_evaluation_id")
+
+    lines.append(f"Family: {family_id}")
+
+    if baseline_id:
+        lines.append(f"Baseline: {baseline_id}")
+
+    lines.append(
+        f"Experiments: {report.get('num_experiments', 0)} "
+        f"completed={report.get('num_completed', 0)} "
+        f"failed={report.get('num_failed', 0)}"
+    )
+
+    lines.append("")
+
+    for row in report.get("experiments", []):
+        name = (
+            row.get("name")
+            or row.get("experiment_id")
+            or "unknown"
         )
-    for row in report["failed"]:
-        lines.append(f"FAILED {row['name']}: {row['error']['type']}: {row['error']['message']}")
-    lines += ["", report["note"], ""]
+
+        # Current schema.
+        difference = row.get("primary_delta")
+
+        # Legacy schema compatibility.
+        if difference is None:
+            difference = row.get("accuracy_difference")
+
+        if difference is None:
+            difference_text = "n/a"
+        else:
+            try:
+                difference_text = f"{float(difference):+.4f}"
+            except (TypeError, ValueError):
+                difference_text = "n/a"
+
+        primary_p = row.get("primary_p")
+
+        if primary_p is None:
+            p_text = "n/a"
+        else:
+            try:
+                p_text = f"{float(primary_p):.3g}"
+            except (TypeError, ValueError):
+                p_text = "n/a"
+
+        # Current schema.
+        bh = row.get("benjamini_hochberg_q")
+
+        # Legacy schema compatibility.
+        if bh is None:
+            bh = row.get("p_benjamini_hochberg")
+
+        if bh is None:
+            bh_text = "n/a"
+        else:
+            try:
+                bh_text = f"{float(bh):.3g}"
+            except (TypeError, ValueError):
+                bh_text = "n/a"
+
+        family_label = row.get("family_label")
+
+        if family_label is None:
+            improved = row.get("improved")
+
+            if improved is True:
+                family_label = "improved"
+            elif improved is False:
+                family_label = "not improved"
+            else:
+                family_label = "not classified"
+
+        lines.append(
+            f"{name}: difference {difference_text}, "
+            f"p={p_text}, BH={bh_text}, {family_label}"
+        )
+
+    failed = report.get("failed_experiments", [])
+
+    if failed:
+        lines.append("")
+        lines.append("Failed experiments:")
+
+        for row in failed:
+            experiment_id = (
+                row.get("experiment_id")
+                or "unknown"
+            )
+            error = row.get("error") or "unknown error"
+
+            lines.append(
+                f"- {experiment_id}: {error}"
+            )
+
+    best = report.get("best_experiment")
+
+    if isinstance(best, dict):
+        lines.append("")
+        lines.append(
+            "Best experiment: "
+            + str(
+                best.get("name")
+                or best.get("experiment_id")
+                or "unknown"
+            )
+        )
+
+        best_delta = best.get("primary_delta")
+
+        if best_delta is not None:
+            try:
+                lines.append(
+                    f"Best primary delta: {float(best_delta):+.4f}"
+                )
+            except (TypeError, ValueError):
+                pass
+
+    note = report.get("note")
+
+    if note:
+        lines.append("")
+        lines.append(str(note))
+
     return "\n".join(lines)
 
 

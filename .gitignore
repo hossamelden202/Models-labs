@@ -1,3 +1,33 @@
 # Keep large/raw dataset trees outside Git for now.
 data/
 dataset/
+
+# ModelLab generated artifacts
+workspace/artifacts/
+workspace/model_artifacts/
+workspace/experiments/
+workspace/evaluations/
+workspace/checkpoints/
+workspace/runs/
+workspace/outputs/
+
+# ML model binaries
+*.pt
+*.pth
+*.onnx
+*.safetensors
+*.ckpt
+*.bin
+
+# Runtime/generated files
+*.log
+__pycache__/
+*.pyc
+*.pyo
+
+# Local patch backups
+*.before_*
+*.bak
+*.backup
+# Generated ML model binaries
+# Runtime files
