@@ -392,31 +392,44 @@ def set_nested_value(
 
 def apply_training_changes(
     config: TrainingConfig,
-    changes: list[TrainingChange],
+    changes,
 ) -> TrainingConfig:
-    """
-    Apply controlled changes to a baseline TrainingConfig.
+    """Return a TrainingConfig with nested training changes applied.
 
-    The baseline object is never mutated.
+    Accepts either:
+      - TrainingChange objects
+      - (path, value) tuples
+      - a TrainingIntervention
     """
 
-    payload = config.model_dump(
-        mode="python"
-    )
+    if hasattr(changes, "changes"):
+        changes = changes.changes
+
+    payload = config.model_dump(mode="python")
 
     for change in changes:
+        if isinstance(change, TrainingChange):
+            path = change.path
+            value = change.value
+
+        elif isinstance(change, tuple) and len(change) == 2:
+            path, value = change
+
+        elif isinstance(change, dict):
+            path = change["path"]
+            value = change["value"]
+
+        else:
+            raise TrainingConfigError(
+                "training changes must contain TrainingChange objects, "
+                "(path, value) tuples, or dictionaries"
+            )
+
         set_nested_value(
             payload,
-            change.path,
-            change.value,
+            path,
+            value,
         )
 
-    try:
-        return TrainingConfig.model_validate(
-            payload
-        )
-    except Exception as exc:
-        raise TrainingConfigError(
-            f"invalid training configuration after "
-            f"applying changes: {exc}"
-        ) from exc
+    return TrainingConfig.model_validate(payload)
+

@@ -1,17 +1,3 @@
-__pycache__/
-*.py[cod]
-*.egg-info/
-.pytest_cache/
-.ruff_cache/
-.coverage
-htmlcov/
-build/
-dist/
-.venv/
-venv/
-/data/
-
-env/
-.env/
-.mypy_cache/
-workspace/model_artifacts/
+# Keep large/raw dataset trees outside Git for now.
+data/
+dataset/

@@ -1,0 +1,727 @@
+from __future__ import annotations
+
+import json
+import shutil
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Callable
+
+import torch
+
+
+class DetectionTrainingError(RuntimeError):
+    """Raised when ModelLab detection training cannot be executed."""
+
+
+@dataclass
+class DetectionTrainingResult:
+    best_checkpoint: str
+    last_checkpoint: str
+    best_epoch: int
+    best_metric: float
+    total_epochs: int
+    stopped_early: bool
+    history: list[dict[str, Any]]
+    config: dict[str, Any]
+    run_dir: str
+
+
+def _positive_int(value: Any, default: int) -> int:
+    try:
+        value = int(value)
+    except Exception:
+        return default
+
+    return value if value > 0 else default
+
+
+def _float(value: Any, default: float) -> float:
+    try:
+        return float(value)
+    except Exception:
+        return default
+
+
+def _get_nested(config: Any, path: str, default: Any = None) -> Any:
+    current = config
+
+    for part in path.split("."):
+        if isinstance(current, dict):
+            if part not in current:
+                return default
+            current = current[part]
+        else:
+            if not hasattr(current, part):
+                return default
+            current = getattr(current, part)
+
+    return current
+
+
+def _config_to_dict(config: Any) -> dict[str, Any]:
+    if config is None:
+        return {}
+
+    if hasattr(config, "model_dump"):
+        return config.model_dump(mode="python")
+
+    if isinstance(config, dict):
+        return dict(config)
+
+    raise DetectionTrainingError(
+        f"unsupported training config type: {type(config)!r}"
+    )
+
+
+def _augmentation_kwargs(config: dict[str, Any]) -> dict[str, Any]:
+    aug = config.get("data", {}).get("augmentation", {})
+
+    if not isinstance(aug, dict):
+        return {}
+
+    if not aug.get("enabled", True):
+        return {
+            "hsv_h": 0.0,
+            "hsv_s": 0.0,
+            "hsv_v": 0.0,
+            "degrees": 0.0,
+            "translate": 0.0,
+            "scale": 0.0,
+            "fliplr": 0.0,
+            "flipud": 0.0,
+            "mosaic": 0.0,
+            "mixup": 0.0,
+        }
+
+    probability = _float(
+        aug.get("probability", 1.0),
+        1.0,
+    )
+
+    probability = max(0.0, min(1.0, probability))
+
+    rotation = _float(
+        aug.get("rotation_degrees", 0.0),
+        0.0,
+    )
+
+    saturation = _float(
+        aug.get("saturation_factor", 0.0),
+        0.0,
+    )
+
+    brightness = _float(
+        aug.get("brightness_factor", 0.0),
+        0.0,
+    )
+
+    horizontal_flip = (
+        1.0
+        if aug.get("horizontal_flip", False)
+        else 0.0
+    )
+
+    return {
+        "hsv_h": 0.0,
+        "hsv_s": max(0.0, saturation),
+        "hsv_v": max(0.0, brightness),
+        "degrees": max(0.0, rotation),
+        "translate": 0.0,
+        "scale": 0.0,
+        "fliplr": horizontal_flip * probability,
+        "flipud": 0.0,
+        "mosaic": 1.0 * probability,
+        "mixup": 0.0,
+    }
+
+
+def _build_ultralytics_kwargs(
+    config: dict[str, Any],
+    *,
+    data_yaml: str,
+    output_dir: Path,
+) -> dict[str, Any]:
+
+    data = config.get("data", {})
+    optimizer = config.get("optimizer", {})
+    scheduler = config.get("scheduler", {})
+    freeze = config.get("freeze", {})
+
+    batch_size = _positive_int(
+        data.get("batch_size", 16),
+        16,
+    )
+
+    width = _positive_int(
+        data.get("input_width", 224),
+        224,
+    )
+
+    height = _positive_int(
+        data.get("input_height", width),
+        width,
+    )
+
+    # Ultralytics accepts one imgsz for normal rectangular training.
+    # Use the larger dimension so the requested resolution is not
+    # silently reduced.
+    imgsz = max(width, height)
+
+    epochs = _positive_int(
+        config.get("epochs", 1),
+        1,
+    )
+
+    learning_rate = _float(
+        optimizer.get("learning_rate", 1e-3),
+        1e-3,
+    )
+
+    weight_decay = _float(
+        optimizer.get("weight_decay", 0.0),
+        0.0,
+    )
+
+    optimizer_name = str(
+        optimizer.get("name", "auto")
+    ).lower()
+
+    optimizer_map = {
+        "adam": "Adam",
+        "adamw": "AdamW",
+        "sgd": "SGD",
+        "rmsprop": "RMSProp",
+    }
+
+    optimizer_name = optimizer_map.get(
+        optimizer_name,
+        optimizer_name,
+    )
+
+    kwargs: dict[str, Any] = {
+        "data": data_yaml,
+        "epochs": epochs,
+        "batch": batch_size,
+        "imgsz": imgsz,
+        "lr0": learning_rate,
+        "weight_decay": weight_decay,
+        "optimizer": optimizer_name,
+        "project": str(output_dir.parent),
+        "name": output_dir.name,
+        "exist_ok": True,
+        "workers": _positive_int(
+            data.get("num_workers", 0),
+            0,
+        ),
+        "seed": _positive_int(
+            config.get("seed", 42),
+            42,
+        ),
+        "verbose": True,
+        "amp": bool(
+            config.get("mixed_precision", True)
+        ),
+        "plots": True,
+        "save": True,
+        "val": True,
+    }
+
+    patience = config.get("early_stopping_patience")
+
+    if patience is not None:
+        patience = max(0, int(patience))
+        kwargs["patience"] = patience
+
+    max_grad_norm = config.get("max_grad_norm")
+
+    if max_grad_norm is not None:
+        # Ultralytics currently handles gradient clipping internally
+        # in its trainer. We record the requested value in the
+        # experiment configuration rather than inventing a second
+        # optimizer loop.
+        kwargs["max_grad_norm"] = float(max_grad_norm)
+
+    freeze_kind = str(
+        freeze.get("kind", "none")
+    ).lower()
+
+    if freeze_kind == "all_but_head":
+        kwargs["freeze"] = 10_000
+
+    elif freeze_kind == "last_n_blocks":
+        n = int(freeze.get("last_n_blocks", 1))
+        if n > 0:
+            # Ultralytics freeze accepts layer indices. The exact
+            # architecture determines the usable range, so record
+            # this request and let the native trainer reject an
+            # incompatible value rather than guessing.
+            kwargs["freeze"] = max(0, n)
+
+    elif freeze_kind == "none":
+        pass
+
+    kwargs.update(
+        _augmentation_kwargs(config)
+    )
+
+    scheduler_name = str(
+        scheduler.get("name", "none")
+    ).lower()
+
+    # Ultralytics has its own scheduler implementation. Do not
+    # create a competing scheduler in ModelLab. Preserve the
+    # requested scheduler in the run metadata and map the
+    # compatible cosine setting.
+    if scheduler_name in {
+        "cosine",
+        "cosine_annealing",
+    }:
+        kwargs["cos_lr"] = True
+
+    elif scheduler_name == "none":
+        kwargs["cos_lr"] = False
+
+    return kwargs
+
+
+def _write_data_yaml(
+    *,
+    root: Path,
+    train_images: Path,
+    val_images: Path,
+    class_names: list[str],
+) -> Path:
+
+    yaml_path = root / "data.yaml"
+
+    lines = [
+        f"path: {root.as_posix()}",
+        f"train: {train_images.relative_to(root).as_posix()}",
+        f"val: {val_images.relative_to(root).as_posix()}",
+        f"nc: {len(class_names)}",
+        "names:",
+    ]
+
+    for index, name in enumerate(class_names):
+        safe_name = str(name).replace("'", "''")
+        lines.append(
+            f"  {index}: '{safe_name}'"
+        )
+
+    yaml_path.write_text(
+        "\n".join(lines) + "\n",
+        encoding="utf-8",
+    )
+
+    return yaml_path
+
+
+
+def _resolve_training_config(config):
+    """
+    Resolve either a full TrainingConfig or a
+    TrainingIntervention into a full TrainingConfig.
+
+    This keeps the detection adapter compatible with the
+    generic ModelLab ExperimentSpec representation.
+    """
+    from modellab.experiments.training_config import (
+        TrainingConfig,
+        TrainingIntervention,
+        apply_training_changes,
+    )
+
+    if config is None:
+        return TrainingConfig()
+
+    if isinstance(config, TrainingConfig):
+        return config
+
+    if isinstance(config, TrainingIntervention):
+        return apply_training_changes(
+            TrainingConfig(),
+            config,
+        )
+
+    # Defensive support for Pydantic-compatible intervention
+    # objects from another import/reload context.
+    if (
+        hasattr(config, "changes")
+        and getattr(config, "kind", None) == "training"
+    ):
+        intervention = TrainingIntervention(
+            kind="training",
+            changes=config.changes,
+        )
+
+        return apply_training_changes(
+            TrainingConfig(),
+            intervention,
+        )
+
+    raise TypeError(
+        "train_detection() expected TrainingConfig, "
+        "TrainingIntervention, or None; got "
+        f"{type(config).__name__}"
+    )
+
+
+def train_detection(
+    *,
+    model_path: str | Path,
+    train_images: str | Path,
+    val_images: str | Path,
+    class_names: list[str],
+    config: Any,
+    output_dir: str | Path,
+    device: str = "auto",
+    on_epoch: Callable[[dict[str, Any]], None] | None = None,
+) -> DetectionTrainingResult:
+    """
+    Train an Ultralytics detection model through ModelLab.
+
+    This is intentionally a thin adapter around the existing
+    Ultralytics runtime. ModelLab remains responsible for the
+    experiment configuration and artifact lifecycle.
+    """
+
+    model_path = Path(model_path)
+    train_images = Path(train_images)
+    val_images = Path(val_images)
+    output_dir = Path(output_dir)
+
+    if not model_path.exists():
+        raise DetectionTrainingError(
+            f"model checkpoint does not exist: {model_path}"
+        )
+
+    if not train_images.is_dir():
+        raise DetectionTrainingError(
+            f"training images directory does not exist: "
+            f"{train_images}"
+        )
+
+    if not val_images.is_dir():
+        raise DetectionTrainingError(
+            f"validation images directory does not exist: "
+            f"{val_images}"
+        )
+
+    if not class_names:
+        raise DetectionTrainingError(
+            "detection training requires class names"
+        )
+
+    try:
+        from ultralytics import YOLO
+    except Exception as exc:
+        raise DetectionTrainingError(
+            "Ultralytics is required for detection training."
+        ) from exc
+
+    config = _resolve_training_config(config)
+    config_dict = _config_to_dict(config)
+
+    output_dir.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    data_root = output_dir / "dataset"
+
+    if data_root.exists():
+        shutil.rmtree(data_root)
+
+    data_root.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    # Use symlinks where possible so Phase 5 does not duplicate
+    # the potentially large image dataset.
+    linked_train = data_root / "images" / "train"
+    linked_val = data_root / "images" / "val"
+
+    linked_train.parent.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    linked_val.parent.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    try:
+        linked_train.symlink_to(
+            train_images.resolve(),
+            target_is_directory=True,
+        )
+        linked_val.symlink_to(
+            val_images.resolve(),
+            target_is_directory=True,
+        )
+    except OSError:
+        shutil.copytree(
+            train_images,
+            linked_train,
+            dirs_exist_ok=True,
+        )
+        shutil.copytree(
+            val_images,
+            linked_val,
+            dirs_exist_ok=True,
+        )
+
+    # Locate corresponding label roots.
+    def label_root(image_root: Path) -> Path:
+        name = image_root.name
+
+        if name == "images":
+            candidate = image_root.parent / "labels"
+            if candidate.exists():
+                return candidate
+
+        if image_root.parent.name == "images":
+            candidate = (
+                image_root.parent.parent
+                / "labels"
+                / image_root.name
+            )
+            if candidate.exists():
+                return candidate
+
+        candidate = image_root.parent / "labels"
+
+        if candidate.exists():
+            return candidate
+
+        raise DetectionTrainingError(
+            f"could not locate YOLO labels for {image_root}"
+        )
+
+    train_label_source = label_root(train_images)
+    val_label_source = label_root(val_images)
+
+    linked_train_labels = (
+        data_root / "labels" / "train"
+    )
+    linked_val_labels = (
+        data_root / "labels" / "val"
+    )
+
+    linked_train_labels.parent.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+    linked_val_labels.parent.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    try:
+        linked_train_labels.symlink_to(
+            train_label_source.resolve(),
+            target_is_directory=True,
+        )
+        linked_val_labels.symlink_to(
+            val_label_source.resolve(),
+            target_is_directory=True,
+        )
+    except OSError:
+        shutil.copytree(
+            train_label_source,
+            linked_train_labels,
+            dirs_exist_ok=True,
+        )
+        shutil.copytree(
+            val_label_source,
+            linked_val_labels,
+            dirs_exist_ok=True,
+        )
+
+    data_yaml = _write_data_yaml(
+        root=data_root,
+        train_images=Path("images/train"),
+        val_images=Path("images/val"),
+        class_names=class_names,
+    )
+
+    kwargs = _build_ultralytics_kwargs(
+        config_dict,
+        data_yaml=str(data_yaml),
+        output_dir=output_dir,
+    )
+
+    # Device handling is delegated to Ultralytics.
+    if device != "auto":
+        kwargs["device"] = device
+
+    # Save the exact ModelLab-side configuration before training.
+    (output_dir / "training_config.json").write_text(
+        json.dumps(
+            config_dict,
+            indent=2,
+            default=str,
+        ),
+        encoding="utf-8",
+    )
+
+    (output_dir / "ultralytics_kwargs.json").write_text(
+        json.dumps(
+            kwargs,
+            indent=2,
+            default=str,
+        ),
+        encoding="utf-8",
+    )
+
+    print(
+        "[DETECTION TRAINING] loading checkpoint:",
+        model_path,
+    )
+
+    model = YOLO(
+        str(model_path)
+    )
+
+    print(
+        "[DETECTION TRAINING] starting Ultralytics training"
+    )
+
+    try:
+        results = model.train(
+            **kwargs
+        )
+    except Exception as exc:
+        raise DetectionTrainingError(
+            "Ultralytics detection training failed: "
+            f"{exc}"
+        ) from exc
+
+    run_dir = Path(
+        getattr(
+            results,
+            "save_dir",
+            output_dir,
+        )
+    )
+
+    weights_dir = run_dir / "weights"
+
+    best = weights_dir / "best.pt"
+    last = weights_dir / "last.pt"
+
+    if not best.exists():
+        raise DetectionTrainingError(
+            "Ultralytics training completed but "
+            f"best.pt was not found at {best}"
+        )
+
+    if not last.exists():
+        # Some Ultralytics configurations may only expose best.pt.
+        # Keep the contract stable by using best.pt as the final
+        # checkpoint in that case.
+        last = best
+
+    # Parse native Ultralytics results when available.
+    history: list[dict[str, Any]] = []
+
+    results_csv = run_dir / "results.csv"
+
+    if results_csv.exists():
+        try:
+            import csv
+
+            with results_csv.open(
+                "r",
+                encoding="utf-8",
+                newline="",
+            ) as handle:
+                reader = csv.DictReader(handle)
+
+                for row in reader:
+                    cleaned = {}
+
+                    for key, value in row.items():
+                        if value is None:
+                            continue
+
+                        try:
+                            cleaned[key.strip()] = float(
+                                value.strip()
+                            )
+                        except Exception:
+                            cleaned[key.strip()] = value.strip()
+
+                    history.append(cleaned)
+
+        except Exception:
+            history = []
+
+    total_epochs = int(
+        config_dict.get(
+            "epochs",
+            len(history) or 1,
+        )
+    )
+
+    best_epoch = 0
+    best_metric = 0.0
+
+    # Prefer fitness from Ultralytics history when available.
+    for index, row in enumerate(history):
+        fitness = row.get("fitness")
+
+        if isinstance(fitness, (int, float)):
+            if float(fitness) >= best_metric:
+                best_metric = float(fitness)
+                best_epoch = index + 1
+
+    if history and best_epoch == 0:
+        best_epoch = len(history)
+
+    payload = {
+        "best_checkpoint": str(best),
+        "last_checkpoint": str(last),
+        "best_epoch": best_epoch,
+        "best_metric": best_metric,
+        "total_epochs": total_epochs,
+        "stopped_early": (
+            len(history) < total_epochs
+            if history
+            else False
+        ),
+        "history": history,
+        "config": config_dict,
+        "run_dir": str(run_dir),
+    }
+
+    (output_dir / "result.json").write_text(
+        json.dumps(
+            payload,
+            indent=2,
+            default=str,
+        ),
+        encoding="utf-8",
+    )
+
+    if on_epoch is not None:
+        for row in history:
+            on_epoch(row)
+
+    return DetectionTrainingResult(
+        best_checkpoint=str(best),
+        last_checkpoint=str(last),
+        best_epoch=best_epoch,
+        best_metric=best_metric,
+        total_epochs=total_epochs,
+        stopped_early=(
+            len(history) < total_epochs
+            if history
+            else False
+        ),
+        history=history,
+        config=config_dict,
+        run_dir=str(run_dir),
+    )

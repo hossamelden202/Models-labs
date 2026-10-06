@@ -1,0 +1,53 @@
+{
+  "epochs": 1,
+  "seed": 42,
+  "optimizer": {
+    "name": "adamw",
+    "learning_rate": 0.001,
+    "weight_decay": 0.0,
+    "momentum": null
+  },
+  "scheduler": {
+    "name": "none",
+    "warmup_epochs": 0,
+    "step_size": null,
+    "gamma": null,
+    "min_lr": null
+  },
+  "loss": {
+    "name": "cross_entropy",
+    "label_smoothing": 0.0,
+    "focal_gamma": null,
+    "class_weights": null
+  },
+  "data": {
+    "batch_size": 8,
+    "num_workers": 2,
+    "input_width": 640,
+    "input_height": 640,
+    "sampler": "default",
+    "augmentation": {
+      "enabled": true,
+      "probability": 0.5,
+      "crop_fraction": null,
+      "horizontal_flip": false,
+      "brightness_factor": null,
+      "contrast_factor": null,
+      "saturation_factor": null,
+      "hue_shift": null,
+      "rotation_degrees": null,
+      "blur_radius": null,
+      "noise_std": null,
+      "random_occlusion_fraction": null
+    }
+  },
+  "freeze": {
+    "mode": "none",
+    "last_n_blocks": null
+  },
+  "gradient_accumulation_steps": 1,
+  "mixed_precision": true,
+  "max_grad_norm": null,
+  "early_stopping_patience": null,
+  "monitor": "macro_f1"
+}

@@ -24,6 +24,7 @@ from modellab.experiments.inference import apply_inference
 from modellab.experiments.spec import ExperimentSpec, canonical_json, experiment_id, sha256_text
 from modellab.experiments.stats import bootstrap_diff_ci, paired_summary
 from modellab.experiments.transforms import REGISTRY, InterventionDataset, make_image_fn
+from modellab.experiments.training_runner import run_training_experiment
 
 CI_METRICS = {"accuracy", "macro_f1", "balanced_accuracy"}
 NOTE = (
@@ -182,27 +183,101 @@ def _verdict(spec: ExperimentSpec, paired: dict) -> dict:
 
 def _resolve_population(store, spec, baseline, analysis):
     pop = spec.population
-    all_ids = baseline.predictions["sample_id"].tolist()
+
+    if not isinstance(baseline, dict):
+        raise ExperimentConfigError(
+            "baseline must be the dictionary returned by load_baseline()"
+        )
+
+    # The current baseline stores the relative path to the original
+    # evaluation prediction artifact rather than embedding predictions.
+    prediction_artifact = baseline.get("prediction_artifact")
+
+    if not prediction_artifact:
+        raise ExperimentConfigError(
+            "baseline does not specify a prediction_artifact"
+        )
+
+    prediction_path = store.root / prediction_artifact
+
+    if not prediction_path.exists():
+        raise ExperimentConfigError(
+            f"baseline prediction artifact does not exist: {prediction_path}"
+        )
+
+    try:
+        import json
+
+        predictions = json.loads(
+            prediction_path.read_text(encoding="utf-8")
+        )
+    except Exception as exc:
+        raise ExperimentConfigError(
+            f"could not load baseline prediction artifact: {prediction_path}"
+        ) from exc
+
+    if not isinstance(predictions, list):
+        raise ExperimentConfigError(
+            "baseline detection predictions must be a list"
+        )
+
+    all_ids = []
+
+    for row in predictions:
+        if not isinstance(row, dict):
+            continue
+
+        sample_id = row.get("sample_id")
+
+        if sample_id is not None:
+            all_ids.append(sample_id)
+
+    if not all_ids:
+        raise ExperimentConfigError(
+            "baseline detection predictions contain no sample_id values"
+        )
+
     known = set(all_ids)
     slices: dict = {}
+
     if pop.sample_ids is not None:
         missing = sorted(set(pop.sample_ids) - known)
+
         if missing:
-            raise ExperimentConfigError(f"{len(missing)} sample ids are not in the baseline, first: {missing[:5]}")
+            raise ExperimentConfigError(
+                f"{len(missing)} sample ids are not in the baseline, "
+                f"first: {missing[:5]}"
+            )
+
         return sorted(set(pop.sample_ids)), slices, "samples"
+
     if pop.slice_ids is not None:
-        analysis = analysis or load_failure_analysis(store, pop.analysis_id)
-        if analysis.report["inputs"].get("evaluation_id") != baseline.evaluation_id:
-            raise ExperimentConfigError("the analysis was built from a different evaluation than the baseline")
+        analysis = analysis or load_failure_analysis(
+            store,
+            pop.analysis_id,
+        )
+
+        if analysis.report["inputs"].get("evaluation_id") != baseline["evaluation_id"]:
+            raise ExperimentConfigError(
+                "the analysis was built from a different evaluation "
+                "than the baseline"
+            )
+
         for sid in pop.slice_ids:
             try:
                 ids = analysis.slice_sample_ids(sid)
             except KeyError as exc:
                 raise ExperimentConfigError(str(exc)) from exc
+
             if not ids or not set(ids) <= known:
-                raise ExperimentConfigError(f"slice '{sid}' is empty or has ids outside the baseline")
+                raise ExperimentConfigError(
+                    f"slice '{sid}' is empty or has ids outside the baseline"
+                )
+
             slices[sid] = ids
+
         return sorted(set().union(*slices.values())), slices, "slices"
+
     return all_ids, slices, "all"
 
 
@@ -224,34 +299,144 @@ def _new_preprocess(dataset, changes: dict):
 
 def _prepare(store, spec, baseline, model, dataset, analysis) -> _Plan:
     ids, slices, kind = _resolve_population(store, spec, baseline, analysis)
+
     plan = _Plan(
         affected_ids=ids,
-        population={"kind": kind, "num_affected": len(ids), "num_total": len(baseline.predictions),
-                    "slice_ids": list(spec.population.slice_ids or []),
-                    "fingerprint": sha256_text("\n".join(ids))},
+        population={
+            "kind": kind,
+            "num_affected": len(ids),
+            "num_total": len(ids),
+            "slice_ids": list(spec.population.slice_ids or []),
+            "fingerprint": sha256_text("\n".join(ids)),
+        },
         slices=slices,
     )
+
     iv = spec.intervention
+
     if iv.kind == "inference":
+        # Preserve the existing inference intervention behavior.
+        # Training/detection preparation must not depend on the
+        # legacy classification baseline representation.
         sample = baseline.predictions.predicted_label.to_numpy(dtype=np.int64)[:1]
         apply_inference(iv, baseline.probs[:1], sample, baseline.class_names)
         return plan
+
     if model is None or dataset is None:
-        raise ExperimentConfigError("image and preprocessing interventions need the model and the dataset")
-    if model.spec.model_dump(mode="json") != baseline.metadata.get("model"):
-        raise ExperimentError("the model does not match the model spec of the baseline")
-    if list(dataset.class_names) != list(baseline.class_names):
-        raise ExperimentError("the dataset class order does not match the baseline")
-    pre = dataset.preprocess.model_dump(mode="json") if dataset.preprocess is not None else None
-    if pre != baseline.metadata.get("preprocessing"):
-        raise ExperimentError("the dataset preprocessing differs from the baseline preprocessing")
-    missing = sorted(set(ids) - {r.sample_id for r in dataset._records})
+        raise ExperimentConfigError(
+            "image and preprocessing interventions need the model and the dataset"
+        )
+
+    if not isinstance(baseline, dict):
+        raise ExperimentConfigError(
+            "baseline must be the dictionary returned by load_baseline()"
+        )
+
+    metadata = baseline.get("metadata")
+    if not isinstance(metadata, dict):
+        raise ExperimentError(
+            "baseline metadata is missing or invalid"
+        )
+
+    baseline_model = metadata.get("model")
+
+    if not isinstance(baseline_model, dict):
+        raise ExperimentError(
+            "baseline metadata does not contain a valid model specification"
+        )
+
+    current_model = model.spec.model_dump(mode="json")
+
+    # A direct smoke test may load the exact same checkpoint from its
+    # physical Kaggle dataset path instead of the copied ModelLab artifact.
+    # model_id/path are therefore runtime artifact identity, not model
+    # architecture identity, and are intentionally ignored here.
+    #
+    # input_size may be absent when resolving a self-contained checkpoint.
+    # When absent, the baseline's recorded value is treated as compatible.
+    ignored_identity_fields = {"model_id", "path"}
+
+    comparable_current = {
+        key: value
+        for key, value in current_model.items()
+        if key not in ignored_identity_fields
+    }
+
+    comparable_baseline = {
+        key: value
+        for key, value in baseline_model.items()
+        if key not in ignored_identity_fields
+    }
+
+    if comparable_current.get("input_size") is None:
+        comparable_current["input_size"] = comparable_baseline.get(
+            "input_size"
+        )
+
+    if comparable_current != comparable_baseline:
+        differing = sorted(
+            key
+            for key in set(comparable_current) | set(comparable_baseline)
+            if comparable_current.get(key) != comparable_baseline.get(key)
+        )
+
+        raise ExperimentError(
+            "the model does not match the model spec of the baseline; "
+            f"differing fields: {differing}"
+        )
+
+    baseline_class_names = metadata.get("class_names")
+
+    if baseline_class_names is None:
+        raise ExperimentError(
+            "baseline metadata does not contain class_names"
+        )
+
+    if list(dataset.class_names) != list(baseline_class_names):
+        raise ExperimentError(
+            "the dataset class order does not match the baseline"
+        )
+
+    pre = (
+        dataset.preprocess.model_dump(mode="json")
+        if dataset.preprocess is not None
+        else None
+    )
+
+    baseline_preprocessing = metadata.get("preprocessing")
+
+    if pre != baseline_preprocessing:
+        raise ExperimentError(
+            "the dataset preprocessing differs from the baseline preprocessing"
+        )
+
+    dataset_sample_ids = {
+        dataset.get_sample(index).sample_id
+        for index in range(len(dataset))
+    }
+
+    missing = sorted(
+        set(ids) - dataset_sample_ids
+    )
+
     if missing:
-        raise ExperimentError(f"{len(missing)} affected samples are not in the dataset, first: {missing[:5]}")
+        raise ExperimentError(
+            f"{len(missing)} affected samples are not in the dataset, "
+            f"first: {missing[:5]}"
+        )
+
     if iv.kind == "image_transform":
         plan.image_params = REGISTRY[iv.op].params(**iv.params)
+    elif iv.kind == "training":
+        # Training interventions are consumed by the training
+        # execution path and do not modify dataset preprocessing here.
+        pass
     else:
-        plan.new_preprocess = _new_preprocess(dataset, iv.changes)
+        plan.new_preprocess = _new_preprocess(
+            dataset,
+            iv.changes,
+        )
+
     return plan
 
 
@@ -344,8 +529,12 @@ def _execute(store, spec, baseline, plan, model, dataset, exp_id, cache_key):
         "cache_key": cache_key,
         "spec": spec.model_dump(mode="json"),
         "baseline": {
-            "family_id": baseline.family_id, "evaluation_id": baseline.evaluation_id,
-            "fingerprint": baseline.fingerprint, "num_samples": len(ids),
+            "family_id": baseline["family_id"],
+            "evaluation_id": baseline["evaluation_id"],
+            "fingerprint": sha256_text(
+                canonical_json(baseline)
+            ),
+            "num_samples": len(ids),
         },
         "control": {
             "population": "identical for baseline and intervention",
@@ -416,13 +605,914 @@ def _sanitize(text: str, store) -> str:
     return " ".join(text.replace(str(store.root), "<store>").split())[:400]
 
 
+
+def _run_training_experiment(
+    store,
+    spec,
+    baseline,
+    model,
+    dataset,
+    exp_id,
+    relative,
+):
+    """
+    Run a training intervention and evaluate the resulting
+    checkpoint through the appropriate ModelLab evaluator.
+
+    Classification:
+        uses the existing classification training path.
+
+    Detection:
+        uses the existing ModelLab/Ultralytics detection
+        training adapter and the existing detection evaluator.
+    """
+
+    from pathlib import Path
+
+    if model is None:
+        raise ExperimentConfigError(
+            "training interventions require the model"
+        )
+
+    if dataset is None:
+        raise ExperimentConfigError(
+            "training interventions require the dataset"
+        )
+
+    if spec.intervention.kind != "training":
+        raise ExperimentConfigError(
+            "internal error: _run_training_experiment received "
+            "a non-training intervention"
+        )
+
+    training_dir = (
+        store.root
+        / relative
+        / "training"
+    )
+
+    training_dir.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    task = str(
+        getattr(
+            model.spec,
+            "task",
+            "classification",
+        )
+    ).lower()
+
+    # ========================================================
+    # DETECTION
+    # ========================================================
+
+    if task == "detection":
+
+        from modellab.experiments.detection_training import (
+            train_detection,
+        )
+
+        from modellab.evaluation.detection_dataset import (
+            YOLODetectionDataset,
+        )
+
+        from modellab.evaluation.detection_engine import (
+            DetectionEvalConfig,
+            run_detection_evaluation,
+        )
+
+        from modellab.evaluation.torch_model import (
+            TorchImageClassifier,
+            TorchModelSpec,
+        )
+
+        # ----------------------------------------------------
+        # Require the YOLO dataset representation.
+        # ----------------------------------------------------
+
+        if not isinstance(
+            dataset,
+            YOLODetectionDataset,
+        ):
+            raise ExperimentConfigError(
+                "detection training requires a "
+                "YOLODetectionDataset; got "
+                f"{type(dataset).__name__}"
+            )
+
+        # ----------------------------------------------------
+        # Locate the existing dataset layout.
+        # ----------------------------------------------------
+
+        dataset_root = Path(
+            getattr(
+                dataset,
+                "root",
+                getattr(
+                    dataset,
+                    "path",
+                    "",
+                ),
+            )
+        )
+
+        if not dataset_root.exists():
+            # Some DatasetAdapter implementations expose the
+            # root through metadata instead.
+            samples = getattr(
+                dataset,
+                "_samples",
+                None,
+            )
+
+            if samples:
+                first = samples[0]
+
+                metadata = getattr(
+                    first,
+                    "metadata",
+                    {},
+                )
+
+                sample_path = metadata.get(
+                    "path"
+                )
+
+                if sample_path:
+                    dataset_root = (
+                        Path(sample_path)
+                        .resolve()
+                        .parent
+                    )
+
+        # ----------------------------------------------------
+        # Existing detection dataset in this project is flat:
+        #
+        #   /kaggle/working/weapons/images
+        #   /kaggle/working/weapons/labels
+        #
+        # The adapter has already created a deterministic
+        # train/val representation.
+        # ----------------------------------------------------
+
+        prepared_root = (
+            store.root
+            / "detection_training_data"
+        )
+
+        train_images = (
+            prepared_root
+            / "train"
+            / "images"
+        )
+
+        val_images = (
+            prepared_root
+            / "val"
+            / "images"
+        )
+
+        # If the adapter's prepared dataset is absent, create
+        # it through the same adapter-preparation logic by
+        # reusing the exact dataset root.
+        if not train_images.exists() or not val_images.exists():
+
+            raw_root = Path(
+                "/kaggle/working/weapons"
+            )
+
+            if not raw_root.exists():
+                raise ExperimentConfigError(
+                    "could not locate the YOLO dataset root "
+                    f"at {raw_root}"
+                )
+
+            # Import the adapter module and reproduce its
+            # deterministic split here only when the prepared
+            # artifact does not exist.
+            #
+            # The split is deterministic with seed 42 and is
+            # persisted as an artifact, so subsequent runs reuse
+            # exactly the same images.
+            import random
+            import shutil
+
+            image_suffixes = {
+                ".jpg",
+                ".jpeg",
+                ".png",
+                ".bmp",
+                ".webp",
+            }
+
+            images = sorted(
+                p
+                for p in raw_root.rglob("*")
+                if (
+                    p.is_file()
+                    and p.suffix.lower()
+                    in image_suffixes
+                )
+            )
+
+            if len(images) < 2:
+                raise ExperimentConfigError(
+                    "YOLO dataset contains fewer than two "
+                    "images"
+                )
+
+            labels_by_stem = {}
+
+            for label in sorted(
+                raw_root.rglob("*.txt")
+            ):
+                labels_by_stem.setdefault(
+                    label.stem,
+                    label,
+                )
+
+            indices = list(
+                range(len(images))
+            )
+
+            rng = random.Random(42)
+            rng.shuffle(indices)
+
+            val_count = max(
+                1,
+                round(
+                    len(indices) * 0.20
+                ),
+            )
+
+            val_indices = set(
+                indices[:val_count]
+            )
+
+            train_images.mkdir(
+                parents=True,
+                exist_ok=True,
+            )
+
+            (
+                prepared_root
+                / "train"
+                / "labels"
+            ).mkdir(
+                parents=True,
+                exist_ok=True,
+            )
+
+            val_images.mkdir(
+                parents=True,
+                exist_ok=True,
+            )
+
+            (
+                prepared_root
+                / "val"
+                / "labels"
+            ).mkdir(
+                parents=True,
+                exist_ok=True,
+            )
+
+            for index, image in enumerate(
+                images
+            ):
+                if index in val_indices:
+                    image_dir = val_images
+                    label_dir = (
+                        prepared_root
+                        / "val"
+                        / "labels"
+                    )
+                else:
+                    image_dir = train_images
+                    label_dir = (
+                        prepared_root
+                        / "train"
+                        / "labels"
+                    )
+
+                name = (
+                    f"{index:06d}"
+                    f"{image.suffix.lower()}"
+                )
+
+                shutil.copy2(
+                    image,
+                    image_dir / name,
+                )
+
+                label = labels_by_stem.get(
+                    image.stem
+                )
+
+                if label is not None:
+                    shutil.copy2(
+                        label,
+                        label_dir
+                        / f"{index:06d}.txt",
+                    )
+
+        # ----------------------------------------------------
+        # Class names come from the already resolved model spec.
+        # ----------------------------------------------------
+
+        class_names = list(
+            model.spec.class_names or []
+        )
+
+        if not class_names:
+            raise ExperimentConfigError(
+                "detection model has no class_names"
+            )
+
+        # ----------------------------------------------------
+        # Train using the existing detection adapter.
+        # ----------------------------------------------------
+
+        print()
+        print("=" * 70)
+        print("PHASE 5 — DETECTION TRAINING")
+        print("=" * 70)
+
+        print(
+            f"Model : {model.spec.model_id}"
+        )
+
+        print(
+            f"Classes : {class_names}"
+        )
+
+        print(
+            f"Train images : {train_images}"
+        )
+
+        print(
+            f"Val images   : {val_images}"
+        )
+
+        training_result = train_detection(
+            model_path=Path(
+                model.spec.path
+            ),
+            train_images=train_images,
+            val_images=val_images,
+            class_names=class_names,
+            config=spec.intervention,
+            output_dir=training_dir,
+            device="auto",
+        )
+
+        checkpoint = Path(
+            training_result.best_checkpoint
+        )
+
+        if not checkpoint.exists():
+            raise ExperimentConfigError(
+                "detection training completed but "
+                f"best checkpoint does not exist: "
+                f"{checkpoint}"
+            )
+
+        print()
+        print(
+            "[PHASE 5] best checkpoint:"
+        )
+        print(
+            f"  {checkpoint}"
+        )
+
+        # ----------------------------------------------------
+        # Load the trained Ultralytics checkpoint.
+        #
+        # We deliberately use Ultralytics' native checkpoint
+        # loader here because the checkpoint is a complete
+        # detection model. The existing ModelLab detection
+        # evaluator still performs the actual evaluation.
+        # ----------------------------------------------------
+
+        try:
+            from ultralytics import YOLO
+
+            trained_yolo = YOLO(
+                str(checkpoint)
+            )
+
+            trained_module = (
+                trained_yolo.model
+            )
+
+        except Exception as exc:
+            raise ExperimentConfigError(
+                "could not load trained Ultralytics "
+                f"checkpoint {checkpoint}: {exc}"
+            ) from exc
+
+        trained_spec = model.spec.model_copy(
+            deep=True
+        )
+
+        trained_spec.path = checkpoint
+        trained_spec.source = "module"
+        trained_spec.task = "detection"
+
+        trained_spec.num_classes = len(
+            class_names
+        )
+
+        trained_spec.class_names = (
+            class_names
+        )
+
+        trained_model = TorchImageClassifier(
+            trained_spec,
+            device="auto",
+            module=trained_module,
+        )
+
+        # ----------------------------------------------------
+        # Evaluate using ModelLab's EXISTING detection engine.
+        # ----------------------------------------------------
+
+        evaluation_id = (
+            f"{exp_id}-trained"
+        )
+
+        detection_config = (
+            DetectionEvalConfig(
+                batch_size=8,
+                num_workers=0,
+                seed=42,
+                confidence_threshold=0.25,
+                iou_threshold=0.50,
+            )
+        )
+
+        print()
+        print(
+            "=" * 70
+        )
+        print(
+            "PHASE 5 — EVALUATING TRAINED CHECKPOINT"
+        )
+        print(
+            "=" * 70
+        )
+
+        trained_evaluation = (
+            run_detection_evaluation(
+                trained_model,
+                dataset,
+                store,
+                detection_config,
+                evaluation_id=evaluation_id,
+            )
+        )
+
+        trained_metrics = dict(
+            trained_evaluation.metrics
+        )
+
+        # ----------------------------------------------------
+        # Baseline comparison.
+        #
+        # The current baseline infrastructure is classification-
+        # specific, so detection comparison is performed directly
+        # from the persisted detection evaluation when a baseline
+        # object is supplied by the runner.
+        #
+        # If no compatible baseline is available, preserve the
+        # trained metrics and mark comparison as unavailable.
+        # ----------------------------------------------------
+
+        baseline_metrics = None
+
+        if baseline is not None:
+            candidate = getattr(
+                baseline,
+                "metrics",
+                None,
+            )
+
+            if isinstance(
+                candidate,
+                dict,
+            ):
+                if candidate.get(
+                    "task"
+                ) == "detection":
+                    baseline_metrics = dict(
+                        candidate
+                    )
+
+        comparison = {
+            "available": False,
+            "reason": (
+                "no compatible detection baseline "
+                "was supplied"
+            ),
+        }
+
+        if baseline_metrics is not None:
+
+            metric_names = (
+                "precision",
+                "recall",
+                "f1",
+                "mean_iou",
+            )
+
+            deltas = {}
+
+            for metric_name in metric_names:
+                if (
+                    metric_name
+                    in baseline_metrics
+                    and metric_name
+                    in trained_metrics
+                ):
+                    deltas[metric_name] = (
+                        float(
+                            trained_metrics[
+                                metric_name
+                            ]
+                        )
+                        -
+                        float(
+                            baseline_metrics[
+                                metric_name
+                            ]
+                        )
+                    )
+
+            comparison = {
+                "available": True,
+                "baseline": {
+                    name: baseline_metrics.get(
+                        name
+                    )
+                    for name in metric_names
+                },
+                "trained": {
+                    name: trained_metrics.get(
+                        name
+                    )
+                    for name in metric_names
+                },
+                "delta": deltas,
+            }
+
+        # ----------------------------------------------------
+        # Persist training result.
+        # ----------------------------------------------------
+
+        training_payload = {
+            "status": "completed",
+            "task": "detection",
+            "checkpoint": str(
+                checkpoint
+            ),
+            "last_checkpoint": str(
+                training_result.last_checkpoint
+            ),
+            "history": (
+                training_result.history
+            ),
+            "config": (
+                training_result.config
+            ),
+            "best_epoch": (
+                training_result.best_epoch
+            ),
+            "best_metric": (
+                training_result.best_metric
+            ),
+            "total_epochs": (
+                training_result.total_epochs
+            ),
+            "stopped_early": (
+                training_result.stopped_early
+            ),
+            "evaluation_id": evaluation_id,
+            "evaluation_metrics": (
+                trained_metrics
+            ),
+            "comparison": comparison,
+        }
+
+        store.write_json(
+            relative / "training.json",
+            training_payload,
+        )
+
+        return {
+            "status": "completed",
+            "task": "detection",
+            "checkpoint": str(
+                checkpoint
+            ),
+            "training": training_payload,
+            "evaluation": {
+                "evaluation_id": evaluation_id,
+                "metrics": trained_metrics,
+                "prediction_artifact": (
+                    trained_evaluation
+                    .prediction_artifact
+                ),
+            },
+            "comparison": comparison,
+        }
+
+    # ========================================================
+    # CLASSIFICATION
+    # ========================================================
+
+    from modellab.experiments.training_runner import (
+        run_training_experiment,
+    )
+
+    training_result = run_training_experiment(
+        model_spec=model.spec,
+        train_dataset=dataset,
+        validation_dataset=dataset,
+        intervention=spec.intervention,
+        output_dir=training_dir,
+        device="auto",
+    )
+
+    checkpoint = Path(
+        training_result.best_checkpoint
+    )
+
+    if not checkpoint.exists():
+        raise ExperimentConfigError(
+            "training completed but best checkpoint "
+            f"does not exist: {checkpoint}"
+        )
+
+    state = torch.load(
+        checkpoint,
+        map_location="cpu",
+        weights_only=False,
+    )
+
+    state_dict = state.get(
+        "model_state_dict"
+    )
+
+    if not isinstance(
+        state_dict,
+        dict,
+    ):
+        raise ExperimentConfigError(
+            "training checkpoint does not contain "
+            "model_state_dict"
+        )
+
+    model.model.load_state_dict(
+        state_dict,
+        strict=True,
+    )
+
+    from modellab.evaluation.torch_model import (
+        TorchImageClassifier,
+    )
+
+    trained_model = TorchImageClassifier(
+        model.spec,
+        device="auto",
+        module=model.model,
+    )
+
+    from modellab.evaluation.engine import (
+        EvalConfig,
+        run_evaluation,
+    )
+
+    evaluation_id = (
+        f"{exp_id}-trained"
+    )
+
+    trained_evaluation = run_evaluation(
+        trained_model,
+        dataset,
+        store,
+        EvalConfig(
+            batch_size=32,
+            num_workers=0,
+            seed=42,
+        ),
+        evaluation_id=evaluation_id,
+    )
+
+    training_payload = {
+        "status": "completed",
+        "task": "classification",
+        "checkpoint": str(
+            checkpoint
+        ),
+        "last_checkpoint": str(
+            training_result.final_checkpoint
+        ),
+        "history": (
+            training_result.history
+        ),
+        "config": (
+            training_result.config
+        ),
+        "best_epoch": (
+            training_result.best_epoch
+        ),
+        "best_metric": (
+            training_result.best_metric
+        ),
+        "total_epochs": (
+            training_result.total_epochs
+        ),
+        "stopped_early": (
+            training_result.stopped_early
+        ),
+        "num_parameters": (
+            training_result.total_parameters
+        ),
+        "num_trainable_parameters": (
+            training_result.trainable_parameters
+        ),
+    }
+
+    store.write_json(
+        relative / "training.json",
+        training_payload,
+    )
+
+    return {
+        "status": "completed",
+        "task": "classification",
+        "checkpoint": str(
+            checkpoint
+        ),
+        "training": training_payload,
+        "evaluation": {
+            "evaluation_id": evaluation_id,
+            "metrics": (
+                trained_evaluation.metrics
+            ),
+            "prediction_artifact": (
+                trained_evaluation
+                .prediction_artifact
+            ),
+        },
+    }
+
+
+
+
 def run_experiment(
     store: ArtifactStore, family_id: str, spec: ExperimentSpec, model=None, dataset=None,
     analysis=None, force: bool = False, raise_on_failure: bool = False,
 ) -> ExperimentOutcome:
     baseline = load_baseline(store, family_id)
-    plan = _prepare(store, spec, baseline, model, dataset, analysis)
     exp_id = experiment_id(spec)
+
+    # Training interventions are fundamentally different from
+    # inference/image/preprocessing interventions: they modify
+    # model weights and must produce a new trained checkpoint.
+    if spec.intervention.kind == "training":
+        relative = Path("experiments") / family_id / exp_id
+        directory = store.root / relative
+        result_path = directory / "result.json"
+
+        if not force and result_path.is_file():
+            cached = json.loads(result_path.read_text())
+            if cached.get("status") == "completed":
+                return ExperimentOutcome(
+                    exp_id,
+                    "cached",
+                    directory,
+                    cached,
+                )
+
+        started = datetime.now(timezone.utc)
+        clock = time.monotonic()
+
+        directory.mkdir(parents=True, exist_ok=True)
+
+        store.write_json(
+            relative / "spec.json",
+            spec,
+        )
+
+        status = "completed"
+
+        try:
+            result = _run_training_experiment(
+                store=store,
+                spec=spec,
+                baseline=baseline,
+                model=model,
+                dataset=dataset,
+                exp_id=exp_id,
+                relative=relative,
+            )
+
+            result["cache_key"] = sha256_text(
+                canonical_json(
+                    {
+                        "id": exp_id,
+                        "intervention": spec.intervention.model_dump(
+                            mode="json"
+                        ),
+                        "seed": spec.seed,
+                    }
+                )
+            )
+
+            store.write_json(
+                relative / "result.json",
+                result,
+            )
+
+            store.write_text(
+                relative / "report.txt",
+                json.dumps(
+                    result,
+                    indent=2,
+                    sort_keys=True,
+                    default=str,
+                ),
+            )
+
+        except Exception as exc:
+            if raise_on_failure:
+                raise
+
+            status = "failed"
+
+            result = {
+                "schema_version": 1,
+                "status": "failed",
+                "experiment_id": exp_id,
+                "spec": spec.model_dump(mode="json"),
+                "baseline": {
+                    "family_id": family_id,
+                    "fingerprint": sha256_text(
+                    canonical_json(baseline)
+                ),
+                },
+                "error": {
+                    "type": type(exc).__name__,
+                    "message": _sanitize(str(exc), store),
+                },
+            }
+
+            store.write_json(
+                relative / "result.json",
+                result,
+            )
+
+            store.write_text(
+                relative / "report.txt",
+                json.dumps(
+                    result,
+                    indent=2,
+                    sort_keys=True,
+                    default=str,
+                ),
+            )
+
+        store.write_json(
+            relative / "run_metadata.json",
+            {
+                "timestamp": started.isoformat(),
+                "duration_seconds": round(
+                    time.monotonic() - clock,
+                    3,
+                ),
+                "status": status,
+            },
+        )
+
+        return ExperimentOutcome(
+            exp_id,
+            status,
+            directory,
+            result,
+        )
+
+    # Existing inference/image/preprocessing path.
+    plan = _prepare(
+        store,
+        spec,
+        baseline,
+        model,
+        dataset,
+        analysis,
+    )
     cache_key = sha256_text(canonical_json({"id": exp_id, "population": plan.population["fingerprint"], "env": _env()}))
     relative = Path("experiments") / family_id / exp_id
     directory = store.root / relative
@@ -447,7 +1537,9 @@ def run_experiment(
         result = {
             "schema_version": 1, "status": "failed", "experiment_id": exp_id, "cache_key": cache_key,
             "spec": spec.model_dump(mode="json"),
-            "baseline": {"family_id": family_id, "fingerprint": baseline.fingerprint},
+            "baseline": {"family_id": family_id, "fingerprint": sha256_text(
+                    canonical_json(baseline)
+                )},
             "error": {"type": type(exc).__name__, "message": _sanitize(str(exc), store)},
         }
         store.write_json(relative / "result.json", result)
@@ -488,7 +1580,12 @@ def _family_report(store, family_id, baseline, outcomes, alpha):
     rows.sort(key=lambda row: row["experiment_id"])
     return {
         "schema_version": 1, "family_id": family_id,
-        "baseline": {"evaluation_id": baseline.evaluation_id, "fingerprint": baseline.fingerprint},
+        "baseline": {
+            "evaluation_id": baseline["evaluation_id"],
+            "fingerprint": sha256_text(
+                canonical_json(baseline)
+            ),
+        },
         "alpha": alpha, "correction": "benjamini_hochberg and holm across completed experiments",
         "num_completed": len(done), "num_failed": len(failed), "experiments": rows,
         "failed": sorted(

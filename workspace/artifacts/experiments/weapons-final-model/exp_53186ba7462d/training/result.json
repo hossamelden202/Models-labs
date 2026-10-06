@@ -1,0 +1,81 @@
+{
+  "best_checkpoint": "/kaggle/working/modellab/workspace/artifacts/experiments/weapons-final-model/exp_53186ba7462d/training/weights/best.pt",
+  "last_checkpoint": "/kaggle/working/modellab/workspace/artifacts/experiments/weapons-final-model/exp_53186ba7462d/training/weights/last.pt",
+  "best_epoch": 1,
+  "best_metric": 0.0,
+  "total_epochs": 1,
+  "stopped_early": false,
+  "history": [
+    {
+      "epoch": 1.0,
+      "time": 9.1851,
+      "train/box_loss": 1.96592,
+      "train/cls_loss": 5.80159,
+      "train/dfl_loss": 2.91625,
+      "metrics/precision(B)": 0.35818,
+      "metrics/recall(B)": 0.3609,
+      "metrics/mAP50(B)": 0.36764,
+      "metrics/mAP50-95(B)": 0.28218,
+      "val/box_loss": 0.73161,
+      "val/cls_loss": 1.76303,
+      "val/dfl_loss": 1.16681,
+      "lr/pg0": 0.001,
+      "lr/pg1": 0.001,
+      "lr/pg2": 0.001
+    }
+  ],
+  "config": {
+    "epochs": 1,
+    "seed": 42,
+    "optimizer": {
+      "name": "adamw",
+      "learning_rate": 0.001,
+      "weight_decay": 0.0,
+      "momentum": null
+    },
+    "scheduler": {
+      "name": "none",
+      "warmup_epochs": 0,
+      "step_size": null,
+      "gamma": null,
+      "min_lr": null
+    },
+    "loss": {
+      "name": "cross_entropy",
+      "label_smoothing": 0.0,
+      "focal_gamma": null,
+      "class_weights": null
+    },
+    "data": {
+      "batch_size": 8,
+      "num_workers": 2,
+      "input_width": 640,
+      "input_height": 640,
+      "sampler": "default",
+      "augmentation": {
+        "enabled": true,
+        "probability": 0.5,
+        "crop_fraction": null,
+        "horizontal_flip": false,
+        "brightness_factor": null,
+        "contrast_factor": null,
+        "saturation_factor": null,
+        "hue_shift": null,
+        "rotation_degrees": null,
+        "blur_radius": null,
+        "noise_std": null,
+        "random_occlusion_fraction": null
+      }
+    },
+    "freeze": {
+      "mode": "none",
+      "last_n_blocks": null
+    },
+    "gradient_accumulation_steps": 1,
+    "mixed_precision": true,
+    "max_grad_norm": null,
+    "early_stopping_patience": null,
+    "monitor": "macro_f1"
+  },
+  "run_dir": "/kaggle/working/modellab/workspace/artifacts/experiments/weapons-final-model/exp_53186ba7462d/training"
+}

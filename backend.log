@@ -62,3 +62,7 @@ INFO:     196.128.199.81:0 - "GET /jobs/06f73ac3dff1 HTTP/1.1" 200 OK
 INFO:     196.128.199.81:0 - "GET /jobs HTTP/1.1" 200 OK
 INFO:     196.128.199.81:0 - "GET /models HTTP/1.1" 200 OK
 INFO:     196.128.199.81:0 - "GET /datasets HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [2350]

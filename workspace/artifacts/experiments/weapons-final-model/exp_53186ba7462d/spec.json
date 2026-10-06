@@ -1,0 +1,47 @@
+{
+  "alpha": 0.05,
+  "hypothesis": {
+    "claim": "Verify end-to-end Phase 5 detection training.",
+    "expected_direction": "improve"
+  },
+  "intervention": {
+    "changes": [
+      {
+        "path": "epochs",
+        "value": 1
+      },
+      {
+        "path": "data.batch_size",
+        "value": 8
+      },
+      {
+        "path": "data.num_workers",
+        "value": 2
+      },
+      {
+        "path": "data.input_width",
+        "value": 640
+      },
+      {
+        "path": "data.input_height",
+        "value": 640
+      }
+    ],
+    "kind": "training"
+  },
+  "metrics": [
+    "accuracy",
+    "macro_f1"
+  ],
+  "n_bootstrap": 1000,
+  "n_permutations": 5000,
+  "name": "detection-smoke-1epoch",
+  "population": {
+    "analysis_id": null,
+    "sample_ids": null,
+    "slice_ids": null
+  },
+  "practical_threshold": 0.01,
+  "repetitions": 1,
+  "seed": 42
+}
