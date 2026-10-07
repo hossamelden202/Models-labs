@@ -46,3 +46,89 @@ INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
 INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
 INFO:     196.128.216.173:0 - "POST /evaluations HTTP/1.1" 202 Accepted
 INFO:     196.128.216.173:0 - "GET /jobs HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /jobs HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "POST /evaluations HTTP/1.1" 202 Accepted
+/usr/local/lib/python3.13/dist-packages/torch/utils/data/dataloader.py:424: UserWarning: This DataLoader will create 5 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  self.check_worker_number_rationality()
+13:54:50 INFO    modellab.evaluation: evaluating 5000 images, batch size 32, device cuda
+/usr/local/lib/python3.13/dist-packages/torch/utils/data/dataloader.py:432: UserWarning: This DataLoader will create 5 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  self.check_worker_number_rationality()
+INFO:     196.128.216.173:0 - "GET /jobs HTTP/1.1" 200 OK
+13:55:00 INFO    modellab.evaluation: evaluated 15/157 batches
+13:55:07 INFO    modellab.evaluation: evaluated 30/157 batches
+13:55:13 INFO    modellab.evaluation: evaluated 45/157 batches
+13:55:19 INFO    modellab.evaluation: evaluated 60/157 batches
+13:55:26 INFO    modellab.evaluation: evaluated 75/157 batches
+INFO:     196.128.216.173:0 - "POST /experiments HTTP/1.1" 202 Accepted
+[DETECTION TRAINING] loading checkpoint: /kaggle/working/modellab/workspace/model_artifacts/artifact_280e11ce538644ff9a20799d6a27f819/best.pt
+[DETECTION TRAINING] starting Ultralytics training
+Ultralytics 8.4.174 🚀 Python-3.13.15 torch-2.11.0+cu128 CUDA:0 (Tesla T4, 14912MiB)
+[34m[1mengine/trainer: [0magnostic_nms=False, amp=True, angle=1.0, augment=False, auto_augment=randaugment, batch=32, bgr=0.0, box=7.5, cache=False, cfg=None, channels_last=None, classes=None, close_mosaic=10, cls=0.5, cls_pw=0.0, cls_remap=True, compile=False, conf=None, copy_paste=0.0, copy_paste_mode=flip, cos_lr=False, cutmix=0.0, data=/kaggle/working/modellab/workspace/artifacts/experiments/fcgvbn/exp_87d8373055aa/training/dataset/data.yaml, degrees=0.0, deterministic=True, device=, dfl=1.5, dgrad=0.5, dis=6.0, distill_model=None, dlam=1.0, dlog=1.0, dnn=False, dropout=0.0, dynamic=False, embed=None, epochs=1, erasing=0.4, exist_ok=True, fliplr=0.0, flipud=0.0, format=torchscript, fraction=1.0, freeze=None, hsv_h=0.0, hsv_s=0.0, hsv_v=0.0, imgsz=224, iou=0.7, kobj=1.0, line_width=None, lr0=0.0002, lrf=0.01, mask_ratio=4, max_det=300, mixup=0.0, mode=train, model=/kaggle/working/modellab/workspace/model_artifacts/artifact_280e11ce538644ff9a20799d6a27f819/best.pt, momentum=0.937, mosaic=0.5, multi_scale=0.0, name=training, nbs=64, nms=None, opset=None, optimize=False, optimizer=AdamW, overlap_mask=True, patience=100, perspective=0.0, plots=True, pose=12.0, pretrained=True, profile=False, project=/kaggle/working/modellab/workspace/artifacts/experiments/fcgvbn/exp_87d8373055aa, quantize=None, rect=False, resume=False, retina_masks=False, rle=1.0, save=True, save_conf=False, save_crop=False, save_dir=/kaggle/working/modellab/workspace/artifacts/experiments/fcgvbn/exp_87d8373055aa/training, save_frames=False, save_json=False, save_period=-1, save_txt=False, scale=0.0, seed=42, shear=0.0, show=False, show_boxes=True, show_conf=True, show_labels=True, simplify=True, single_cls=False, source=None, split=val, stream_buffer=False, task=detect, time=None, tracker=tracktrack.yaml, translate=0.0, val=True, verbose=True, vid_stride=1, visualize=False, warmup_bias_lr=0.1, warmup_epochs=3.0, warmup_momentum=0.8, weight_decay=0.0, workers=5, workspace=None
+INFO:     196.128.216.173:0 - "GET /experiments/fcgvbn HTTP/1.1" 200 OK
+13:55:34 INFO    modellab.evaluation: evaluated 90/157 batches
+
+                   from  n    params  module                                       arguments                     
+  0                  -1  1       464  ultralytics.nn.modules.conv.Conv             [3, 16, 3, 2]                 
+  1                  -1  1      4672  ultralytics.nn.modules.conv.Conv             [16, 32, 3, 2]                
+  2                  -1  1      6640  ultralytics.nn.modules.block.C3k2            [32, 64, 1, False, 0.25]      
+  3                  -1  1     36992  ultralytics.nn.modules.conv.Conv             [64, 64, 3, 2]                
+  4                  -1  1     26080  ultralytics.nn.modules.block.C3k2            [64, 128, 1, False, 0.25]     
+  5                  -1  1    147712  ultralytics.nn.modules.conv.Conv             [128, 128, 3, 2]              
+  6                  -1  1     87040  ultralytics.nn.modules.block.C3k2            [128, 128, 1, True]           
+  7                  -1  1    295424  ultralytics.nn.modules.conv.Conv             [128, 256, 3, 2]              
+  8                  -1  1    346112  ultralytics.nn.modules.block.C3k2            [256, 256, 1, True]           
+  9                  -1  1    164608  ultralytics.nn.modules.block.SPPF            [256, 256, 5]                 
+ 10                  -1  1    249728  ultralytics.nn.modules.block.C2PSA           [256, 256, 1]                 
+ 11                  -1  1         0  torch.nn.modules.upsampling.Upsample         [None, 2, 'nearest']          
+ 12             [-1, 6]  1         0  ultralytics.nn.modules.conv.Concat           [1]                           
+ 13                  -1  1    111296  ultralytics.nn.modules.block.C3k2            [384, 128, 1, False]          
+ 14                  -1  1         0  torch.nn.modules.upsampling.Upsample         [None, 2, 'nearest']          
+ 15             [-1, 4]  1         0  ultralytics.nn.modules.conv.Concat           [1]                           
+ 16                  -1  1     32096  ultralytics.nn.modules.block.C3k2            [256, 64, 1, False]           
+ 17                  -1  1     36992  ultralytics.nn.modules.conv.Conv             [64, 64, 3, 2]                
+ 18            [-1, 13]  1         0  ultralytics.nn.modules.conv.Concat           [1]                           
+ 19                  -1  1     86720  ultralytics.nn.modules.block.C3k2            [192, 128, 1, False]          
+ 20                  -1  1    147712  ultralytics.nn.modules.conv.Conv             [128, 128, 3, 2]              
+ 21            [-1, 10]  1         0  ultralytics.nn.modules.conv.Concat           [1]                           
+ 22                  -1  1    378880  ultralytics.nn.modules.block.C3k2            [384, 256, 1, True]           
+ 23        [16, 19, 22]  1    431647  ultralytics.nn.modules.head.Detect           [5, 16, None, [64, 128, 256]] 
+YOLO11n summary: 181 layers, 2,590,815 parameters, 2,590,799 gradients, 6.5 GFLOPs
+
+Transferred 499/499 items from pretrained weights
+Freezing layer 'model.23.dfl.conv.weight'
+[34m[1mAMP: [0mrunning Automatic Mixed Precision (AMP) checks...
+INFO:     196.128.216.173:0 - "GET /jobs HTTP/1.1" 200 OK
+13:55:45 INFO    modellab.evaluation: evaluated 105/157 batches
+13:55:52 INFO    modellab.evaluation: evaluated 120/157 batches
+[34m[1mAMP: [0mchecks passed ✅
+[34m[1mtrain: [0mFast image access ✅ (ping: 0.0±0.0 ms, read: 1857.8±1103.5 MB/s, size: 193.7 KB)
+[K[34m[1mtrain: [0mScanning /kaggle/working/modellab/workspace/artifacts/detection_training_data/train/labels.cache... 378 images, 133 backgrounds, 0 corrupt: 100% ━━━━━━━━━━━━ 378/378 61.0Mit/s 0.0s
+[34m[1malbumentations: [0mBlur(p=0.01, blur_limit=(3, 7)), MedianBlur(p=0.01, blur_limit=(3, 7)), ToGray(p=0.01, method='weighted_average', num_output_channels=3), CLAHE(p=0.01, clip_limit=(1.0, 4.0), tile_grid_size=(8, 8))
+[34m[1mval: [0mFast image access ✅ (ping: 0.0±0.0 ms, read: 1999.7±1180.7 MB/s, size: 230.4 KB)
+[K[34m[1mval: [0mScanning /kaggle/working/modellab/workspace/artifacts/detection_training_data/val/labels.cache... 94 images, 23 backgrounds, 0 corrupt: 100% ━━━━━━━━━━━━ 94/94 16.4Mit/s 0.0s
+[34m[1moptimizer:[0m AdamW(lr=0.0002, momentum=0.937) with parameter groups 81 weight(decay=0.0), 88 weight(decay=0.0), 87 bias(decay=0.0)
+Plotting labels to /kaggle/working/modellab/workspace/artifacts/experiments/fcgvbn/exp_87d8373055aa/training/labels.jpg... 
+Using 378 train, 94 val images for fraction=1.0 at imgsz=224
+Using 2 dataloader workers
+Logging results to [1m/kaggle/working/modellab/workspace/artifacts/experiments/fcgvbn/exp_87d8373055aa/training[0m
+Starting training for 1 epochs...
+Closing dataloader mosaic
+[34m[1malbumentations: [0mBlur(p=0.01, blur_limit=(3, 7)), MedianBlur(p=0.01, blur_limit=(3, 7)), ToGray(p=0.01, method='weighted_average', num_output_channels=3), CLAHE(p=0.01, clip_limit=(1.0, 4.0), tile_grid_size=(8, 8))
+13:55:58 INFO    modellab.evaluation: evaluated 135/157 batches
+
+      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+13:56:05 INFO    modellab.evaluation: evaluated 150/157 batches
+13:56:07 INFO    modellab.evaluation: evaluated 157/157 batches
+[K        1/1      1.21G       1.89      4.542      2.116         23        224: 0% ──────────── 0/12  14.4s[K        1/1      1.22G       2.05      4.406      2.258         24        224: 8% ━─────────── 1/12 1.6s/it 14.8s<17.4s[K        1/1      1.23G       2.01      4.217      2.233         24        224: 16% ━━────────── 2/12 2.0it/s 15.0s<5.0s[K        1/1      1.24G      2.084      4.285      2.338         22        224: 25% ━━━───────── 3/12 2.7it/s 15.3s<3.4s[K        1/1      1.24G      2.094      4.246      2.364         18        224: 33% ━━━━──────── 4/12 3.3it/s 15.5s<2.4s[K        1/1      1.24G      2.104      4.228      2.376         21        224: 41% ━━━━━─────── 5/12 3.8it/s 15.7s<1.9s[K        1/1      1.24G      2.143      4.191      2.427         19        224: 50% ━━━━━━────── 6/12 4.1it/s 15.9s<1.5s[K        1/1      1.24G      2.125      4.174      2.437         21        224: 58% ━━━━━━━───── 7/12 4.1it/s 16.1s<1.2s[K        1/1      1.24G      2.136      4.193      2.452         21        224: 66% ━━━━━━━━──── 8/12 3.9it/s 16.4s<1.0s[K        1/1      1.24G      2.147      4.191      2.466         24        224: 75% ━━━━━━━━━─── 9/12 5.2it/s 16.5s<0.6s[K        1/1      1.24G      2.163      4.289      2.482         11        224: 91% ━━━━━━━━━━━─ 11/12 3.7it/s 23.3s<0.3s[K        1/1      1.24G      2.163      4.289      2.482         11        224: 100% ━━━━━━━━━━━━ 12/12 1.9s/it 23.3s

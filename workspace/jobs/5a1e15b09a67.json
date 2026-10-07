@@ -1,0 +1,135 @@
+{
+  "created_at": "2026-10-07T13:55:32.246289+00:00",
+  "error": null,
+  "finished_at": null,
+  "job_id": "5a1e15b09a67",
+  "kind": "experiments",
+  "params": {
+    "alpha": 0.05,
+    "baseline_evaluation_id": "yolo232",
+    "dataset_id": "dataset3",
+    "device": "auto",
+    "family_id": "fcgvbn",
+    "force": true,
+    "matrices": [],
+    "model_id": "yolo-fixed",
+    "specs": [
+      {
+        "alpha": 0.05,
+        "hypothesis": {
+          "claim": "Training the detector with the selected configuration will improve detection F1 over the baseline.",
+          "expected_direction": "improve"
+        },
+        "intervention": {
+          "changes": [
+            {
+              "path": "epochs",
+              "value": 1
+            },
+            {
+              "path": "seed",
+              "value": 42
+            },
+            {
+              "path": "monitor",
+              "value": "macro_f1"
+            },
+            {
+              "path": "mixed_precision",
+              "value": true
+            },
+            {
+              "path": "gradient_accumulation_steps",
+              "value": 1
+            },
+            {
+              "path": "data.batch_size",
+              "value": 32
+            },
+            {
+              "path": "data.input_width",
+              "value": 224
+            },
+            {
+              "path": "data.input_height",
+              "value": 224
+            },
+            {
+              "path": "data.num_workers",
+              "value": 5
+            },
+            {
+              "path": "data.sampler",
+              "value": "default"
+            },
+            {
+              "path": "data.augmentation.enabled",
+              "value": true
+            },
+            {
+              "path": "data.augmentation.probability",
+              "value": 0.5
+            },
+            {
+              "path": "data.augmentation.horizontal_flip",
+              "value": false
+            },
+            {
+              "path": "optimizer.name",
+              "value": "adamw"
+            },
+            {
+              "path": "optimizer.learning_rate",
+              "value": 0.0002
+            },
+            {
+              "path": "optimizer.weight_decay",
+              "value": 0.0
+            },
+            {
+              "path": "scheduler.name",
+              "value": "none"
+            },
+            {
+              "path": "scheduler.warmup_epochs",
+              "value": 0
+            },
+            {
+              "path": "loss.name",
+              "value": "cross_entropy"
+            },
+            {
+              "path": "loss.label_smoothing",
+              "value": 0.0
+            },
+            {
+              "path": "freeze.mode",
+              "value": "none"
+            }
+          ],
+          "kind": "training"
+        },
+        "metrics": [
+          "accuracy",
+          "macro_f1"
+        ],
+        "n_bootstrap": 1000,
+        "n_permutations": 5000,
+        "name": "detection_training_experiment",
+        "population": {
+          "analysis_id": null,
+          "sample_ids": null,
+          "slice_ids": null
+        },
+        "practical_threshold": 0.01,
+        "repetitions": 1,
+        "seed": 42
+      }
+    ],
+    "stop_on_failure": true,
+    "subpath": null
+  },
+  "result": null,
+  "started_at": "2026-10-07T13:55:32.248176+00:00",
+  "status": "running"
+}
