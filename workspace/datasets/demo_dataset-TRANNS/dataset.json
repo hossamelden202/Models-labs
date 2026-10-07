@@ -1,0 +1,23 @@
+{
+  "created_at": "2026-10-07T10:23:09.042875+00:00",
+  "csv": null,
+  "dataset_id": "demo_dataset-TRANNS",
+  "kind": "folder",
+  "label_column": "label",
+  "path_column": "path",
+  "root": "/kaggle/working/imagenet_vit_test",
+  "source": "local",
+  "summary": {
+    "classes": {
+      "images": 5000
+    },
+    "declared_classes": [
+      "images",
+      "labels"
+    ],
+    "layout": "class_only",
+    "num_excluded": 5001,
+    "num_samples": 5000,
+    "splits": {}
+  }
+}
