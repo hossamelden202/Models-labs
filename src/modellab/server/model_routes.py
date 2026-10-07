@@ -328,6 +328,82 @@ async def upload_model_artifact(
                 message=f"Local model path is not a file: {source}",
             )
 
+        # -----------------------------------------------------
+        # Hugging Face local model support
+        #
+        # A HF model is normally a directory, not just a weights
+        # file. If the supplied weights file has a sibling config.json
+        # identifying a HF model, preserve the entire directory so
+        # the resolver can discover the architecture automatically.
+        # -----------------------------------------------------
+        hf_config = source.parent / "config.json"
+        is_huggingface = False
+
+        if hf_config.is_file():
+            try:
+                import json
+
+                config = json.loads(
+                    hf_config.read_text(encoding="utf-8")
+                )
+
+                is_huggingface = (
+                    isinstance(config, dict)
+                    and (
+                        bool(config.get("model_type"))
+                        or bool(config.get("architectures"))
+                    )
+                )
+            except Exception:
+                is_huggingface = False
+
+        if is_huggingface:
+            import shutil
+
+            staged_dir = folder / source.parent.name
+
+            shutil.copytree(
+                source.parent,
+                staged_dir,
+                dirs_exist_ok=True,
+            )
+
+            model_path = staged_dir / source.name
+            data = source.read_bytes()
+
+            inspection = inspect_artifact(model_path)
+
+            record = {
+                "artifact_id": public_id,
+                "kind": "local",
+                "file_name": source.name,
+                "path": str(model_path),
+                "size": len(data),
+                "artifact_dir": str(staged_dir),
+                "format": "huggingface",
+            }
+
+            workspace.write_json(
+                folder / "artifact.json",
+                record,
+            )
+
+            return JSONResponse(
+                status_code=201,
+                content={
+                    "artifact_id": public_id,
+                    "artifact": {
+                        k: v
+                        for k, v in record.items()
+                        if k != "path"
+                    },
+                    "inspection": _jsonable(inspection),
+                },
+            )
+
+        # -----------------------------------------------------
+        # Normal local model file
+        # -----------------------------------------------------
         model_path = folder / source.name
         data = source.read_bytes()
         model_path.write_bytes(data)
@@ -615,22 +691,46 @@ def model_from_artifact(
         # ---------------------------------------------------------
         spec = _jsonable(resolution.spec)
 
+        # Preserve the provider selected by the resolver at the registration boundary.
+        # Local Hugging Face artifacts are identified by config.json beside the
+        # checkpoint. Existing registered architectures are unaffected.
+        if isinstance(spec, dict):
+            hf_config_path = Path(model_path).parent / "config.json"
+
+            if (
+                resolution.route == "provider_architecture"
+                and hf_config_path.is_file()
+            ):
+                try:
+                    hf_config = json.loads(hf_config_path.read_text())
+                except Exception:
+                    hf_config = {}
+
+                if (
+                    isinstance(hf_config, dict)
+                    and (
+                        hf_config.get("model_type")
+                        or hf_config.get("architectures")
+                    )
+                ):
+                    spec["provider_id"] = "huggingface"
+
         if isinstance(spec, dict):
             spec["path"] = str(model_path)
 
-            if materialized_factory is not None:
-                factory_ref = spec.get("factory")
+        if materialized_factory is not None:
+            factory_ref = spec.get("factory")
 
-                if factory_ref:
-                    factory_ref = str(factory_ref)
+            if factory_ref:
+                factory_ref = str(factory_ref)
 
-                    if ":" in factory_ref:
-                        callable_name = factory_ref.rsplit(":", 1)[1]
-                        spec["factory"] = (
-                            f"{materialized_factory}:{callable_name}"
-                        )
-                    else:
-                        spec["factory"] = str(materialized_factory)
+                if ":" in factory_ref:
+                    callable_name = factory_ref.rsplit(":", 1)[1]
+                    spec["factory"] = (
+                        f"{materialized_factory}:{callable_name}"
+                    )
+                else:
+                    spec["factory"] = str(materialized_factory)
 
         # ---------------------------------------------------------
         # Preserve resolver metadata required by downstream systems.

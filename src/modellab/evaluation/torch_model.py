@@ -39,6 +39,7 @@ class TorchModelSpec(BaseModel):
     mixed_precision: bool = False
     architecture: str | None = None
     architecture_config: dict[str, Any] | None = None
+    provider_id: str | None = None
 
     @model_validator(mode="after")
     def _check(self):
@@ -158,6 +159,60 @@ def _build_registered(spec: TorchModelSpec) -> torch.nn.Module:
     return _require_module(build_architecture(spec.architecture, spec.architecture_config, spec.num_classes))
 
 
+def _build_huggingface(spec: TorchModelSpec) -> torch.nn.Module:
+    """
+    Build a Hugging Face image-classification architecture from the
+    local artifact directory.
+
+    This constructs the architecture only. Checkpoint weights are loaded
+    separately by _apply_state_dict(), preserving ModelLab's existing
+    diagnostics and compatibility checks.
+    """
+    if spec.path is None:
+        raise ModelLoadError("Hugging Face provider requires a checkpoint path")
+
+    model_dir = Path(spec.path).parent
+    config_path = model_dir / "config.json"
+
+    if not config_path.is_file():
+        raise ModelLoadError(
+            f"Hugging Face model directory has no config.json: {model_dir}"
+        )
+
+    try:
+        from transformers import AutoConfig, AutoModelForImageClassification
+    except ImportError as exc:
+        raise ModelLoadError(
+            "Hugging Face Transformers is required for provider architecture loading"
+        ) from exc
+
+    try:
+        config = AutoConfig.from_pretrained(
+            str(model_dir),
+            local_files_only=True,
+        )
+
+        # ModelLab's resolved class count remains authoritative.
+        if spec.num_classes is not None:
+            config.num_labels = spec.num_classes
+
+        if spec.class_names:
+            config.id2label = {
+                i: name for i, name in enumerate(spec.class_names)
+            }
+            config.label2id = {
+                name: i for i, name in enumerate(spec.class_names)
+            }
+
+        model = AutoModelForImageClassification.from_config(config)
+    except Exception as exc:
+        raise ModelLoadError(
+            f"could not construct Hugging Face model from {model_dir}: {exc}"
+        ) from exc
+
+    return _require_module(model)
+
+
 def _read_state(path: Path):
     if path.suffix.lower() == ".safetensors":
         try:
@@ -166,6 +221,92 @@ def _read_state(path: Path):
             raise ModelLoadError("reading .safetensors files needs the safetensors package") from exc
         return load_file(str(path))
     return torch.load(path, map_location="cpu", weights_only=True)
+
+
+
+
+def _normalize_hf_vit_state_dict(
+    model: torch.nn.Module,
+    state: Mapping[str, torch.Tensor],
+) -> Mapping[str, torch.Tensor]:
+    """
+    Normalize legacy Hugging Face ViT checkpoint keys to the
+    parameter names used by newer Transformers ViT models.
+
+    This is intentionally narrow:
+      - activates only when the checkpoint contains legacy
+        `vit.encoder.layer.*` keys
+      - activates only when the target model contains
+        `vit.layers.*` keys
+      - leaves all other architectures untouched
+    """
+
+    state_keys = tuple(state.keys())
+    model_keys = frozenset(model.state_dict().keys())
+
+    legacy_prefix = "vit.encoder.layer."
+    current_prefix = "vit.layers."
+
+    has_legacy_vit = any(
+        key.startswith(legacy_prefix)
+        for key in state_keys
+    )
+
+    has_current_vit = any(
+        key.startswith(current_prefix)
+        for key in model_keys
+    )
+
+    if not has_legacy_vit or not has_current_vit:
+        return state
+
+    replacements = (
+        (
+            ".attention.attention.query.",
+            ".attention.q_proj.",
+        ),
+        (
+            ".attention.attention.key.",
+            ".attention.k_proj.",
+        ),
+        (
+            ".attention.attention.value.",
+            ".attention.v_proj.",
+        ),
+        (
+            ".attention.output.dense.",
+            ".attention.o_proj.",
+        ),
+        (
+            ".intermediate.dense.",
+            ".mlp.fc1.",
+        ),
+        (
+            ".output.dense.",
+            ".mlp.fc2.",
+        ),
+    )
+
+    normalized: dict[str, torch.Tensor] = {}
+
+    for key, value in state.items():
+        new_key = key
+
+        if new_key.startswith(legacy_prefix):
+            new_key = new_key.replace(
+                legacy_prefix,
+                current_prefix,
+                1,
+            )
+
+            for old, new in replacements:
+                if old in new_key:
+                    new_key = new_key.replace(old, new, 1)
+                    break
+
+        normalized[new_key] = value
+
+    return normalized
 
 
 def _apply_state_dict(model: torch.nn.Module, spec: TorchModelSpec) -> None:
@@ -181,6 +322,9 @@ def _apply_state_dict(model: torch.nn.Module, spec: TorchModelSpec) -> None:
         state = {
             (k[len(prefix) :] if k.startswith(prefix) else k): v for k, v in state.items()
         }
+
+    state = _normalize_hf_vit_state_dict(model, state)
+
     check_and_load(model, state, spec.model_id)
 
 
@@ -216,7 +360,30 @@ def _load_model(spec: TorchModelSpec) -> torch.nn.Module:
 
             model = _require_module(model)
         elif spec.source == "state_dict":
-            model = _build_registered(spec) if spec.architecture else _build_from_factory(spec)
+            is_huggingface = spec.provider_id == "huggingface"
+
+            # Runtime fallback for resolved local Hugging Face artifacts.
+            # Some API/runtime paths reconstruct TorchModelSpec without
+            # preserving provider_id, while architecture_config still
+            # contains the Hugging Face model configuration.
+            if not is_huggingface:
+                config = spec.architecture_config
+                is_huggingface = (
+                    isinstance(config, dict)
+                    and (
+                        config.get("model_type")
+                        or config.get("architectures")
+                    )
+                )
+
+            if is_huggingface:
+                model = _build_huggingface(spec)
+            else:
+                model = (
+                    _build_registered(spec)
+                    if spec.architecture
+                    else _build_from_factory(spec)
+                )
             _apply_state_dict(model, spec)
         else:
             model = _build_from_factory(spec)

@@ -13,6 +13,7 @@ from modellab.evaluation.torch_model import (
     TorchModelSpec,
     _build_from_factory,
     _build_registered,
+    _normalize_hf_vit_state_dict,
     _read_state,
 )
 from modellab.loading import architectures as arch
@@ -118,6 +119,100 @@ def _strip_keys(state: dict, prefix: str) -> dict:
     return {(k[len(prefix):] if k.startswith(prefix) else k): v for k, v in state.items()}
 
 
+def _build_huggingface(
+    spec: TorchModelSpec,
+    provider: dict[str, Any],
+) -> torch.nn.Module:
+    """
+    Build a standard Hugging Face image-classification architecture
+    from config only.
+
+    IMPORTANT:
+    This constructs the architecture but does NOT load checkpoint
+    weights. ModelLab's existing _state(), _diagnose(), and
+    check_and_load() pipeline remains responsible for the weights.
+    """
+    try:
+        from transformers import AutoConfig, AutoModelForImageClassification
+    except ImportError as exc:
+        raise RuntimeError(
+            "Hugging Face Transformers is required for provider "
+            "architecture construction"
+        ) from exc
+
+    source = provider.get("source") or {}
+    provider_config = dict(provider.get("config") or {})
+
+    provider_path = source.get("path")
+    provider_identifier = source.get("identifier")
+
+    # MVP deliberately prefers a local HF directory. This prevents an
+    # automatic registration from unexpectedly downloading arbitrary
+    # model code or weights from the network.
+    config_source = provider_path
+
+    if not config_source:
+        config_source = provider_identifier
+
+    if not config_source:
+        raise RuntimeError(
+            "Hugging Face provider has neither a local path nor "
+            "an architecture identifier"
+        )
+
+    trust_remote_code = bool(
+        provider.get("trust_executable", False)
+    )
+
+    try:
+        if provider_path:
+            config = AutoConfig.from_pretrained(
+                str(config_source),
+                local_files_only=True,
+                trust_remote_code=trust_remote_code,
+            )
+        else:
+            config = AutoConfig.from_pretrained(
+                str(config_source),
+                trust_remote_code=trust_remote_code,
+            )
+
+        # Keep the already-validated ModelLab class count authoritative.
+        if spec.num_classes is not None:
+            if hasattr(config, "num_labels"):
+                config.num_labels = spec.num_classes
+
+            # Preserve the corrected label metadata from config.json.
+            if spec.class_names:
+                config.id2label = {
+                    index: name
+                    for index, name in enumerate(spec.class_names)
+                }
+                config.label2id = {
+                    name: index
+                    for index, name in enumerate(spec.class_names)
+                }
+
+        model = AutoModelForImageClassification.from_config(
+            config,
+            trust_remote_code=trust_remote_code,
+        )
+
+    except Exception as exc:
+        raise RuntimeError(
+            f"could not construct Hugging Face architecture "
+            f"from {config_source!r}: {exc}"
+        ) from exc
+
+    if not isinstance(model, torch.nn.Module):
+        raise TypeError(
+            "Hugging Face AutoModelForImageClassification did not "
+            f"produce a torch.nn.Module: {type(model).__name__}"
+        )
+
+    return model
+
+
 class _Resolver:
     def __init__(self, req: ModelRequest, settings: ResolveSettings, artifact_path, factory_file):
         self.req = req
@@ -184,7 +279,20 @@ class _Resolver:
             resolved["architecture_path"] = self.req.architecture_path
         return Resolution(
             status=status, route=self.route, artifact=self.info,
-            spec=self.spec.model_dump(mode="json") if status == "ready" else None,
+            spec=(
+                {
+                    **self.spec.model_dump(mode="json"),
+                    "provider_id": self.provider_resolution.get("provider_id"),
+                }
+                if status == "ready"
+                and self.provider_resolution is not None
+                and self.provider_resolution.get("provider_id")
+                else (
+                    self.spec.model_dump(mode="json")
+                    if status == "ready"
+                    else None
+                )
+            ),
             resolved={k: v for k, v in resolved.items() if v is not None}, preprocess=pre,
             inferred=self.inferred, missing=self.missing, candidates=self.candidates,
             diagnostics=self.diagnostics, validation=self.validation, errors=self.errors, warnings=self.warnings,
@@ -475,32 +583,10 @@ class _Resolver:
 
 
     def _resolve_provider_architecture(self) -> bool:
-        """
-        Resolve an architecture through the generic provider layer.
-
-        External architecture providers are intentionally separate
-        from ModelLab's registered architecture registry.
-
-        Supported external source aliases:
-          - huggingface
-          - hf
-          - transformers
-          - local
-
-        The architecture name itself is preserved as the external
-        provider identifier. It is never treated as a ModelLab
-        registered architecture when an external source is supplied.
-        """
-
         r = self.req
-
         source_type = r.architecture_source
         source_path = r.architecture_path
         source_identifier = r.architecture_identifier
-
-        # --------------------------------------------------------
-        # Infer the provider when the request gives enough evidence.
-        # --------------------------------------------------------
 
         if source_type in {"hf", "transformers"}:
             source_type = "huggingface"
@@ -511,12 +597,6 @@ class _Resolver:
         if source_identifier and not source_type:
             source_type = "huggingface"
 
-        # A Hugging Face-style repository identifier such as
-        # "facebook/dinov3-..." is an external architecture
-        # identifier, not a ModelLab registered architecture.
-        #
-        # Do this only when no explicit source was supplied and the
-        # architecture clearly looks like an external HF identifier.
         if (
             not source_type
             and r.architecture
@@ -526,13 +606,53 @@ class _Resolver:
             source_type = "huggingface"
             source_identifier = r.architecture
 
-        # No external/provider information at all.
+        # -------------------------------------------------------------
+        # Automatic local Hugging Face detection.
+        #
+        # A normal state-dict checkpoint becomes a HF candidate only
+        # when its sibling directory contains a real Transformers
+        # config.json with model_type/architectures metadata.
+        #
+        # This does not affect YOLO or ordinary PyTorch checkpoints.
+        # -------------------------------------------------------------
+        if not source_type and self.path is not None:
+            artifact_dir = self.path.parent
+
+            config_path = artifact_dir / "config.json"
+
+            if config_path.is_file():
+                try:
+                    import json
+
+                    config_data = json.loads(
+                        config_path.read_text(encoding="utf-8")
+                    )
+
+                    if isinstance(config_data, dict) and (
+                        config_data.get("model_type")
+                        or config_data.get("architectures")
+                    ):
+                        source_type = "huggingface"
+                        source_path = str(artifact_dir)
+
+                        self.infer(
+                            "architecture_source",
+                            "huggingface",
+                            "local checkpoint directory contains a Transformers config.json",
+                        )
+                        self.infer(
+                            "architecture_path",
+                            str(artifact_dir),
+                            "local checkpoint directory contains a Transformers config.json",
+                        )
+                except Exception:
+                    # Do not turn an unrelated/broken config.json into
+                    # a resolver failure. The normal probe path below
+                    # remains available.
+                    pass
+
         if not source_type:
             return False
-
-        # --------------------------------------------------------
-        # Build the provider source.
-        # --------------------------------------------------------
 
         source = ArchitectureSource(
             source_type=source_type,
@@ -541,9 +661,6 @@ class _Resolver:
             config=dict(r.architecture_config or {}),
         )
 
-        # For explicit external architectures, preserve the
-        # architecture identifier while preventing the registered
-        # architecture registry from seeing it.
         provider_architecture = r.architecture
 
         try:
@@ -587,6 +704,7 @@ class _Resolver:
                     "config": dict(provider_source.config),
                 },
                 "config": dict(result.config or {}),
+                "trust_executable": bool(r.trust_executable),
             }
 
             self.infer(
@@ -600,46 +718,37 @@ class _Resolver:
 
             return True
 
-        if result.status == "ambiguous":
-            self.need(
-                "architecture",
-                (
-                    "multiple architecture providers produced "
-                    "equally strong candidates; choose the "
-                    "architecture explicitly"
-                ),
-                options=[
-                    candidate.architecture
-                    for candidate in result.candidates
-                ],
-            )
-            return True
+        if result.status in {"ambiguous", "needs_input"}:
+            candidates = [
+                candidate.architecture
+                for candidate in result.candidates
+            ]
 
-        if result.status == "needs_input":
             self.need(
                 "architecture",
-                result.reason,
-                options=[
-                    candidate.architecture
-                    for candidate in result.candidates
-                ] or None,
+                result.reason or (
+                    "the architecture provider found multiple "
+                    "possible architectures"
+                ),
+                options=candidates or None,
             )
             return True
 
         if result.status == "error":
-            message = result.reason
+            reason = result.reason or "provider resolution failed"
 
             if result.errors:
-                message += ": " + "; ".join(
-                    result.errors
-                )
+                reason += ": " + "; ".join(result.errors)
 
-            self.err(message)
+            self.err(
+                "architecture provider resolution failed: "
+                + reason
+            )
             return True
 
         self.err(
-            "architecture provider returned unknown status: "
-            f"{result.status}"
+            "architecture provider returned an unknown resolution "
+            f"status: {result.status!r}"
         )
         return True
 
@@ -711,8 +820,16 @@ class _Resolver:
             )
             return
 
-        # Provider architectures are resolved independently
-        # from ModelLab's registered architecture registry.
+        # -------------------------------------------------------------
+        # Provider architectures are resolved independently from
+        # ModelLab's registered architecture registry.
+        #
+        # IMPORTANT:
+        # Automatic Hugging Face detection must happen BEFORE the
+        # generic architecture probe. A Transformers checkpoint can
+        # contain internal dimensions such as 768 that are NOT the
+        # number of classification labels.
+        # -------------------------------------------------------------
         if (
             r.architecture_source
             or r.architecture_path
@@ -727,6 +844,25 @@ class _Resolver:
             if handled:
                 return
 
+        # -------------------------------------------------------------
+        # Automatic provider detection for local model directories.
+        #
+        # This runs only when the request did not explicitly provide
+        # a provider source.
+        # -------------------------------------------------------------
+        if not (
+            r.architecture_source
+            or r.architecture_path
+            or r.architecture_identifier
+        ):
+            handled = self._resolve_provider_architecture()
+
+            if self.provider_resolution is not None:
+                self._route_provider()
+                return
+
+            if handled:
+                return
         if r.architecture:
             self._route_architecture(r.architecture)
             return
@@ -766,26 +902,71 @@ class _Resolver:
 
         self.route = "provider_architecture"
 
+        # Provider metadata is authoritative when it declares the
+        # classification label count. This is especially important
+        # for Hugging Face models: generic checkpoint heuristics can
+        # mistake an internal hidden dimension (for example 768 in
+        # ViT-Base) for the number of classes.
+        if (
+            self.num_classes is None
+            and provider.get("provider_id") == "huggingface"
+        ):
+            provider_config = provider.get("config") or {}
+            provider_num_labels = provider_config.get("num_labels")
+
+            if isinstance(provider_num_labels, int) and provider_num_labels > 0:
+                self.num_classes = provider_num_labels
+                self.infer(
+                    "num_classes",
+                    provider_num_labels,
+                    "Hugging Face config.json num_labels",
+                )
+
+                # A generic checkpoint heuristic may already have
+                # requested num_classes before provider metadata was read.
+                # HF config.json is authoritative, so remove that stale
+                # missing-input request.
+                self.missing = [
+                    item
+                    for item in self.missing
+                    if item.field != "num_classes"
+                ]
+
         if self.num_classes is None:
             self._need_classes()
             return
 
+        provider_id = provider.get("provider_id")
         provider_source = provider.get("source") or {}
 
-        if not self._code_allowed():
-            return
+        # Hugging Face uses the controlled Transformers runtime directly.
+        # No custom factory is required.
+        if provider_id == "huggingface":
+            architecture = provider.get("architecture")
 
-        factory = self.req.factory
-        if not factory:
-            self.need(
-                "factory",
-                (
-                    "this provider architecture requires a "
-                    "factory for model construction"
+            if not architecture:
+                self.err(
+                    "Hugging Face provider resolved without an "
+                    "architecture identifier"
+                )
+                return
+
+            self.fields = {
+                "source": "state_dict",
+                "path": self.path,
+                "state_dict_key": self.state_key,
+                "strip_prefix": self.strip,
+                "architecture": architecture,
+                "architecture_config": dict(
+                    provider.get("config") or {}
                 ),
-            )
+            }
+
+            self._finish_state(meta=False)
             return
 
+        # Existing provider behavior remains unchanged for providers
+        # that require executable/custom construction.
         if not self._code_allowed():
             return
 
@@ -808,24 +989,7 @@ class _Resolver:
             "strip_prefix": self.strip,
             "factory": factory,
             "factory_kwargs": dict(self.req.factory_kwargs),
-            "provider_id": provider.get("provider_id"),
-            "provider_architecture": provider.get(
-                "architecture"
-            ),
-            "provider_source_type": provider_source.get(
-                "source_type"
-            ),
-            "provider_identifier": provider_source.get(
-                "identifier"
-            ),
-            "provider_path": provider_source.get(
-                "path"
-            ),
-            "provider_config": dict(
-                provider.get("config") or {}
-            ),
         }
-
 
         self._finish_state(meta=False)
 
@@ -935,6 +1099,11 @@ class _Resolver:
             "output_index": r.output_index,
             "single_logit_binary": r.single_logit_binary,
             "mixed_precision": r.mixed_precision,
+            "provider_id": (
+                self.provider_resolution.get("provider_id")
+                if self.provider_resolution is not None
+                else None
+            ),
         }
         try:
             self.spec = TorchModelSpec.model_validate({**base, **self.fields})
@@ -947,6 +1116,20 @@ class _Resolver:
         def build():
             if self.route == "custom_factory":
                 return _build_from_factory(self.spec)
+
+            if (
+                self.route == "provider_architecture"
+                and self.provider_resolution is not None
+            ):
+                provider_id = self.provider_resolution.get("provider_id")
+
+                if provider_id == "huggingface":
+                    return _build_huggingface(
+                        self.spec,
+                        self.provider_resolution,
+                    )
+
+            # Existing registered-architecture path.
             return _build_registered(self.spec)
 
         try:
@@ -962,6 +1145,15 @@ class _Resolver:
             return None
 
     def _diagnose(self, module, state):
+        # Normalize known legacy Hugging Face ViT checkpoint keys
+        # before comparing them with the currently constructed
+        # Transformers model.
+        #
+        # This is intentionally narrow and only activates when the
+        # model/checkpoint key families match the legacy/current ViT
+        # layouts. Other architectures, including YOLO, are untouched.
+        state = _normalize_hf_vit_state_dict(module, state)
+
         shapes = model_shapes_of(module)
 
         def diff(candidate):
