@@ -42,6 +42,74 @@ def _load_baseline(
     return payload
 
 
+def create_detection_baseline(
+    store,
+    family_id: str,
+    evaluation_id: str,
+) -> dict[str, Any]:
+    evaluation_dir = (
+        store.root
+        / "evaluations"
+        / evaluation_id
+    )
+
+    metrics_path = evaluation_dir / "metrics.json"
+    metadata_path = evaluation_dir / "metadata.json"
+
+    if not metrics_path.is_file():
+        raise ValueError(
+            f"evaluation '{evaluation_id}' has no metrics.json"
+        )
+
+    if not metadata_path.is_file():
+        raise ValueError(
+            f"evaluation '{evaluation_id}' has no metadata.json"
+        )
+
+    metrics = json.loads(metrics_path.read_text())
+    metadata = json.loads(metadata_path.read_text())
+
+    if not isinstance(metrics, dict):
+        raise ValueError(
+            f"evaluation '{evaluation_id}' has invalid metrics.json"
+        )
+
+    if metrics.get("task") != "detection":
+        raise ValueError(
+            f"evaluation '{evaluation_id}' is not a detection evaluation"
+        )
+
+    relative = (
+        Path("experiments")
+        / family_id
+        / "baseline.json"
+    )
+    target = store.root / relative
+
+    payload = {
+        "family_id": family_id,
+        "evaluation_id": evaluation_id,
+        "metrics": metrics,
+        "metadata": metadata,
+    }
+
+    if target.is_file():
+        existing = json.loads(target.read_text())
+
+        if (
+            existing.get("evaluation_id") != evaluation_id
+            or existing.get("metrics") != metrics
+        ):
+            raise ValueError(
+                f"family '{family_id}' already has a different "
+                "detection baseline"
+            )
+    else:
+        store.write_json(relative, payload)
+
+    return payload
+
+
 def _jsonable(value: Any) -> Any:
     if value is None:
         return None
@@ -500,6 +568,12 @@ def run_detection_family(
         "task": "detection",
         "num_specs": len(specs),
         "num_outcomes": len(outcomes),
+        "num_completed": sum(
+            1 for outcome in outcomes if outcome.status == "completed"
+        ),
+        "num_failed": sum(
+            1 for outcome in outcomes if outcome.status != "completed"
+        ),
         "outcomes": [
             {
                 "experiment_id": outcome.experiment_id,

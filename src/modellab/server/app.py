@@ -725,10 +725,18 @@ def create_app(settings: ServerSettings) -> FastAPI:
                 entry["error"] = doc["error"]
             experiments.append(entry)
         report_path = base / "family_report.json"
+
+        campaigns = []
+        campaigns_dir = base / "campaigns"
+        if campaigns_dir.is_dir():
+            for campaign_path in sorted(campaigns_dir.glob("*/campaign.json")):
+                campaigns.append(json.loads(campaign_path.read_text()))
+
         return {
             "baseline": read(base / "baseline.json"),
             "family_report": json.loads(report_path.read_text()) if report_path.is_file() else None,
             "experiments": experiments,
+            "campaigns": campaigns,
         }
 
     @api.get("/experiments/{family_id}/{experiment_id}")

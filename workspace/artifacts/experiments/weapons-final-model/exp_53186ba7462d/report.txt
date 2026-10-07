@@ -1,60 +1,247 @@
 {
-  "baseline": {
-    "family_id": "weapons-final-model",
-    "fingerprint": "6c001a3b44c0cb193910f941bf5d35b75ba24da8bbd041e781a7b075f1aa3549"
+  "cache_key": "a050987a74dcb7a5a7c359bda9fc9ab5c1027f1175ae49d796638e6e3f279449",
+  "checkpoint": "/kaggle/working/modellab/workspace/artifacts/experiments/weapons-final-model/exp_53186ba7462d/training/weights/best.pt",
+  "comparison": {
+    "available": false,
+    "reason": "no compatible detection baseline was supplied"
   },
-  "error": {
-    "message": "images in one detection batch have different shapes; set resize in the preprocess config",
-    "type": "EvaluationError"
-  },
-  "experiment_id": "exp_53186ba7462d",
-  "schema_version": 1,
-  "spec": {
-    "alpha": 0.05,
-    "hypothesis": {
-      "claim": "Verify end-to-end Phase 5 detection training.",
-      "expected_direction": "improve"
-    },
-    "intervention": {
-      "changes": [
-        {
-          "path": "epochs",
-          "value": 1
-        },
-        {
-          "path": "data.batch_size",
-          "value": 8
-        },
-        {
-          "path": "data.num_workers",
-          "value": 2
-        },
-        {
-          "path": "data.input_width",
-          "value": 640
-        },
-        {
-          "path": "data.input_height",
-          "value": 640
-        }
+  "evaluation": {
+    "evaluation_id": "exp_53186ba7462d-trained",
+    "metrics": {
+      "class_names": [
+        "handgun",
+        "long_gun",
+        "knife",
+        "sword",
+        "explosive"
       ],
-      "kind": "training"
+      "confidence_threshold": 0.25,
+      "f1": 0.27034482758620687,
+      "false_negatives": 218,
+      "false_positives": 311,
+      "iou_threshold": 0.5,
+      "mean_iou": 0.9146202433879808,
+      "num_classes": 5,
+      "num_samples": 472,
+      "per_class": {
+        "explosive": {
+          "class_id": 4,
+          "f1": 0.0,
+          "fn": 0,
+          "fp": 7,
+          "mean_iou": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "tp": 0
+        },
+        "handgun": {
+          "class_id": 0,
+          "f1": 0.07692307692307691,
+          "fn": 71,
+          "fp": 97,
+          "mean_iou": 0.8448211612863742,
+          "precision": 0.0673076923076923,
+          "recall": 0.08974358974358974,
+          "tp": 7
+        },
+        "knife": {
+          "class_id": 2,
+          "f1": 0.446078431372549,
+          "fn": 147,
+          "fp": 79,
+          "mean_iou": 0.9199894035496429,
+          "precision": 0.5352941176470588,
+          "recall": 0.38235294117647056,
+          "tp": 91
+        },
+        "long_gun": {
+          "class_id": 1,
+          "f1": 0.0,
+          "fn": 0,
+          "fp": 51,
+          "mean_iou": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "tp": 0
+        },
+        "sword": {
+          "class_id": 3,
+          "f1": 0.0,
+          "fn": 0,
+          "fp": 77,
+          "mean_iou": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "tp": 0
+        }
+      },
+      "precision": 0.2396088019559902,
+      "recall": 0.310126582278481,
+      "task": "detection",
+      "true_positives": 98
     },
-    "metrics": [
-      "accuracy",
-      "macro_f1"
-    ],
-    "n_bootstrap": 1000,
-    "n_permutations": 5000,
-    "name": "detection-smoke-1epoch",
-    "population": {
-      "analysis_id": null,
-      "sample_ids": null,
-      "slice_ids": null
-    },
-    "practical_threshold": 0.01,
-    "repetitions": 1,
-    "seed": 42
+    "prediction_artifact": "evaluations/exp_53186ba7462d-trained/predictions.json"
   },
-  "status": "failed"
+  "status": "completed",
+  "task": "detection",
+  "training": {
+    "best_epoch": 1,
+    "best_metric": 0.0,
+    "checkpoint": "/kaggle/working/modellab/workspace/artifacts/experiments/weapons-final-model/exp_53186ba7462d/training/weights/best.pt",
+    "comparison": {
+      "available": false,
+      "reason": "no compatible detection baseline was supplied"
+    },
+    "config": {
+      "data": {
+        "augmentation": {
+          "blur_radius": null,
+          "brightness_factor": null,
+          "contrast_factor": null,
+          "crop_fraction": null,
+          "enabled": true,
+          "horizontal_flip": false,
+          "hue_shift": null,
+          "noise_std": null,
+          "probability": 0.5,
+          "random_occlusion_fraction": null,
+          "rotation_degrees": null,
+          "saturation_factor": null
+        },
+        "batch_size": 8,
+        "input_height": 640,
+        "input_width": 640,
+        "num_workers": 2,
+        "sampler": "default"
+      },
+      "early_stopping_patience": null,
+      "epochs": 1,
+      "freeze": {
+        "last_n_blocks": null,
+        "mode": "none"
+      },
+      "gradient_accumulation_steps": 1,
+      "loss": {
+        "class_weights": null,
+        "focal_gamma": null,
+        "label_smoothing": 0.0,
+        "name": "cross_entropy"
+      },
+      "max_grad_norm": null,
+      "mixed_precision": true,
+      "monitor": "macro_f1",
+      "optimizer": {
+        "learning_rate": 0.001,
+        "momentum": null,
+        "name": "adamw",
+        "weight_decay": 0.0
+      },
+      "scheduler": {
+        "gamma": null,
+        "min_lr": null,
+        "name": "none",
+        "step_size": null,
+        "warmup_epochs": 0
+      },
+      "seed": 42
+    },
+    "evaluation_id": "exp_53186ba7462d-trained",
+    "evaluation_metrics": {
+      "class_names": [
+        "handgun",
+        "long_gun",
+        "knife",
+        "sword",
+        "explosive"
+      ],
+      "confidence_threshold": 0.25,
+      "f1": 0.27034482758620687,
+      "false_negatives": 218,
+      "false_positives": 311,
+      "iou_threshold": 0.5,
+      "mean_iou": 0.9146202433879808,
+      "num_classes": 5,
+      "num_samples": 472,
+      "per_class": {
+        "explosive": {
+          "class_id": 4,
+          "f1": 0.0,
+          "fn": 0,
+          "fp": 7,
+          "mean_iou": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "tp": 0
+        },
+        "handgun": {
+          "class_id": 0,
+          "f1": 0.07692307692307691,
+          "fn": 71,
+          "fp": 97,
+          "mean_iou": 0.8448211612863742,
+          "precision": 0.0673076923076923,
+          "recall": 0.08974358974358974,
+          "tp": 7
+        },
+        "knife": {
+          "class_id": 2,
+          "f1": 0.446078431372549,
+          "fn": 147,
+          "fp": 79,
+          "mean_iou": 0.9199894035496429,
+          "precision": 0.5352941176470588,
+          "recall": 0.38235294117647056,
+          "tp": 91
+        },
+        "long_gun": {
+          "class_id": 1,
+          "f1": 0.0,
+          "fn": 0,
+          "fp": 51,
+          "mean_iou": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "tp": 0
+        },
+        "sword": {
+          "class_id": 3,
+          "f1": 0.0,
+          "fn": 0,
+          "fp": 77,
+          "mean_iou": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "tp": 0
+        }
+      },
+      "precision": 0.2396088019559902,
+      "recall": 0.310126582278481,
+      "task": "detection",
+      "true_positives": 98
+    },
+    "history": [
+      {
+        "epoch": 1.0,
+        "lr/pg0": 0.001,
+        "lr/pg1": 0.001,
+        "lr/pg2": 0.001,
+        "metrics/mAP50(B)": 0.13321,
+        "metrics/mAP50-95(B)": 0.08368,
+        "metrics/precision(B)": 0.12615,
+        "metrics/recall(B)": 0.27381,
+        "time": 9.42836,
+        "train/box_loss": 2.03384,
+        "train/cls_loss": 5.664,
+        "train/dfl_loss": 3.04066,
+        "val/box_loss": 1.00097,
+        "val/cls_loss": 2.99166,
+        "val/dfl_loss": 1.45383
+      }
+    ],
+    "last_checkpoint": "/kaggle/working/modellab/workspace/artifacts/experiments/weapons-final-model/exp_53186ba7462d/training/weights/last.pt",
+    "status": "completed",
+    "stopped_early": false,
+    "task": "detection",
+    "total_epochs": 1
+  }
 }

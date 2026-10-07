@@ -1,6 +1,6 @@
 task: detect
 mode: train
-model: /kaggle/input/datasets/hossameldenmohamed/weapons-continue-v3/runs/weapons_model_finetuned/weights/best.pt
+model: /kaggle/input/datasets/hossameldenmohamed/weapons-yolo-model/best.pt
 data: /kaggle/working/modellab/workspace/artifacts/experiments/weapons-final-model/exp_53186ba7462d/training/dataset/data.yaml
 epochs: 1
 time: null

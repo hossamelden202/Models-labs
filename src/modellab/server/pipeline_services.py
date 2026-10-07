@@ -19,7 +19,14 @@ def _objects(ws, cache, p):
     if not p.get("model_id") or not p.get("dataset_id"):
         return None, None
     model, pre, _ = cache.get(ws, p["model_id"], p["device"])
-    return model, services.build_dataset(ws, p["dataset_id"], p.get("subpath"), model.spec.class_names, pre)
+    return model, services.build_dataset(
+        ws,
+        p["dataset_id"],
+        p.get("subpath"),
+        model.spec.class_names,
+        pre,
+        task=model.spec.task,
+    )
 
 
 def investigate(ws, cache, store, p):

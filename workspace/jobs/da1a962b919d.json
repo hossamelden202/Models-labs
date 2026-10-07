@@ -1,0 +1,302 @@
+{
+  "created_at": "2026-10-07T00:32:28.603134+00:00",
+  "error": null,
+  "finished_at": "2026-10-07T00:32:53.588989+00:00",
+  "job_id": "da1a962b919d",
+  "kind": "experiments",
+  "params": {
+    "alpha": 0.05,
+    "baseline_evaluation_id": "eval",
+    "dataset_id": "dataset",
+    "device": "auto",
+    "family_id": "expermt",
+    "force": true,
+    "matrices": [],
+    "model_id": "model",
+    "specs": [
+      {
+        "alpha": 0.05,
+        "hypothesis": {
+          "claim": "Training the detector with the selected configuration will improve detection F1 over the baseline.",
+          "expected_direction": "improve"
+        },
+        "intervention": {
+          "changes": [
+            {
+              "path": "epochs",
+              "value": 2
+            },
+            {
+              "path": "data.batch_size",
+              "value": 32
+            },
+            {
+              "path": "data.input_width",
+              "value": 224
+            },
+            {
+              "path": "data.input_height",
+              "value": 224
+            },
+            {
+              "path": "data.num_workers",
+              "value": 2
+            },
+            {
+              "path": "optimizer.learning_rate",
+              "value": 0.0002
+            }
+          ],
+          "kind": "training"
+        },
+        "metrics": [
+          "accuracy",
+          "macro_f1"
+        ],
+        "n_bootstrap": 1000,
+        "n_permutations": 5000,
+        "name": "detection_training_experiment",
+        "population": {
+          "analysis_id": null,
+          "sample_ids": null,
+          "slice_ids": null
+        },
+        "practical_threshold": 0.01,
+        "repetitions": 1,
+        "seed": 42
+      }
+    ],
+    "stop_on_failure": true,
+    "subpath": null
+  },
+  "result": {
+    "family_id": "expermt",
+    "num_completed": 1,
+    "num_failed": 0,
+    "outcomes": [
+      {
+        "experiment_id": "exp_8235bbd79ee1",
+        "name": "detection_training_experiment",
+        "result": {
+          "cache_key": "exp_8235bbd79ee1",
+          "checkpoint": "/kaggle/working/modellab/workspace/artifacts/experiments/expermt/exp_8235bbd79ee1/training/weights/best.pt",
+          "comparison": {
+            "available": true,
+            "baseline": {
+              "f1": 0.15986949429037522,
+              "mean_iou": 0.7559261113929755,
+              "precision": 0.16498316498316498,
+              "recall": 0.1550632911392405
+            },
+            "delta": {
+              "f1": 0.20445688142119972,
+              "mean_iou": 0.058324995656305,
+              "precision": 0.28999313833437057,
+              "recall": 0.1487341772151899
+            },
+            "trained": {
+              "f1": 0.36432637571157495,
+              "mean_iou": 0.8142511070492805,
+              "precision": 0.4549763033175355,
+              "recall": 0.3037974683544304
+            }
+          },
+          "evaluation": {
+            "evaluation_id": "exp_8235bbd79ee1-trained",
+            "metrics": {
+              "class_names": [
+                "handgun",
+                "long_gun",
+                "knife",
+                "sword",
+                "explosive"
+              ],
+              "confidence_threshold": 0.25,
+              "f1": 0.36432637571157495,
+              "false_negatives": 220,
+              "false_positives": 115,
+              "iou_threshold": 0.5,
+              "mean_iou": 0.8142511070492805,
+              "num_classes": 5,
+              "num_samples": 472,
+              "per_class": {
+                "explosive": {
+                  "class_id": 4,
+                  "f1": 0.0,
+                  "fn": 0,
+                  "fp": 10,
+                  "mean_iou": 0.0,
+                  "precision": 0.0,
+                  "recall": 0.0,
+                  "tp": 0
+                },
+                "handgun": {
+                  "class_id": 0,
+                  "f1": 0.09929078014184396,
+                  "fn": 71,
+                  "fp": 56,
+                  "mean_iou": 0.7220114621262557,
+                  "precision": 0.1111111111111111,
+                  "recall": 0.08974358974358974,
+                  "tp": 7
+                },
+                "knife": {
+                  "class_id": 2,
+                  "f1": 0.49171270718232046,
+                  "fn": 149,
+                  "fp": 35,
+                  "mean_iou": 0.8215059105825522,
+                  "precision": 0.717741935483871,
+                  "recall": 0.3739495798319328,
+                  "tp": 89
+                },
+                "long_gun": {
+                  "class_id": 1,
+                  "f1": 0.0,
+                  "fn": 0,
+                  "fp": 5,
+                  "mean_iou": 0.0,
+                  "precision": 0.0,
+                  "recall": 0.0,
+                  "tp": 0
+                },
+                "sword": {
+                  "class_id": 3,
+                  "f1": 0.0,
+                  "fn": 0,
+                  "fp": 9,
+                  "mean_iou": 0.0,
+                  "precision": 0.0,
+                  "recall": 0.0,
+                  "tp": 0
+                }
+              },
+              "precision": 0.4549763033175355,
+              "recall": 0.3037974683544304,
+              "task": "detection",
+              "true_positives": 96
+            }
+          },
+          "status": "completed",
+          "task": "detection",
+          "training": {
+            "best_checkpoint": "/kaggle/working/modellab/workspace/artifacts/experiments/expermt/exp_8235bbd79ee1/training/weights/best.pt",
+            "best_epoch": 2,
+            "best_metric": 0.0,
+            "config": {
+              "data": {
+                "augmentation": {
+                  "blur_radius": null,
+                  "brightness_factor": null,
+                  "contrast_factor": null,
+                  "crop_fraction": null,
+                  "enabled": true,
+                  "horizontal_flip": false,
+                  "hue_shift": null,
+                  "noise_std": null,
+                  "probability": 0.5,
+                  "random_occlusion_fraction": null,
+                  "rotation_degrees": null,
+                  "saturation_factor": null
+                },
+                "batch_size": 32,
+                "input_height": 224,
+                "input_width": 224,
+                "num_workers": 2,
+                "sampler": "default"
+              },
+              "early_stopping_patience": null,
+              "epochs": 2,
+              "freeze": {
+                "last_n_blocks": null,
+                "mode": "none"
+              },
+              "gradient_accumulation_steps": 1,
+              "loss": {
+                "class_weights": null,
+                "focal_gamma": null,
+                "label_smoothing": 0.0,
+                "name": "cross_entropy"
+              },
+              "max_grad_norm": null,
+              "mixed_precision": true,
+              "monitor": "macro_f1",
+              "optimizer": {
+                "learning_rate": 0.0002,
+                "momentum": null,
+                "name": "adamw",
+                "weight_decay": 0.0
+              },
+              "scheduler": {
+                "gamma": null,
+                "min_lr": null,
+                "name": "none",
+                "step_size": null,
+                "warmup_epochs": 0
+              },
+              "seed": 42
+            },
+            "history": [
+              {
+                "epoch": 1.0,
+                "lr/pg0": 0.000183333,
+                "lr/pg1": 0.000183333,
+                "lr/pg2": 0.00851667,
+                "metrics/mAP50(B)": 0.16871,
+                "metrics/mAP50-95(B)": 0.08678,
+                "metrics/precision(B)": 0.21555,
+                "metrics/recall(B)": 0.20238,
+                "time": 4.84766,
+                "train/box_loss": 2.02046,
+                "train/cls_loss": 4.02759,
+                "train/dfl_loss": 2.3004,
+                "val/box_loss": 1.53128,
+                "val/cls_loss": 2.57041,
+                "val/dfl_loss": 1.24343
+              },
+              {
+                "epoch": 2.0,
+                "lr/pg0": 0.000101,
+                "lr/pg1": 0.000101,
+                "lr/pg2": 0.000101,
+                "metrics/mAP50(B)": 0.25276,
+                "metrics/mAP50-95(B)": 0.14155,
+                "metrics/precision(B)": 0.27236,
+                "metrics/recall(B)": 0.29838,
+                "time": 6.82381,
+                "train/box_loss": 1.35003,
+                "train/cls_loss": 2.7123,
+                "train/dfl_loss": 1.55978,
+                "val/box_loss": 1.24221,
+                "val/cls_loss": 2.21221,
+                "val/dfl_loss": 1.03725
+              }
+            ],
+            "last_checkpoint": "/kaggle/working/modellab/workspace/artifacts/experiments/expermt/exp_8235bbd79ee1/training/weights/last.pt",
+            "run_dir": "/kaggle/working/modellab/workspace/artifacts/experiments/expermt/exp_8235bbd79ee1/training",
+            "stopped_early": false,
+            "total_epochs": 2
+          }
+        },
+        "status": "completed"
+      }
+    ],
+    "report": {
+      "family_id": "expermt",
+      "num_completed": 1,
+      "num_failed": 0,
+      "num_outcomes": 1,
+      "num_specs": 1,
+      "outcomes": [
+        {
+          "directory": "/kaggle/working/modellab/workspace/artifacts/experiments/expermt/exp_8235bbd79ee1",
+          "experiment_id": "exp_8235bbd79ee1",
+          "status": "completed"
+        }
+      ],
+      "task": "detection"
+    }
+  },
+  "started_at": "2026-10-07T00:32:28.604201+00:00",
+  "status": "completed"
+}

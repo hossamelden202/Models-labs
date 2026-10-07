@@ -73,22 +73,48 @@ def dataset_summary(ws: Workspace, rec: dict, subpath: str | None = None) -> dic
     }
 
 
-def build_dataset(ws, dataset_id, subpath, class_names, preprocess):
+def build_dataset(
+    ws,
+    dataset_id,
+    subpath,
+    class_names,
+    preprocess,
+    task=None,
+):
     from modellab.evaluation.image_dataset import ImageClassificationDataset
 
     rec = ws.get_dataset(dataset_id)
     names = list(class_names) if class_names else None
     label = dataset_label(dataset_id, subpath)
+
     if rec["kind"] == "csv":
         if subpath:
             raise ApiError(422, "subpath is not supported for CSV datasets")
         return ImageClassificationDataset.from_csv(
-            rec["csv"], root=rec["root"], path_column=rec.get("path_column") or "path",
-            label_column=rec.get("label_column") or "label", class_names=names,
-            dataset_id=label, preprocess=preprocess,
+            rec["csv"],
+            root=rec["root"],
+            path_column=rec.get("path_column") or "path",
+            label_column=rec.get("label_column") or "label",
+            class_names=names,
+            dataset_id=label,
+            preprocess=preprocess,
         )
+
+    if task == "detection":
+        from modellab.evaluation.detection_dataset import YOLODetectionDataset
+
+        return YOLODetectionDataset(
+            root=dataset_root(ws, rec, subpath),
+            class_names=names,
+            dataset_id=label,
+            preprocess=preprocess,
+        )
+
     return ImageClassificationDataset.from_folder(
-        dataset_root(ws, rec, subpath), class_names=names, dataset_id=label, preprocess=preprocess
+        dataset_root(ws, rec, subpath),
+        class_names=names,
+        dataset_id=label,
+        preprocess=preprocess,
     )
 
 
@@ -177,6 +203,7 @@ def evaluate(ws, cache, store, p):
         p.get("subpath"),
         model.spec.class_names,
         pre,
+        task=model.spec.task,
     )
 
     from modellab.evaluation.engine import EvalConfig, run_evaluation
@@ -330,32 +357,118 @@ def experiments(ws, cache, store, p):
         ExperimentConfigError,
         create_baseline,
         expand_matrix,
+        experiment_id,
         parse_spec,
         run_family,
     )
 
     family = p["family_id"]
-    if p.get("baseline_evaluation_id"):
-        create_baseline(store, family, p["baseline_evaluation_id"])
+
     specs = [parse_spec(s) for s in p["specs"]]
     for matrix in p["matrices"]:
         specs.extend(expand_matrix(matrix))
+
     model = dataset = None
+
     if any(s.intervention.kind != "inference" for s in specs):
         if not p.get("model_id") or not p.get("dataset_id"):
-            raise ExperimentConfigError("image and preprocessing interventions need model_id and dataset_id")
-        model, pre, _ = cache.get(ws, p["model_id"], p["device"])
-        dataset = build_dataset(ws, p["dataset_id"], p.get("subpath"), model.spec.class_names, pre)
-    run = run_family(
-        store, family, specs, model=model, dataset=dataset, force=p["force"],
-        stop_on_failure=p["stop_on_failure"], alpha=p["alpha"],
+            raise ExperimentConfigError(
+                "image and preprocessing interventions need "
+                "model_id and dataset_id"
+            )
+
+        model, pre, _ = cache.get(
+            ws,
+            p["model_id"],
+            p["device"],
+        )
+
+        dataset = build_dataset(
+            ws,
+            p["dataset_id"],
+            p.get("subpath"),
+            model.spec.class_names,
+            pre,
+            task=model.spec.task,
+        )
+
+    is_detection_training = (
+        model is not None
+        and getattr(
+            getattr(model, "spec", None),
+            "task",
+            None,
+        ) == "detection"
+        and all(
+            getattr(spec.intervention, "kind", None)
+            == "training"
+            for spec in specs
+        )
     )
+
+    if p.get("baseline_evaluation_id"):
+        if is_detection_training:
+            from modellab.experiments.detection_runner import (
+                create_detection_baseline,
+            )
+
+            create_detection_baseline(
+                store,
+                family,
+                p["baseline_evaluation_id"],
+            )
+        else:
+            create_baseline(
+                store,
+                family,
+                p["baseline_evaluation_id"],
+            )
+
+    if is_detection_training:
+        from modellab.experiments.detection_runner import (
+            run_detection_family,
+        )
+
+        run = run_detection_family(
+            store,
+            family,
+            specs,
+            model=model,
+            dataset=dataset,
+            analysis=None,
+            force=p["force"],
+            stop_on_failure=p["stop_on_failure"],
+            alpha=p["alpha"],
+        )
+    else:
+        run = run_family(
+            store,
+            family,
+            specs,
+            model=model,
+            dataset=dataset,
+            force=p["force"],
+            stop_on_failure=p["stop_on_failure"],
+            alpha=p["alpha"],
+        )
     return {
         "family_id": family,
         "num_completed": run.report["num_completed"],
         "num_failed": run.report["num_failed"],
         "outcomes": [
-            {"experiment_id": o.experiment_id, "name": o.result["spec"]["name"], "status": o.status}
+            {
+                "experiment_id": o.experiment_id,
+                "name": next(
+                    (
+                        spec.name
+                        for spec in specs
+                        if experiment_id(spec) == o.experiment_id
+                    ),
+                    o.experiment_id,
+                ),
+                "status": o.status,
+                "result": o.result,
+            }
             for o in run.outcomes
         ],
         "report": run.report,

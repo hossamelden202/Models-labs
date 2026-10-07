@@ -1,7 +1,7 @@
-Experiment family weapons-final-model
-baseline evaluation: weapons-final7632478
-completed: 0   failed: 1
+Family: weapons-final-model
+Baseline: weapons-final7632478
+Experiments: 1 completed=1 failed=0
 
-FAILED detection-smoke-1epoch: EvaluationError: images in one detection batch have different shapes; set resize in the preprocess config
+exp_d42a49e6aebf: difference n/a, p=n/a, BH=n/a, not classified
 
-The result describes the effect of the applied intervention on this model and population under the controlled design. It does not identify a mechanism. Statistical significance is reported separately from practical significance.
+Statistical significance is reported separately from practical significance.
