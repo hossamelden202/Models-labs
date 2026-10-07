@@ -1,0 +1,66 @@
+{
+  "check": {
+    "loaded": true,
+    "metadata": {
+      "class_names": [
+        "handgun",
+        "long_gun",
+        "knife",
+        "sword",
+        "explosive"
+      ],
+      "details": {
+        "mixed_precision": false,
+        "source": "module",
+        "task": "detection"
+      },
+      "device": "cpu",
+      "framework": "pytorch",
+      "input_size": [
+        224,
+        224
+      ],
+      "model_id": "yolo-fixed",
+      "num_classes": 5
+    }
+  },
+  "created_at": "2026-10-07T13:40:06.155737+00:00",
+  "files": [],
+  "model_id": "yolo-fixed",
+  "preprocess": {
+    "center_crop": null,
+    "color_mode": "RGB",
+    "interpolation": "bilinear",
+    "mean": null,
+    "resize": null,
+    "std": null
+  },
+  "source": "local",
+  "spec": {
+    "class_names": [
+      "handgun",
+      "long_gun",
+      "knife",
+      "sword",
+      "explosive"
+    ],
+    "factory": null,
+    "factory_kwargs": {},
+    "input_size": [
+      224,
+      224
+    ],
+    "mixed_precision": false,
+    "model_id": "yolo-fixed",
+    "num_classes": 5,
+    "output_index": 0,
+    "output_key": null,
+    "path": "/kaggle/working/modellab/workspace/model_artifacts/artifact_280e11ce538644ff9a20799d6a27f819/best.pt",
+    "provider_id": null,
+    "single_logit_binary": false,
+    "source": "module",
+    "state_dict_key": null,
+    "strip_prefix": null,
+    "task": "detection"
+  }
+}

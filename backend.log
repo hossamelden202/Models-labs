@@ -1,38 +1,48 @@
-INFO:     Started server process [5142]
+INFO:     Started server process [5822]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
-INFO:     127.0.0.1:42950 - "GET /health HTTP/1.1" 200 OK
-INFO:     127.0.0.1:42966 - "GET /health HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "POST /experiments HTTP/1.1" 202 Accepted
-INFO:     196.128.216.173:0 - "GET /experiments/trans HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /jobs HTTP/1.1" 200 OK
-12:27:30 INFO    modellab.evaluation: evaluating 5000 images, batch size 32, device cuda
-12:27:39 INFO    modellab.evaluation: evaluated 15/157 batches
-12:27:47 INFO    modellab.evaluation: evaluated 30/157 batches
-12:27:56 INFO    modellab.evaluation: evaluated 45/157 batches
-INFO:     196.128.216.173:0 - "GET /jobs HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /jobs HTTP/1.1" 200 OK
-12:28:05 INFO    modellab.evaluation: evaluated 60/157 batches
-INFO:     196.128.216.173:0 - "GET /jobs HTTP/1.1" 200 OK
-12:28:14 INFO    modellab.evaluation: evaluated 75/157 batches
-INFO:     196.128.216.173:0 - "GET /jobs HTTP/1.1" 200 OK
-12:28:22 INFO    modellab.evaluation: evaluated 90/157 batches
-INFO:     196.128.216.173:0 - "GET /jobs HTTP/1.1" 200 OK
-12:28:31 INFO    modellab.evaluation: evaluated 105/157 batches
-INFO:     196.128.216.173:0 - "GET /jobs HTTP/1.1" 200 OK
-12:28:39 INFO    modellab.evaluation: evaluated 120/157 batches
-12:28:47 INFO    modellab.evaluation: evaluated 135/157 batches
-12:28:55 INFO    modellab.evaluation: evaluated 150/157 batches
-INFO:     196.128.216.173:0 - "GET /jobs HTTP/1.1" 200 OK
-12:28:58 INFO    modellab.evaluation: evaluated 157/157 batches
-INFO:     196.128.216.173:0 - "GET /jobs HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /experiments/trans HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /experiments/trans/exp_d377bb24076c HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /experiments/trans/exp_d377bb24076c/paired HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60952 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60960 - "GET /health HTTP/1.1" 200 OK
 INFO:     196.128.216.173:0 - "GET /health HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /health HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /health HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /jobs HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
 INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
 INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
 INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "POST /evaluations HTTP/1.1" 202 Accepted
+13:51:35 WARNING modellab.model: unpickling a full model from /kaggle/working/modellab/workspace/model_artifacts/artifact_280e11ce538644ff9a20799d6a27f819/best.pt, only do this for files you trust
+/usr/local/lib/python3.13/dist-packages/torch/utils/data/dataloader.py:424: UserWarning: This DataLoader will create 5 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  self.check_worker_number_rationality()
+/usr/local/lib/python3.13/dist-packages/torch/utils/data/dataloader.py:432: UserWarning: This DataLoader will create 5 worker processes in total. Our suggested max number of worker in current system is 4, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  self.check_worker_number_rationality()
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "POST /evaluations HTTP/1.1" 202 Accepted
+INFO:     196.128.216.173:0 - "GET /jobs HTTP/1.1" 200 OK

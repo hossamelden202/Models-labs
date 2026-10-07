@@ -131,6 +131,7 @@ def evaluate(ws, cache, store, p):
             DetectionEvalConfig,
             run_detection_evaluation,
         )
+        from modellab.evaluation.preprocessing import build_transform
 
         rec = ws.get_dataset(p["dataset_id"])
 
@@ -143,16 +144,53 @@ def evaluate(ws, cache, store, p):
 
         root = dataset_root(ws, rec, p.get("subpath"))
 
-        # Detection batches must have a consistent tensor shape.
-        # If the registered model declares an input_size but the stored
-        # preprocessing config does not specify resize, inherit the model
-        # input size without changing the global preprocessing behavior.
-        detection_pre = pre
-        if detection_pre.resize is None and model.spec.input_size is not None:
-            from modellab.evaluation.preprocessing import PreprocessConfig
+        # --------------------------------------------------------
+        # Resolve THIS model's declared input size.
+        #
+        # Do not use a global/default size.
+        # The persisted model registration is authoritative.
+        # --------------------------------------------------------
+        model_record = ws.get_model(p["model_id"])
+        persisted_spec = model_record.get("spec", {})
 
+        detection_input_size = None
+
+        if isinstance(persisted_spec, dict):
+            persisted_size = persisted_spec.get("input_size")
+
+            if persisted_size is not None:
+                detection_input_size = (
+                    int(persisted_size[0]),
+                    int(persisted_size[1]),
+                )
+
+        # Fall back to the runtime spec only if the persisted
+        # registration does not contain a size.
+        if detection_input_size is None and model.spec.input_size is not None:
+            detection_input_size = (
+                int(model.spec.input_size[0]),
+                int(model.spec.input_size[1]),
+            )
+
+        if detection_input_size is None:
+            raise ApiError(
+                422,
+                f"model {p['model_id']!r} has no input_size; "
+                "detection evaluation cannot create fixed-size batches",
+            )
+
+        # --------------------------------------------------------
+        # Force this dataset to THIS model's input size.
+        #
+        # Existing explicit resize is preserved only when it already
+        # matches the model size. Otherwise the model size is used,
+        # because the model cannot receive arbitrary image shapes.
+        # --------------------------------------------------------
+        detection_pre = pre
+
+        if detection_pre.resize != detection_input_size:
             detection_pre = detection_pre.model_copy(
-                update={"resize": tuple(model.spec.input_size)}
+                update={"resize": detection_input_size}
             )
 
         dataset = YOLODetectionDataset(
@@ -164,6 +202,11 @@ def evaluate(ws, cache, store, p):
             ),
             preprocess=detection_pre,
         )
+
+        # Explicitly guarantee the dataset transform uses the
+        # resolved model size.
+        dataset.preprocess = detection_pre
+        dataset._transform = build_transform(detection_pre)
 
         config = DetectionEvalConfig(
             batch_size=p["batch_size"],
@@ -177,6 +220,7 @@ def evaluate(ws, cache, store, p):
             store=store,
             config=config,
             evaluation_id=p.get("evaluation_id"),
+            input_size=detection_input_size,
         )
 
         return {

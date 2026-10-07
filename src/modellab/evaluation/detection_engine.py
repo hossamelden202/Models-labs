@@ -40,8 +40,13 @@ class DetectionEvalConfig(BaseModel):
 
 
 class _DetectionStream(Dataset):
-    def __init__(self, dataset: YOLODetectionDataset):
+    def __init__(
+        self,
+        dataset: YOLODetectionDataset,
+        input_size: tuple[int, int] | None = None,
+    ):
         self.dataset = dataset
+        self.input_size = input_size
 
     def __len__(self):
         return len(self.dataset)
@@ -54,16 +59,77 @@ class _DetectionStream(Dataset):
                 f"sample {sample.sample_id}: input must be a torch.Tensor"
             )
 
+        tensor = sample.input
+
+        if self.input_size is not None:
+            expected_height, expected_width = self.input_size
+            expected_shape = (
+                int(expected_height),
+                int(expected_width),
+            )
+
+            actual_shape = tuple(int(x) for x in tensor.shape[-2:])
+
+            if actual_shape != expected_shape:
+                if tensor.ndim != 3:
+                    raise EvaluationError(
+                        f"sample {sample.sample_id}: expected image tensor "
+                        f"with 3 dimensions (C,H,W), got "
+                        f"{tuple(tensor.shape)}"
+                    )
+
+                tensor = torch.nn.functional.interpolate(
+                    tensor.unsqueeze(0),
+                    size=expected_shape,
+                    mode="bilinear",
+                    align_corners=False,
+                ).squeeze(0)
+
         return (
             sample.sample_id,
             sample.metadata.get("path", ""),
             sample.metadata.get("boxes", []),
-            sample.input,
+            tensor,
         )
 
 
-def _collate(items):
+def _collate(items, input_size=None):
     ids, paths, targets, tensors = zip(*items, strict=True)
+
+    if input_size is not None:
+        expected_height, expected_width = (
+            int(input_size[0]),
+            int(input_size[1]),
+        )
+
+        normalized_tensors = []
+
+        for tensor in tensors:
+            if not isinstance(tensor, torch.Tensor):
+                raise EvaluationError(
+                    "detection sample input must be a torch.Tensor"
+                )
+
+            if tensor.ndim != 3:
+                raise EvaluationError(
+                    "detection sample input must have shape (C,H,W), "
+                    f"got {tuple(tensor.shape)}"
+                )
+
+            if tuple(tensor.shape[-2:]) != (
+                expected_height,
+                expected_width,
+            ):
+                tensor = torch.nn.functional.interpolate(
+                    tensor.unsqueeze(0),
+                    size=(expected_height, expected_width),
+                    mode="bilinear",
+                    align_corners=False,
+                ).squeeze(0)
+
+            normalized_tensors.append(tensor)
+
+        tensors = tuple(normalized_tensors)
 
     try:
         batch = torch.stack(tensors)
@@ -319,6 +385,7 @@ def run_detection_evaluation(
     store: ArtifactStore,
     config: DetectionEvalConfig | None = None,
     evaluation_id: str | None = None,
+    input_size: tuple[int, int] | None = None,
 ) -> EvaluationResult:
 
     config = config or DetectionEvalConfig()
@@ -354,12 +421,71 @@ def run_detection_evaluation(
 
     started = datetime.now(timezone.utc)
 
+    # Resolve one fixed image size for this detection model.
+    # The caller supplies the model-specific size.
+    detection_input_size = input_size
+
+    if detection_input_size is None:
+        detection_input_size = model.spec.input_size
+
+    if detection_input_size is None:
+        effective_resize = getattr(
+            getattr(dataset, "preprocess", None),
+            "resize",
+            None,
+        )
+
+        if effective_resize is not None:
+            if isinstance(effective_resize, int):
+                detection_input_size = (
+                    int(effective_resize),
+                    int(effective_resize),
+                )
+            else:
+                detection_input_size = (
+                    int(effective_resize[0]),
+                    int(effective_resize[1]),
+                )
+
+    if detection_input_size is None:
+        raise EvaluationError(
+            "detection evaluation requires a fixed input size; "
+            "set model input_size or preprocess.resize"
+        )
+
+    detection_input_size = (
+        int(detection_input_size[0]),
+        int(detection_input_size[1]),
+    )
+
+    # Detection-only: force dataset images to this model's size.
+    from modellab.evaluation.preprocessing import build_transform
+
+    preprocess = getattr(dataset, "preprocess", None)
+
+    if preprocess is None:
+        from modellab.evaluation.preprocessing import PreprocessConfig
+        preprocess = PreprocessConfig()
+
+    if preprocess.resize != detection_input_size:
+        preprocess = preprocess.model_copy(
+            update={"resize": detection_input_size}
+        )
+        dataset.preprocess = preprocess
+        dataset._transform = build_transform(preprocess)
+
     loader = DataLoader(
-        _DetectionStream(dataset),
+        _DetectionStream(
+            dataset,
+            input_size=detection_input_size,
+        ),
         batch_size=config.batch_size,
         shuffle=False,
         num_workers=config.num_workers,
-        collate_fn=_collate,
+        collate_fn=lambda items: _collate(
+            items,
+            input_size=detection_input_size,
+        ),
         pin_memory=model.device.type == "cuda",
     )
 
