@@ -1,0 +1,33 @@
+{
+  "created_at": "2026-10-07T02:55:38.728886+00:00",
+  "error": null,
+  "finished_at": "2026-10-07T02:55:54.511050+00:00",
+  "job_id": "1d0ade60783f",
+  "kind": "evaluation",
+  "params": {
+    "batch_size": 32,
+    "dataset_id": "dataset2",
+    "device": "auto",
+    "evaluation_id": "eval2",
+    "model_id": "model2",
+    "num_workers": 4,
+    "seed": 42,
+    "subpath": null
+  },
+  "result": {
+    "dataset_id": "dataset2",
+    "device": "auto",
+    "evaluation_id": "eval2",
+    "f1": 0.15986949429037522,
+    "false_negatives": 267,
+    "false_positives": 248,
+    "mean_iou": 0.7559261113929755,
+    "model_id": "model2",
+    "num_samples": 472,
+    "precision": 0.16498316498316498,
+    "recall": 0.1550632911392405,
+    "true_positives": 49
+  },
+  "started_at": "2026-10-07T02:55:38.730135+00:00",
+  "status": "completed"
+}

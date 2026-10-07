@@ -1,0 +1,538 @@
+{
+  "created_at": "2026-10-07T03:09:21.663318+00:00",
+  "error": null,
+  "finished_at": "2026-10-07T03:10:41.496230+00:00",
+  "job_id": "53deb7f070c2",
+  "kind": "experiments",
+  "params": {
+    "alpha": 0.05,
+    "baseline_evaluation_id": "eval2",
+    "dataset_id": "dataset2",
+    "device": "auto",
+    "family_id": "wonowyqw",
+    "force": true,
+    "matrices": [],
+    "model_id": "model2",
+    "specs": [
+      {
+        "alpha": 0.05,
+        "hypothesis": {
+          "claim": "Training the detector with the selected configuration will improve detection F1 over the baseline.",
+          "expected_direction": "improve"
+        },
+        "intervention": {
+          "changes": [
+            {
+              "path": "epochs",
+              "value": 10
+            },
+            {
+              "path": "seed",
+              "value": 42
+            },
+            {
+              "path": "monitor",
+              "value": "macro_f1"
+            },
+            {
+              "path": "mixed_precision",
+              "value": true
+            },
+            {
+              "path": "gradient_accumulation_steps",
+              "value": 1
+            },
+            {
+              "path": "data.batch_size",
+              "value": 32
+            },
+            {
+              "path": "data.input_width",
+              "value": 224
+            },
+            {
+              "path": "data.input_height",
+              "value": 224
+            },
+            {
+              "path": "data.num_workers",
+              "value": 4
+            },
+            {
+              "path": "data.sampler",
+              "value": "balanced"
+            },
+            {
+              "path": "data.augmentation.enabled",
+              "value": true
+            },
+            {
+              "path": "data.augmentation.probability",
+              "value": 0.5
+            },
+            {
+              "path": "data.augmentation.horizontal_flip",
+              "value": true
+            },
+            {
+              "path": "optimizer.name",
+              "value": "adamw"
+            },
+            {
+              "path": "optimizer.learning_rate",
+              "value": 0.0002
+            },
+            {
+              "path": "optimizer.weight_decay",
+              "value": 0.0
+            },
+            {
+              "path": "scheduler.name",
+              "value": "none"
+            },
+            {
+              "path": "scheduler.warmup_epochs",
+              "value": 0
+            },
+            {
+              "path": "loss.name",
+              "value": "cross_entropy"
+            },
+            {
+              "path": "loss.label_smoothing",
+              "value": 0.0
+            },
+            {
+              "path": "freeze.mode",
+              "value": "none"
+            },
+            {
+              "path": "data.augmentation.rotation_degrees",
+              "value": 10.0
+            },
+            {
+              "path": "data.augmentation.hue_shift",
+              "value": 0.05
+            },
+            {
+              "path": "data.augmentation.blur_radius",
+              "value": 1.0
+            },
+            {
+              "path": "data.augmentation.noise_std",
+              "value": 0.02
+            },
+            {
+              "path": "data.augmentation.crop_fraction",
+              "value": 0.9
+            },
+            {
+              "path": "data.augmentation.random_occlusion_fraction",
+              "value": 0.1
+            },
+            {
+              "path": "optimizer.momentum",
+              "value": 0.9
+            },
+            {
+              "path": "scheduler.step_size",
+              "value": 10
+            },
+            {
+              "path": "scheduler.min_lr",
+              "value": 1e-06
+            },
+            {
+              "path": "early_stopping_patience",
+              "value": 5
+            }
+          ],
+          "kind": "training"
+        },
+        "metrics": [
+          "accuracy",
+          "macro_f1"
+        ],
+        "n_bootstrap": 1000,
+        "n_permutations": 5000,
+        "name": "detection_training_experiment",
+        "population": {
+          "analysis_id": null,
+          "sample_ids": null,
+          "slice_ids": null
+        },
+        "practical_threshold": 0.01,
+        "repetitions": 1,
+        "seed": 42
+      }
+    ],
+    "stop_on_failure": true,
+    "subpath": null
+  },
+  "result": {
+    "family_id": "wonowyqw",
+    "num_completed": 1,
+    "num_failed": 0,
+    "outcomes": [
+      {
+        "experiment_id": "exp_00cf096f3983",
+        "name": "detection_training_experiment",
+        "result": {
+          "cache_key": "exp_00cf096f3983",
+          "checkpoint": "/kaggle/working/modellab/workspace/artifacts/experiments/wonowyqw/exp_00cf096f3983/training/weights/best.pt",
+          "comparison": {
+            "available": true,
+            "baseline": {
+              "f1": 0.15986949429037522,
+              "mean_iou": 0.7559261113929755,
+              "precision": 0.16498316498316498,
+              "recall": 0.1550632911392405
+            },
+            "delta": {
+              "f1": 0.6796720529875617,
+              "mean_iou": 0.22461019386946268,
+              "precision": 0.6020325418231177,
+              "recall": 0.7721518987341771
+            },
+            "trained": {
+              "f1": 0.839541547277937,
+              "mean_iou": 0.9805363052624382,
+              "precision": 0.7670157068062827,
+              "recall": 0.9272151898734177
+            }
+          },
+          "evaluation": {
+            "evaluation_id": "exp_00cf096f3983-trained",
+            "metrics": {
+              "class_names": [
+                "handgun",
+                "long_gun",
+                "knife",
+                "sword",
+                "explosive"
+              ],
+              "confidence_threshold": 0.25,
+              "f1": 0.839541547277937,
+              "false_negatives": 23,
+              "false_positives": 89,
+              "iou_threshold": 0.5,
+              "mean_iou": 0.9805363052624382,
+              "num_classes": 5,
+              "num_samples": 472,
+              "per_class": {
+                "explosive": {
+                  "class_id": 4,
+                  "f1": 0.0,
+                  "fn": 0,
+                  "fp": 0,
+                  "mean_iou": 0.0,
+                  "precision": 0.0,
+                  "recall": 0.0,
+                  "tp": 0
+                },
+                "handgun": {
+                  "class_id": 0,
+                  "f1": 0.6478873239436619,
+                  "fn": 9,
+                  "fp": 66,
+                  "mean_iou": 0.9659665875489816,
+                  "precision": 0.5111111111111111,
+                  "recall": 0.8846153846153846,
+                  "tp": 69
+                },
+                "knife": {
+                  "class_id": 2,
+                  "f1": 0.9237113402061856,
+                  "fn": 14,
+                  "fp": 23,
+                  "mean_iou": 0.9850242986652439,
+                  "precision": 0.9068825910931174,
+                  "recall": 0.9411764705882353,
+                  "tp": 224
+                },
+                "long_gun": {
+                  "class_id": 1,
+                  "f1": 0.0,
+                  "fn": 0,
+                  "fp": 0,
+                  "mean_iou": 0.0,
+                  "precision": 0.0,
+                  "recall": 0.0,
+                  "tp": 0
+                },
+                "sword": {
+                  "class_id": 3,
+                  "f1": 0.0,
+                  "fn": 0,
+                  "fp": 0,
+                  "mean_iou": 0.0,
+                  "precision": 0.0,
+                  "recall": 0.0,
+                  "tp": 0
+                }
+              },
+              "precision": 0.7670157068062827,
+              "recall": 0.9272151898734177,
+              "task": "detection",
+              "true_positives": 293
+            }
+          },
+          "status": "completed",
+          "task": "detection",
+          "training": {
+            "best_checkpoint": "/kaggle/working/modellab/workspace/artifacts/experiments/wonowyqw/exp_00cf096f3983/training/weights/best.pt",
+            "best_epoch": 10,
+            "best_metric": 0.0,
+            "config": {
+              "data": {
+                "augmentation": {
+                  "blur_radius": 1.0,
+                  "brightness_factor": null,
+                  "contrast_factor": null,
+                  "crop_fraction": 0.9,
+                  "enabled": true,
+                  "horizontal_flip": true,
+                  "hue_shift": 0.05,
+                  "noise_std": 0.02,
+                  "probability": 0.5,
+                  "random_occlusion_fraction": 0.1,
+                  "rotation_degrees": 10.0,
+                  "saturation_factor": null
+                },
+                "batch_size": 32,
+                "input_height": 224,
+                "input_width": 224,
+                "num_workers": 4,
+                "sampler": "balanced"
+              },
+              "early_stopping_patience": 5,
+              "epochs": 10,
+              "freeze": {
+                "last_n_blocks": null,
+                "mode": "none"
+              },
+              "gradient_accumulation_steps": 1,
+              "loss": {
+                "class_weights": null,
+                "focal_gamma": null,
+                "label_smoothing": 0.0,
+                "name": "cross_entropy"
+              },
+              "max_grad_norm": null,
+              "mixed_precision": true,
+              "monitor": "macro_f1",
+              "optimizer": {
+                "learning_rate": 0.0002,
+                "momentum": 0.9,
+                "name": "adamw",
+                "weight_decay": 0.0
+              },
+              "scheduler": {
+                "gamma": null,
+                "min_lr": 1e-06,
+                "name": "none",
+                "step_size": 10,
+                "warmup_epochs": 0
+              },
+              "seed": 42
+            },
+            "history": [
+              {
+                "epoch": 1.0,
+                "lr/pg0": 6.11111e-05,
+                "lr/pg1": 6.11111e-05,
+                "lr/pg2": 0.0695056,
+                "metrics/mAP50(B)": 0.52556,
+                "metrics/mAP50-95(B)": 0.3682,
+                "metrics/precision(B)": 0.78104,
+                "metrics/recall(B)": 0.41228,
+                "time": 26.0401,
+                "train/box_loss": 1.25328,
+                "train/cls_loss": 3.0235,
+                "train/dfl_loss": 1.59699,
+                "val/box_loss": 1.03986,
+                "val/cls_loss": 1.91368,
+                "val/dfl_loss": 0.8283
+              },
+              {
+                "epoch": 2.0,
+                "lr/pg0": 0.000115128,
+                "lr/pg1": 0.000115128,
+                "lr/pg2": 0.0362262,
+                "metrics/mAP50(B)": 0.60907,
+                "metrics/mAP50-95(B)": 0.42735,
+                "metrics/precision(B)": 0.80341,
+                "metrics/recall(B)": 0.5,
+                "time": 27.8682,
+                "train/box_loss": 0.34496,
+                "train/cls_loss": 0.86083,
+                "train/dfl_loss": 0.97815,
+                "val/box_loss": 1.10028,
+                "val/cls_loss": 1.4282,
+                "val/dfl_loss": 0.87434
+              },
+              {
+                "epoch": 3.0,
+                "lr/pg0": 0.000155944,
+                "lr/pg1": 0.000155944,
+                "lr/pg2": 0.00293372,
+                "metrics/mAP50(B)": 0.74785,
+                "metrics/mAP50-95(B)": 0.55854,
+                "metrics/precision(B)": 0.61378,
+                "metrics/recall(B)": 0.78571,
+                "time": 29.941,
+                "train/box_loss": 0.2325,
+                "train/cls_loss": 0.64639,
+                "train/dfl_loss": 0.95965,
+                "val/box_loss": 0.96118,
+                "val/cls_loss": 1.05542,
+                "val/dfl_loss": 0.77248
+              },
+              {
+                "epoch": 4.0,
+                "lr/pg0": 0.0001406,
+                "lr/pg1": 0.0001406,
+                "lr/pg2": 0.0001406,
+                "metrics/mAP50(B)": 0.79404,
+                "metrics/mAP50-95(B)": 0.63608,
+                "metrics/precision(B)": 0.6598,
+                "metrics/recall(B)": 0.88757,
+                "time": 32.171,
+                "train/box_loss": 0.20951,
+                "train/cls_loss": 0.55439,
+                "train/dfl_loss": 0.93424,
+                "val/box_loss": 0.79479,
+                "val/cls_loss": 0.76175,
+                "val/dfl_loss": 0.69294
+              },
+              {
+                "epoch": 5.0,
+                "lr/pg0": 0.0001208,
+                "lr/pg1": 0.0001208,
+                "lr/pg2": 0.0001208,
+                "metrics/mAP50(B)": 0.8383,
+                "metrics/mAP50-95(B)": 0.68612,
+                "metrics/precision(B)": 0.7894,
+                "metrics/recall(B)": 0.91954,
+                "time": 34.0047,
+                "train/box_loss": 0.17938,
+                "train/cls_loss": 0.48846,
+                "train/dfl_loss": 0.92554,
+                "val/box_loss": 0.71591,
+                "val/cls_loss": 0.66426,
+                "val/dfl_loss": 0.65353
+              },
+              {
+                "epoch": 6.0,
+                "lr/pg0": 0.000101,
+                "lr/pg1": 0.000101,
+                "lr/pg2": 0.000101,
+                "metrics/mAP50(B)": 0.83634,
+                "metrics/mAP50-95(B)": 0.69216,
+                "metrics/precision(B)": 0.78536,
+                "metrics/recall(B)": 0.87531,
+                "time": 36.0927,
+                "train/box_loss": 0.15311,
+                "train/cls_loss": 0.42717,
+                "train/dfl_loss": 0.92636,
+                "val/box_loss": 0.67073,
+                "val/cls_loss": 0.64245,
+                "val/dfl_loss": 0.63241
+              },
+              {
+                "epoch": 7.0,
+                "lr/pg0": 8.12e-05,
+                "lr/pg1": 8.12e-05,
+                "lr/pg2": 8.12e-05,
+                "metrics/mAP50(B)": 0.83134,
+                "metrics/mAP50-95(B)": 0.69439,
+                "metrics/precision(B)": 0.74419,
+                "metrics/recall(B)": 0.98246,
+                "time": 38.4292,
+                "train/box_loss": 0.15061,
+                "train/cls_loss": 0.4028,
+                "train/dfl_loss": 0.91192,
+                "val/box_loss": 0.63995,
+                "val/cls_loss": 0.63861,
+                "val/dfl_loss": 0.61889
+              },
+              {
+                "epoch": 8.0,
+                "lr/pg0": 6.14e-05,
+                "lr/pg1": 6.14e-05,
+                "lr/pg2": 6.14e-05,
+                "metrics/mAP50(B)": 0.83142,
+                "metrics/mAP50-95(B)": 0.68617,
+                "metrics/precision(B)": 0.75289,
+                "metrics/recall(B)": 0.98246,
+                "time": 40.5081,
+                "train/box_loss": 0.15287,
+                "train/cls_loss": 0.37453,
+                "train/dfl_loss": 0.92495,
+                "val/box_loss": 0.65666,
+                "val/cls_loss": 0.64931,
+                "val/dfl_loss": 0.61834
+              },
+              {
+                "epoch": 9.0,
+                "lr/pg0": 4.16e-05,
+                "lr/pg1": 4.16e-05,
+                "lr/pg2": 4.16e-05,
+                "metrics/mAP50(B)": 0.85251,
+                "metrics/mAP50-95(B)": 0.70118,
+                "metrics/precision(B)": 0.7585,
+                "metrics/recall(B)": 0.97048,
+                "time": 42.3978,
+                "train/box_loss": 0.13895,
+                "train/cls_loss": 0.35956,
+                "train/dfl_loss": 0.92518,
+                "val/box_loss": 0.66092,
+                "val/cls_loss": 0.64775,
+                "val/dfl_loss": 0.61713
+              },
+              {
+                "epoch": 10.0,
+                "lr/pg0": 2.18e-05,
+                "lr/pg1": 2.18e-05,
+                "lr/pg2": 2.18e-05,
+                "metrics/mAP50(B)": 0.85235,
+                "metrics/mAP50-95(B)": 0.70291,
+                "metrics/precision(B)": 0.75778,
+                "metrics/recall(B)": 0.96491,
+                "time": 44.8122,
+                "train/box_loss": 0.1443,
+                "train/cls_loss": 0.3596,
+                "train/dfl_loss": 0.92984,
+                "val/box_loss": 0.64766,
+                "val/cls_loss": 0.65104,
+                "val/dfl_loss": 0.6117
+              }
+            ],
+            "last_checkpoint": "/kaggle/working/modellab/workspace/artifacts/experiments/wonowyqw/exp_00cf096f3983/training/weights/last.pt",
+            "run_dir": "/kaggle/working/modellab/workspace/artifacts/experiments/wonowyqw/exp_00cf096f3983/training",
+            "stopped_early": false,
+            "total_epochs": 10
+          }
+        },
+        "status": "completed"
+      }
+    ],
+    "report": {
+      "family_id": "wonowyqw",
+      "num_completed": 1,
+      "num_failed": 0,
+      "num_outcomes": 1,
+      "num_specs": 1,
+      "outcomes": [
+        {
+          "directory": "/kaggle/working/modellab/workspace/artifacts/experiments/wonowyqw/exp_00cf096f3983",
+          "experiment_id": "exp_00cf096f3983",
+          "status": "completed"
+        }
+      ],
+      "task": "detection"
+    }
+  },
+  "started_at": "2026-10-07T03:09:21.664622+00:00",
+  "status": "completed"
+}

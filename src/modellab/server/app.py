@@ -882,12 +882,48 @@ def create_app(settings: ServerSettings) -> FastAPI:
             for campaign_path in sorted(campaigns_dir.glob("*/campaign.json")):
                 campaigns.append(json.loads(campaign_path.read_text()))
 
+        # Derive ranking/recommendation from the existing persisted
+        # experiment results without rerunning any experiment.
+        from modellab.experiments.campaign import (
+            _recommendation,
+            rank_outcomes,
+        )
+
+        class _ExistingOutcome:
+            def __init__(self, experiment_id, status, directory, result):
+                self.experiment_id = experiment_id
+                self.status = status
+                self.directory = directory
+                self.result = result
+
+        existing_outcomes = []
+        for path in sorted(base.glob("exp_*/result.json")):
+            doc = json.loads(path.read_text())
+            existing_outcomes.append(
+                _ExistingOutcome(
+                    experiment_id=doc.get("experiment_id") or path.parent.name,
+                    status=doc.get("status"),
+                    directory=path.parent,
+                    result=doc,
+                )
+            )
+
+        ranking = rank_outcomes(existing_outcomes)
+        best_experiment = ranking[0] if ranking else None
+        final_recommendation = _recommendation(
+            ranking,
+            campaign_id=family_id,
+        )
+
         return {
             "baseline": read(base / "baseline.json"),
             "family_report": json.loads(report_path.read_text()) if report_path.is_file() else None,
             "experiments": experiments,
             "outcomes": experiments,
             "campaigns": campaigns,
+            "ranking": ranking,
+            "best_experiment": best_experiment,
+            "final_recommendation": final_recommendation,
         }
 
     @api.get("/experiments/{family_id}/{experiment_id}")

@@ -49,9 +49,12 @@ src/modellab/evaluation/preprocessing.py
 src/modellab/evaluation/torch_model.py
 src/modellab/experiments/__init__.py
 src/modellab/experiments/baseline.py
+src/modellab/experiments/campaign.py
+src/modellab/experiments/detection_runner.py
 src/modellab/experiments/detection_training.py
 src/modellab/experiments/errors.py
 src/modellab/experiments/inference.py
+src/modellab/experiments/planner.py
 src/modellab/experiments/runner.py
 src/modellab/experiments/spec.py
 src/modellab/experiments/stats.py
