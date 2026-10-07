@@ -1,0 +1,422 @@
+{
+  "created_at": "2026-10-07T07:21:05.827964+00:00",
+  "error": null,
+  "finished_at": "2026-10-07T07:22:25.387548+00:00",
+  "job_id": "ed5bd25fff1a",
+  "kind": "experiments",
+  "params": {
+    "alpha": 0.05,
+    "baseline_evaluation_id": null,
+    "dataset_id": "dataset3",
+    "device": "auto",
+    "family_id": "wow",
+    "force": false,
+    "matrices": [],
+    "model_id": "model3",
+    "specs": [
+      {
+        "alpha": 0.05,
+        "hypothesis": {
+          "claim": "Adding color jitter augmentation will reduce false positives caused by lighting and background.",
+          "expected_direction": "improve"
+        },
+        "intervention": {
+          "changes": [
+            {
+              "path": "data.augmentation.saturation_factor",
+              "value": 0.5
+            },
+            {
+              "path": "data.augmentation.brightness_factor",
+              "value": 0.4
+            }
+          ],
+          "kind": "training"
+        },
+        "metrics": [
+          "accuracy",
+          "macro_f1"
+        ],
+        "n_bootstrap": 1000,
+        "n_permutations": 5000,
+        "name": "advisor_aug_color",
+        "population": {
+          "analysis_id": null,
+          "sample_ids": null,
+          "slice_ids": null
+        },
+        "practical_threshold": 0.01,
+        "repetitions": 1,
+        "seed": 42
+      }
+    ],
+    "stop_on_failure": true,
+    "subpath": null
+  },
+  "result": {
+    "family_id": "wow",
+    "num_completed": 1,
+    "num_failed": 0,
+    "outcomes": [
+      {
+        "experiment_id": "exp_6807c67f48cb",
+        "name": "advisor_aug_color",
+        "result": {
+          "cache_key": "exp_6807c67f48cb",
+          "checkpoint": "/kaggle/working/modellab/workspace/artifacts/experiments/wow/exp_6807c67f48cb/training/weights/best.pt",
+          "comparison": {
+            "available": true,
+            "baseline": {
+              "f1": 0.15986949429037522,
+              "mean_iou": 0.7559261113929755,
+              "precision": 0.16498316498316498,
+              "recall": 0.1550632911392405
+            },
+            "delta": {
+              "f1": 0.7516349304883859,
+              "mean_iou": 0.2248602115975732,
+              "precision": 0.6886079952378295,
+              "recall": 0.8227848101265822
+            },
+            "trained": {
+              "f1": 0.9115044247787611,
+              "mean_iou": 0.9807863229905487,
+              "precision": 0.8535911602209945,
+              "recall": 0.9778481012658228
+            }
+          },
+          "evaluation": {
+            "evaluation_id": "exp_6807c67f48cb-trained",
+            "metrics": {
+              "class_names": [
+                "handgun",
+                "long_gun",
+                "knife",
+                "sword",
+                "explosive"
+              ],
+              "confidence_threshold": 0.25,
+              "f1": 0.9115044247787611,
+              "false_negatives": 7,
+              "false_positives": 53,
+              "iou_threshold": 0.5,
+              "mean_iou": 0.9807863229905487,
+              "num_classes": 5,
+              "num_samples": 472,
+              "per_class": {
+                "explosive": {
+                  "class_id": 4,
+                  "f1": 0.0,
+                  "fn": 0,
+                  "fp": 0,
+                  "mean_iou": 0.0,
+                  "precision": 0.0,
+                  "recall": 0.0,
+                  "tp": 0
+                },
+                "handgun": {
+                  "class_id": 0,
+                  "f1": 0.8538011695906432,
+                  "fn": 5,
+                  "fp": 20,
+                  "mean_iou": 0.9691195764218806,
+                  "precision": 0.7849462365591398,
+                  "recall": 0.9358974358974359,
+                  "tp": 73
+                },
+                "knife": {
+                  "class_id": 2,
+                  "f1": 0.9309664694280079,
+                  "fn": 2,
+                  "fp": 33,
+                  "mean_iou": 0.9843951047681452,
+                  "precision": 0.8773234200743495,
+                  "recall": 0.9915966386554622,
+                  "tp": 236
+                },
+                "long_gun": {
+                  "class_id": 1,
+                  "f1": 0.0,
+                  "fn": 0,
+                  "fp": 0,
+                  "mean_iou": 0.0,
+                  "precision": 0.0,
+                  "recall": 0.0,
+                  "tp": 0
+                },
+                "sword": {
+                  "class_id": 3,
+                  "f1": 0.0,
+                  "fn": 0,
+                  "fp": 0,
+                  "mean_iou": 0.0,
+                  "precision": 0.0,
+                  "recall": 0.0,
+                  "tp": 0
+                }
+              },
+              "precision": 0.8535911602209945,
+              "recall": 0.9778481012658228,
+              "task": "detection",
+              "true_positives": 309
+            }
+          },
+          "status": "completed",
+          "task": "detection",
+          "training": {
+            "best_checkpoint": "/kaggle/working/modellab/workspace/artifacts/experiments/wow/exp_6807c67f48cb/training/weights/best.pt",
+            "best_epoch": 10,
+            "best_metric": 0.0,
+            "config": {
+              "data": {
+                "augmentation": {
+                  "blur_radius": null,
+                  "brightness_factor": 0.4,
+                  "contrast_factor": null,
+                  "crop_fraction": null,
+                  "enabled": true,
+                  "horizontal_flip": false,
+                  "hue_shift": null,
+                  "noise_std": null,
+                  "probability": 0.5,
+                  "random_occlusion_fraction": null,
+                  "rotation_degrees": null,
+                  "saturation_factor": 0.5
+                },
+                "batch_size": 32,
+                "input_height": 224,
+                "input_width": 224,
+                "num_workers": 2,
+                "sampler": "default"
+              },
+              "early_stopping_patience": null,
+              "epochs": 10,
+              "freeze": {
+                "last_n_blocks": null,
+                "mode": "none"
+              },
+              "gradient_accumulation_steps": 1,
+              "loss": {
+                "class_weights": null,
+                "focal_gamma": null,
+                "label_smoothing": 0.0,
+                "name": "cross_entropy"
+              },
+              "max_grad_norm": null,
+              "mixed_precision": true,
+              "monitor": "macro_f1",
+              "optimizer": {
+                "learning_rate": 0.001,
+                "momentum": null,
+                "name": "adamw",
+                "weight_decay": 0.0
+              },
+              "scheduler": {
+                "gamma": null,
+                "min_lr": null,
+                "name": "none",
+                "step_size": null,
+                "warmup_epochs": 0
+              },
+              "seed": 42
+            },
+            "history": [
+              {
+                "epoch": 1.0,
+                "lr/pg0": 0.000305556,
+                "lr/pg1": 0.000305556,
+                "lr/pg2": 0.06975,
+                "metrics/mAP50(B)": 0.50493,
+                "metrics/mAP50-95(B)": 0.28597,
+                "metrics/precision(B)": 0.82847,
+                "metrics/recall(B)": 0.39474,
+                "time": 26.4437,
+                "train/box_loss": 1.55072,
+                "train/cls_loss": 3.1397,
+                "train/dfl_loss": 1.8012,
+                "val/box_loss": 1.55925,
+                "val/cls_loss": 2.70239,
+                "val/dfl_loss": 1.13792
+              },
+              {
+                "epoch": 2.0,
+                "lr/pg0": 0.000575639,
+                "lr/pg1": 0.000575639,
+                "lr/pg2": 0.0366868,
+                "metrics/mAP50(B)": 0.78923,
+                "metrics/mAP50-95(B)": 0.54356,
+                "metrics/precision(B)": 0.54039,
+                "metrics/recall(B)": 0.71429,
+                "time": 28.3977,
+                "train/box_loss": 0.25641,
+                "train/cls_loss": 0.64921,
+                "train/dfl_loss": 0.86305,
+                "val/box_loss": 1.30331,
+                "val/cls_loss": 1.365,
+                "val/dfl_loss": 1.02719
+              },
+              {
+                "epoch": 3.0,
+                "lr/pg0": 0.000779722,
+                "lr/pg1": 0.000779722,
+                "lr/pg2": 0.0035575,
+                "metrics/mAP50(B)": 0.87976,
+                "metrics/mAP50-95(B)": 0.61896,
+                "metrics/precision(B)": 0.65681,
+                "metrics/recall(B)": 0.96429,
+                "time": 30.5405,
+                "train/box_loss": 0.15055,
+                "train/cls_loss": 0.41898,
+                "train/dfl_loss": 0.83108,
+                "val/box_loss": 1.18281,
+                "val/cls_loss": 1.06958,
+                "val/dfl_loss": 0.94937
+              },
+              {
+                "epoch": 4.0,
+                "lr/pg0": 0.000703,
+                "lr/pg1": 0.000703,
+                "lr/pg2": 0.000703,
+                "metrics/mAP50(B)": 0.92766,
+                "metrics/mAP50-95(B)": 0.70339,
+                "metrics/precision(B)": 0.80821,
+                "metrics/recall(B)": 0.96372,
+                "time": 32.4935,
+                "train/box_loss": 0.12178,
+                "train/cls_loss": 0.29045,
+                "train/dfl_loss": 0.82802,
+                "val/box_loss": 1.02448,
+                "val/cls_loss": 0.83587,
+                "val/dfl_loss": 0.8524
+              },
+              {
+                "epoch": 5.0,
+                "lr/pg0": 0.000604,
+                "lr/pg1": 0.000604,
+                "lr/pg2": 0.000604,
+                "metrics/mAP50(B)": 0.93957,
+                "metrics/mAP50-95(B)": 0.74639,
+                "metrics/precision(B)": 0.81605,
+                "metrics/recall(B)": 0.96429,
+                "time": 34.6393,
+                "train/box_loss": 0.10472,
+                "train/cls_loss": 0.21526,
+                "train/dfl_loss": 0.82992,
+                "val/box_loss": 0.94522,
+                "val/cls_loss": 0.87092,
+                "val/dfl_loss": 0.80453
+              },
+              {
+                "epoch": 6.0,
+                "lr/pg0": 0.000505,
+                "lr/pg1": 0.000505,
+                "lr/pg2": 0.000505,
+                "metrics/mAP50(B)": 0.95049,
+                "metrics/mAP50-95(B)": 0.7653,
+                "metrics/precision(B)": 0.84358,
+                "metrics/recall(B)": 0.9575,
+                "time": 36.8035,
+                "train/box_loss": 0.08915,
+                "train/cls_loss": 0.17293,
+                "train/dfl_loss": 0.82514,
+                "val/box_loss": 0.84785,
+                "val/cls_loss": 0.85706,
+                "val/dfl_loss": 0.7407
+              },
+              {
+                "epoch": 7.0,
+                "lr/pg0": 0.000406,
+                "lr/pg1": 0.000406,
+                "lr/pg2": 0.000406,
+                "metrics/mAP50(B)": 0.95891,
+                "metrics/mAP50-95(B)": 0.79085,
+                "metrics/precision(B)": 0.86295,
+                "metrics/recall(B)": 0.88589,
+                "time": 38.9451,
+                "train/box_loss": 0.07492,
+                "train/cls_loss": 0.14034,
+                "train/dfl_loss": 0.82239,
+                "val/box_loss": 0.75422,
+                "val/cls_loss": 0.81766,
+                "val/dfl_loss": 0.70143
+              },
+              {
+                "epoch": 8.0,
+                "lr/pg0": 0.000307,
+                "lr/pg1": 0.000307,
+                "lr/pg2": 0.000307,
+                "metrics/mAP50(B)": 0.9552,
+                "metrics/mAP50-95(B)": 0.8024,
+                "metrics/precision(B)": 0.89851,
+                "metrics/recall(B)": 0.86654,
+                "time": 40.8663,
+                "train/box_loss": 0.07613,
+                "train/cls_loss": 0.13122,
+                "train/dfl_loss": 0.82531,
+                "val/box_loss": 0.70119,
+                "val/cls_loss": 0.79352,
+                "val/dfl_loss": 0.68516
+              },
+              {
+                "epoch": 9.0,
+                "lr/pg0": 0.000208,
+                "lr/pg1": 0.000208,
+                "lr/pg2": 0.000208,
+                "metrics/mAP50(B)": 0.95091,
+                "metrics/mAP50-95(B)": 0.81674,
+                "metrics/precision(B)": 0.92591,
+                "metrics/recall(B)": 0.88617,
+                "time": 42.9908,
+                "train/box_loss": 0.06444,
+                "train/cls_loss": 0.11704,
+                "train/dfl_loss": 0.82764,
+                "val/box_loss": 0.70465,
+                "val/cls_loss": 0.76839,
+                "val/dfl_loss": 0.68646
+              },
+              {
+                "epoch": 10.0,
+                "lr/pg0": 0.000109,
+                "lr/pg1": 0.000109,
+                "lr/pg2": 0.000109,
+                "metrics/mAP50(B)": 0.9483,
+                "metrics/mAP50-95(B)": 0.81767,
+                "metrics/precision(B)": 0.86905,
+                "metrics/recall(B)": 0.8584,
+                "time": 45.3779,
+                "train/box_loss": 0.05625,
+                "train/cls_loss": 0.12131,
+                "train/dfl_loss": 0.82329,
+                "val/box_loss": 0.69908,
+                "val/cls_loss": 0.72747,
+                "val/dfl_loss": 0.6873
+              }
+            ],
+            "last_checkpoint": "/kaggle/working/modellab/workspace/artifacts/experiments/wow/exp_6807c67f48cb/training/weights/last.pt",
+            "run_dir": "/kaggle/working/modellab/workspace/artifacts/experiments/wow/exp_6807c67f48cb/training",
+            "stopped_early": false,
+            "total_epochs": 10
+          }
+        },
+        "status": "completed"
+      }
+    ],
+    "report": {
+      "family_id": "wow",
+      "num_completed": 1,
+      "num_failed": 0,
+      "num_outcomes": 1,
+      "num_specs": 1,
+      "outcomes": [
+        {
+          "directory": "/kaggle/working/modellab/workspace/artifacts/experiments/wow/exp_6807c67f48cb",
+          "experiment_id": "exp_6807c67f48cb",
+          "status": "completed"
+        }
+      ],
+      "task": "detection"
+    }
+  },
+  "started_at": "2026-10-07T07:21:05.828988+00:00",
+  "status": "completed"
+}

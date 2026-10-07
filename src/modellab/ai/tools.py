@@ -30,7 +30,13 @@ def get_baseline(root, family_id):
     doc = _read(Path(root) / "experiments" / family_id / "baseline.json")
     if doc is None:
         raise ToolError(f"no readable baseline for family {family_id!r}")
-    if doc.get("task") != "detection":
+    task = (
+        doc.get("task")
+        or (doc.get("metadata") or {}).get("task")
+        or ((doc.get("metadata") or {}).get("model") or {}).get("task")
+    )
+
+    if task != "detection":
         raise ToolError("the advisor supports detection families only")
     return doc
 
