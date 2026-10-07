@@ -742,6 +742,27 @@ def model_from_artifact(
             getattr(resolution, "preprocess", {})
         )
 
+        # Classification models need a fixed spatial size before batching.
+        # If the resolver already knows the model input_size but did not
+        # provide an explicit resize operation, derive it here.
+        if isinstance(preprocess, dict):
+            spec_input_size = (
+                spec.get("input_size")
+                if isinstance(spec, dict)
+                else None
+            )
+
+            if (
+                preprocess.get("resize") is None
+                and isinstance(spec_input_size, (list, tuple))
+                and len(spec_input_size) == 2
+                and spec.get("task", "classification") == "classification"
+            ):
+                preprocess["resize"] = [
+                    int(spec_input_size[0]),
+                    int(spec_input_size[1]),
+                ]
+
         created_at = datetime.now(timezone.utc).isoformat()
 
         model_record = {

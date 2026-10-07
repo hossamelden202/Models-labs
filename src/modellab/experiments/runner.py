@@ -250,8 +250,10 @@ def _prepare(store, spec, baseline, model, dataset, analysis) -> _Plan:
         raise ExperimentError(f"{len(missing)} affected samples are not in the dataset, first: {missing[:5]}")
     if iv.kind == "image_transform":
         plan.image_params = REGISTRY[iv.op].params(**iv.params)
-    else:
+    elif iv.kind == "preprocessing":
         plan.new_preprocess = _new_preprocess(dataset, iv.changes)
+    elif iv.kind == "training":
+        plan.training_changes = iv.changes
     return plan
 
 

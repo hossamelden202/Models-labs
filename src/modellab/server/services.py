@@ -197,12 +197,27 @@ def evaluate(ws, cache, store, p):
     # --------------------------------------------------------
     # Existing classification evaluation path.
     # --------------------------------------------------------
+    # Classification batches must have a consistent tensor shape.
+    # If the registered model declares an input_size but the stored
+    # preprocessing config does not specify resize, inherit the model
+    # input size.
+    classification_pre = pre
+    if (
+        classification_pre.resize is None
+        and model.spec.input_size is not None
+    ):
+        from modellab.evaluation.preprocessing import PreprocessConfig
+
+        classification_pre = classification_pre.model_copy(
+            update={"resize": tuple(model.spec.input_size)}
+        )
+
     dataset = build_dataset(
         ws,
         p["dataset_id"],
         p.get("subpath"),
         model.spec.class_names,
-        pre,
+        classification_pre,
         task=model.spec.task,
     )
 
@@ -383,12 +398,30 @@ def experiments(ws, cache, store, p):
             p["device"],
         )
 
+        # Classification preprocessing inherits the model input size when
+        # no explicit resize is stored. This keeps experiment preprocessing
+        # consistent with the preprocessing used during evaluation.
+        #
+        # Detection is intentionally left unchanged because its preprocessing
+        # is handled by the existing detection evaluation path.
+        experiment_pre = pre
+        if (
+            model.spec.task != "detection"
+            and experiment_pre.resize is None
+            and model.spec.input_size is not None
+        ):
+            from modellab.evaluation.preprocessing import PreprocessConfig
+
+            experiment_pre = experiment_pre.model_copy(
+                update={"resize": tuple(model.spec.input_size)}
+            )
+
         dataset = build_dataset(
             ws,
             p["dataset_id"],
             p.get("subpath"),
             model.spec.class_names,
-            pre,
+            experiment_pre,
             task=model.spec.task,
         )
 

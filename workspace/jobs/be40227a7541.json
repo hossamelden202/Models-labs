@@ -1,0 +1,24 @@
+{
+  "created_at": "2026-10-07T11:41:11.971007+00:00",
+  "error": {
+    "message": "Caught EvaluationError in DataLoader worker process 0.\nOriginal Traceback (most recent call last):\n  File \"/kaggle/working/modellab/src/modellab/evaluation/engine.py\", line 58, in _collate\n    batch = torch.stack(tensors)\nRuntimeError: stack expects each tensor to be equal size, but got [3, 500, 389] at entry 0 and [3, 500, 477] at entry 1\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/usr/local/lib/python3.13/dist-packages/torch/utils/data/_utils/worker.py\", line 358, in _worker_loop\n    data = fetcher.fetch(index)  # type: ignore[possibly-undefined]\n  File \"/usr/local/lib/python3.13/dist-packages/torch/utils/data/_utils/fetch.py\", line 57, in fetch\n    return self.collate_fn(data)\n           ~~~~~~~~~~~~~~~^^^^^^\n  File \"/kaggle/working/modellab/src/modellab/evaluation/engine.py\", line 60, in _collate\n    raise EvaluationError(\n        \"images in one batch have different shapes, set resize in the preprocess config\"\n    ) from exc\nmodellab.core.errors.EvaluationError: images in one batch have different shapes, set resize in the preprocess config\n",
+    "traceback": "Traceback (most recent call last):\n  File \"/kaggle/working/modellab/src/modellab/server/jobs.py\", line 96, in _run\n    update = {\"status\": \"completed\", \"result\": fn()}\n                                               ~~^^\n  File \"/kaggle/working/modellab/src/modellab/server/app.py\", line 607, in <lambda>\n    return enqueue(\"evaluation\", params, lambda: services.evaluate(ws, cache, store, params), wait, timeout)\n                                                 ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/kaggle/working/modellab/src/modellab/server/services.py\", line 217, in evaluate\n    result = run_evaluation(\n        model=model,\n    ...<3 lines>...\n        evaluation_id=p.get(\"evaluation_id\"),\n    )\n  File \"/kaggle/working/modellab/src/modellab/evaluation/engine.py\", line 163, in run_evaluation\n    for step, (ids, paths, labels, batch) in enumerate(loader, start=1):\n                                             ~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/dist-packages/torch/utils/data/dataloader.py\", line 741, in __next__\n    data = self._next_data()\n  File \"/usr/local/lib/python3.13/dist-packages/torch/utils/data/dataloader.py\", line 1548, in _next_data\n    return self._process_data(data, worker_id)\n           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/dist-packages/torch/utils/data/dataloader.py\", line 1586, in _process_data\n    data.reraise()\n    ~~~~~~~~~~~~^^\n  File \"/usr/local/lib/python3.13/dist-packages/torch/_utils.py\", line 785, in reraise\n    raise exception\nmodellab.core.errors.EvaluationError: Caught EvaluationError in DataLoader worker process 0.\nOriginal Traceback (most recent call last):\n  File \"/kaggle/working/modellab/src/modellab/evaluation/engine.py\", line 58, in _collate\n    batch = torch.stack(tensors)\nRuntimeError: stack expects each tensor to be equal size, but got [3, 500, 389] at entry 0 and [3, 500, 477] at entry 1\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/usr/local/lib/python3.13/dist-packages/torch/utils/data/_utils/worker.py\", line 358, in _worker_loop\n    data = fetcher.fetch(index)  # type: ignore[possibly-undefined]\n  File \"/usr/local/lib/python3.13/dist-packages/torch/utils/data/_utils/fetch.py\", line 57, in fetch\n    return self.collate_fn(data)\n           ~~~~~~~~~~~~~~~^^^^^^\n  File \"/kaggle/working/modellab/src/modellab/evaluation/engine.py\", line 60, in _collate\n    raise EvaluationError(\n        \"images in one batch have different shapes, set resize in the preprocess config\"\n    ) from exc\nmodellab.core.errors.EvaluationError: images in one batch have different shapes, set resize in the preprocess config\n\n",
+    "type": "EvaluationError"
+  },
+  "finished_at": "2026-10-07T11:41:19.115800+00:00",
+  "job_id": "be40227a7541",
+  "kind": "evaluation",
+  "params": {
+    "batch_size": 32,
+    "dataset_id": "trans",
+    "device": "auto",
+    "evaluation_id": "trans",
+    "model_id": "demo_model2343",
+    "num_workers": 4,
+    "seed": 42,
+    "subpath": null
+  },
+  "result": null,
+  "started_at": "2026-10-07T11:41:11.972166+00:00",
+  "status": "failed"
+}

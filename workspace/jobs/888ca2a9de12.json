@@ -1,0 +1,50 @@
+{
+  "created_at": "2026-10-07T12:10:52.735657+00:00",
+  "error": {
+    "message": "could not load model 'demo_model2343': unknown architecture 'vit', registered: ['sequential', 'timm', 'torchvision']",
+    "traceback": "Traceback (most recent call last):\n  File \"/kaggle/working/modellab/src/modellab/evaluation/torch_model.py\", line 367, in _load_model\n    # preserving provider_id, while architecture_config still\n  File \"/kaggle/working/modellab/src/modellab/evaluation/torch_model.py\", line 159, in _build_registered\n    return _require_module(build_architecture(spec.architecture, spec.architecture_config, spec.num_classes))\n                           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/kaggle/working/modellab/src/modellab/loading/architectures.py\", line 125, in build_architecture\n    defn = get_architecture(name)\n  File \"/kaggle/working/modellab/src/modellab/loading/architectures.py\", line 108, in get_architecture\n    raise ArchitectureError(f\"unknown architecture '{name}', registered: {sorted(ARCHITECTURES)}\")\nmodellab.loading.architectures.ArchitectureError: unknown architecture 'vit', registered: ['sequential', 'timm', 'torchvision']\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/kaggle/working/modellab/src/modellab/server/jobs.py\", line 96, in _run\n    update = {\"status\": \"completed\", \"result\": fn()}\n                                               ~~^^\n  File \"/kaggle/working/modellab/src/modellab/server/app.py\", line 778, in <lambda>\n    return enqueue(\"experiments\", params, lambda: services.experiments(ws, cache, store, params), wait, timeout)\n                                                  ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/kaggle/working/modellab/src/modellab/server/services.py\", line 395, in experiments\n    model, pre, _ = cache.get(\n                    ~~~~~~~~~^\n        ws,\n        ^^^\n        p[\"model_id\"],\n        ^^^^^^^^^^^^^^\n        p[\"device\"],\n        ^^^^^^^^^^^^\n    )\n    ^\n  File \"/kaggle/working/modellab/src/modellab/server/services.py\", line 29, in get\n    TorchImageClassifier(spec, device=device),\n    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^\n  File \"/kaggle/working/modellab/src/modellab/evaluation/torch_model.py\", line 499, in __init__\n    raise EvaluationError(\n    \n  File \"/kaggle/working/modellab/src/modellab/evaluation/torch_model.py\", line 377, in _load_model\n    )\nmodellab.core.errors.ModelLoadError: could not load model 'demo_model2343': unknown architecture 'vit', registered: ['sequential', 'timm', 'torchvision']\n",
+    "type": "ModelLoadError"
+  },
+  "finished_at": "2026-10-07T12:10:52.740980+00:00",
+  "job_id": "888ca2a9de12",
+  "kind": "experiments",
+  "params": {
+    "alpha": 0.05,
+    "baseline_evaluation_id": null,
+    "dataset_id": "trans",
+    "device": "auto",
+    "family_id": "trans",
+    "force": false,
+    "matrices": [],
+    "model_id": "demo_model2343",
+    "specs": [
+      {
+        "hypothesis": {
+          "claim": "preprocessing intervention executes successfully",
+          "expected_direction": "no_change"
+        },
+        "intervention": {
+          "changes": {
+            "resize": [
+              256,
+              256
+            ]
+          },
+          "kind": "preprocessing"
+        },
+        "metrics": [
+          "accuracy",
+          "macro_f1"
+        ],
+        "name": "api_preprocess_regression",
+        "repetitions": 1,
+        "seed": 42
+      }
+    ],
+    "stop_on_failure": false,
+    "subpath": null
+  },
+  "result": null,
+  "started_at": "2026-10-07T12:10:52.736366+00:00",
+  "status": "failed"
+}

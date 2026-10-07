@@ -1,38 +1,38 @@
-INFO:     Started server process [4786]
+INFO:     Started server process [5142]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
-INFO:     127.0.0.1:33212 - "GET /health HTTP/1.1" 200 OK
-INFO:     127.0.0.1:33226 - "GET /health HTTP/1.1" 200 OK
-INFO:     127.0.0.1:46186 - "GET /health HTTP/1.1" 200 OK
-INFO:     127.0.0.1:46198 - "GET /architectures HTTP/1.1" 200 OK
-INFO:     127.0.0.1:46200 - "GET /model-artifacts/probe_model.pt HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:46212 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42950 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42966 - "GET /health HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "POST /experiments HTTP/1.1" 202 Accepted
+INFO:     196.128.216.173:0 - "GET /experiments/trans HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /jobs HTTP/1.1" 200 OK
+12:27:30 INFO    modellab.evaluation: evaluating 5000 images, batch size 32, device cuda
+12:27:39 INFO    modellab.evaluation: evaluated 15/157 batches
+12:27:47 INFO    modellab.evaluation: evaluated 30/157 batches
+12:27:56 INFO    modellab.evaluation: evaluated 45/157 batches
+INFO:     196.128.216.173:0 - "GET /jobs HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /jobs HTTP/1.1" 200 OK
+12:28:05 INFO    modellab.evaluation: evaluated 60/157 batches
+INFO:     196.128.216.173:0 - "GET /jobs HTTP/1.1" 200 OK
+12:28:14 INFO    modellab.evaluation: evaluated 75/157 batches
+INFO:     196.128.216.173:0 - "GET /jobs HTTP/1.1" 200 OK
+12:28:22 INFO    modellab.evaluation: evaluated 90/157 batches
+INFO:     196.128.216.173:0 - "GET /jobs HTTP/1.1" 200 OK
+12:28:31 INFO    modellab.evaluation: evaluated 105/157 batches
+INFO:     196.128.216.173:0 - "GET /jobs HTTP/1.1" 200 OK
+12:28:39 INFO    modellab.evaluation: evaluated 120/157 batches
+12:28:47 INFO    modellab.evaluation: evaluated 135/157 batches
+12:28:55 INFO    modellab.evaluation: evaluated 150/157 batches
+INFO:     196.128.216.173:0 - "GET /jobs HTTP/1.1" 200 OK
+12:28:58 INFO    modellab.evaluation: evaluated 157/157 batches
+INFO:     196.128.216.173:0 - "GET /jobs HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /experiments/trans HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /experiments/trans/exp_d377bb24076c HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /experiments/trans/exp_d377bb24076c/paired HTTP/1.1" 200 OK
 INFO:     196.128.216.173:0 - "GET /health HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "POST /datasets/register HTTP/1.1" 409 Conflict
-INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "POST /datasets/register HTTP/1.1" 201 Created
-INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
 INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
 INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
 INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "POST /evaluations HTTP/1.1" 202 Accepted
-INFO:     196.128.216.173:0 - "GET /jobs HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /jobs HTTP/1.1" 200 OK

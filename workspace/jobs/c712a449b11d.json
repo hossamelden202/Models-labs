@@ -1,0 +1,27 @@
+{
+  "created_at": "2026-10-07T11:45:24.532820+00:00",
+  "error": null,
+  "finished_at": "2026-10-07T11:46:43.424013+00:00",
+  "job_id": "c712a449b11d",
+  "kind": "evaluation",
+  "params": {
+    "batch_size": 32,
+    "dataset_id": "trans",
+    "device": "auto",
+    "evaluation_id": "trans",
+    "model_id": "demo_model2343",
+    "num_workers": 4,
+    "seed": 42,
+    "subpath": null
+  },
+  "result": {
+    "accuracy": 0.7656,
+    "device": "auto",
+    "evaluation_id": "trans",
+    "macro_f1": 0.7614942870854636,
+    "num_samples": 5000,
+    "weighted_f1": 0.7614942870854635
+  },
+  "started_at": "2026-10-07T11:45:24.534353+00:00",
+  "status": "completed"
+}
