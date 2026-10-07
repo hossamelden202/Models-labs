@@ -19,7 +19,7 @@ BASE_METRICS = {
     },
 }
 GOOD = json.dumps({"candidate_id": "res_416", "claim": "Higher resolution should raise handgun recall",
-                   "rationale": "small objects", "confidence": 0.7})
+                   "rationale": "small objects"})
 EXPECTED_TRACE = ["collect_context", "analyze_problem", "retrieve_knowledge",
                   "generate_hypothesis", "generate_experiment", "validate_experiment"]
 
@@ -74,10 +74,16 @@ def test_full_flow(root):
     assert out["proposal"]["candidate_id"] == "res_416"
     assert {c["path"] for c in out["proposal"]["changes"]} == {"data.input_width", "data.input_height"}
     assert out["hypothesis"]["target_metric"] == "recall"
+    assert "confidence" not in out["hypothesis"]
+    assert out["hypothesis"]["evidence_level"] == "low"
+    assert [r["candidate_id"] for r in out["ranking"]][:3] == ["epochs_30", "res_416", "aug_geometry"]
     assert out["retrieved"] and out["retrieved"][0]["id"] == f"experiment:{FAMILY}:exp_aaa"
     assert any("recall: baseline" in e for e in out["hypothesis"]["evidence"])
     prompt = llm.calls[0][1]["content"]
     assert "res_416" in prompt and "handgun" in prompt and "Why is my weapon detector weak?" in prompt
+    allowed = prompt.split("Allowed experiments")[1]
+    assert "1. epochs_30" in allowed and "Why ranked here" in allowed
+    assert "res_512" not in allowed and "lr_1e-4" not in allowed
 
 
 def test_analysis_flags_absent_class(root):
@@ -97,7 +103,7 @@ def test_prefers_failure_analysis_artifact(root):
 
 
 def test_unknown_candidate_is_retried(root):
-    bad = json.dumps({"candidate_id": "made_up", "claim": "c", "rationale": "r", "confidence": 0.5})
+    bad = json.dumps({"candidate_id": "made_up", "claim": "handgun", "rationale": "r"})
     out, llm = run(root, [bad, GOOD])
     assert len(llm.calls) == 2
     assert "made_up" not in out["proposal"]["candidate_id"]
@@ -109,17 +115,19 @@ def test_llm_failure_falls_back_to_rule(root):
     assert out["llm_used"] is False
     assert out["trace"] == EXPECTED_TRACE
     assert out["validation"]["valid"] is True
-    assert out["hypothesis"]["confidence"] == 0.3
     assert any("LLM output unusable" in n for n in out["notes"])
-    assert out["proposal"]["candidate_id"] == "res_416"
+    assert out["proposal"]["candidate_id"] == "epochs_30"
+    assert out["hypothesis"]["evidence_level"] == "medium"
 
 
 def test_tried_experiment_is_not_proposed_again(root):
     put(root, f"experiments/{FAMILY}/exp_bbb/result.json",
         exp_result({"data.input_width": 416, "data.input_height": 416}))
-    out, llm = run(root, [GOOD, json.dumps({"candidate_id": "res_512", "claim": "c", "rationale": "r", "confidence": 0.6})])
+    out, llm = run(root, [GOOD, json.dumps({"candidate_id": "res_512", "claim": "Resolution should help handgun recall", "rationale": "r"})])
     assert out["proposal"]["candidate_id"] == "res_512"
-    assert "res_416" not in llm.calls[0][1]["content"].split("Allowed experiments:")[1]
+    offered = [l for l in llm.calls[0][1]["content"].splitlines() if l[:1].isdigit() and ". " in l[:4]]
+    assert offered and not any(l.split(". ", 1)[1].startswith("res_416:") for l in offered)
+    assert any(l.split(". ", 1)[1].startswith("res_512:") for l in offered)
 
 
 def test_empty_menu_stops_early(root, monkeypatch):
@@ -150,3 +158,40 @@ def test_list_experiments_summary(root):
     rows = tools.list_experiments(root, FAMILY)
     assert rows == [{"experiment_id": "exp_aaa", "status": "completed", "changes": {"epochs": 1},
                      "delta": {"f1": 0.11, "precision": 0.075, "recall": 0.155}}]
+
+
+def test_claim_must_name_a_weak_class(root):
+    vague = json.dumps({"candidate_id": "res_416", "claim": "Higher resolution helps with lighting", "rationale": "r"})
+    out, llm = run(root, [vague, GOOD])
+    assert len(llm.calls) == 2
+    assert "must name a weak class" in llm.calls[1][-1]["content"]
+    assert "handgun" in out["hypothesis"]["claim"]
+    assert out["llm_used"] is True
+
+
+def test_candidate_outside_top_three_is_rejected(root):
+    outside = json.dumps({"candidate_id": "batch_16", "claim": "handgun recall", "rationale": "r"})
+    out, llm = run(root, [outside, GOOD])
+    assert len(llm.calls) == 2 and out["proposal"]["candidate_id"] == "res_416"
+
+
+def test_extra_llm_fields_are_ignored(root):
+    noisy = json.dumps({"candidate_id": "res_416", "claim": "handgun recall", "rationale": "r", "confidence": 0.99})
+    out, llm = run(root, [noisy])
+    assert len(llm.calls) == 1 and out["llm_used"] is True
+    assert "confidence" not in out["hypothesis"]
+
+
+def test_find_control(root):
+    assert tools.find_control(root, FAMILY) is None
+    put(root, f"experiments/{FAMILY}/exp_ctl/result.json", exp_result({}))
+    assert tools.find_control(root, FAMILY) == "exp_ctl"
+    with pytest.raises(tools.ToolError):
+        tools.find_control(root, "../x")
+
+
+def test_failed_default_run_is_not_a_control(root):
+    bad = exp_result({})
+    bad["status"] = "failed"
+    put(root, f"experiments/{FAMILY}/exp_ctl/result.json", bad)
+    assert tools.find_control(root, FAMILY) is None

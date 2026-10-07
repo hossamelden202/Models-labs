@@ -12,6 +12,8 @@ src/modellab.egg-info/top_level.txt
 src/modellab/ai/__init__.py
 src/modellab/ai/analysis.py
 src/modellab/ai/catalog.py
+src/modellab/ai/finding.py
+src/modellab/ai/routes.py
 src/modellab/ai/schemas.py
 src/modellab/ai/tools.py
 src/modellab/ai/validation.py
@@ -43,6 +45,8 @@ src/modellab/cli/__init__.py
 src/modellab/cli/main.py
 src/modellab/config/__init__.py
 src/modellab/config/settings.py
+src/modellab/config_import/__init__.py
+src/modellab/config_import/importer.py
 src/modellab/core/__init__.py
 src/modellab/core/datasets/__init__.py
 src/modellab/core/datasets/base.py

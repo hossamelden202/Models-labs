@@ -1,3 +1,5 @@
+import pytest
+
 from modellab.ai.finding import interpret
 
 HYP = {"target_metric": "recall"}
@@ -34,3 +36,38 @@ def test_failed_and_unavailable():
     assert failed["verdict"] == "failed" and "cuda out of memory" in failed["summary"]
     assert interpret(HYP, result({"recall": 0.1}, available=False))["verdict"] == "unavailable"
     assert interpret(HYP, result({"f1": 0.1}))["verdict"] == "unavailable"
+
+
+def control(trained, status="completed", available=True):
+    return {"status": status, "comparison": {"available": available, "trained": trained}}
+
+
+def test_control_is_the_reference_when_present():
+    res = result({"recall": 0.245, "f1": 0.14, "precision": 0.085, "mean_iou": 0.15},
+                 trained={"f1": 0.30, "precision": 0.25, "recall": 0.40, "mean_iou": 0.90})
+    out = interpret(HYP, res, control({"f1": 0.25, "precision": 0.20, "recall": 0.30, "mean_iou": 0.85}))
+    assert out["basis"] == "control" and out["verdict"] == "improved"
+    assert "0.300 to 0.400 (+0.100)" in out["summary"]
+    assert "Against the baseline model the change is +0.245" in out["summary"]
+    assert out["caveats"] == ["single run, no significance test"]
+    assert out["delta"]["recall"] == pytest.approx(0.10)
+    assert out["delta_vs_baseline"]["recall"] == 0.245
+
+
+def test_gain_that_the_control_explains_is_not_called_an_improvement():
+    res = result({"recall": 0.15}, trained={"f1": 0.3, "precision": 0.2, "recall": 0.305, "mean_iou": 0.8})
+    out = interpret(HYP, res, control({"f1": 0.3, "precision": 0.2, "recall": 0.30, "mean_iou": 0.8}))
+    assert out["verdict"] == "no_meaningful_change"
+    assert interpret(HYP, res)["verdict"] == "improved"
+
+
+def test_unusable_control_falls_back_to_baseline():
+    res = result({"recall": 0.15})
+    for bad in (None, control({}, status="failed"), control({}, available=False), control({"f1": 0.1})):
+        out = interpret(HYP, res, bad)
+        assert out["basis"] == "baseline" and len(out["caveats"]) == 2
+
+
+def test_failed_candidate_ignores_control():
+    out = interpret(HYP, {"status": "failed", "error": {"type": "OOM", "message": "x"}}, control({"recall": 0.3}))
+    assert out["verdict"] == "failed"

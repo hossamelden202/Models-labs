@@ -3,13 +3,16 @@ from modellab.ai.analysis import analyze_detection
 from modellab.ai.catalog import build_menu, get_candidate
 from modellab.ai.knowledge.ingestion import ingest_all, tried_changes
 from modellab.ai.llm.provider import LLMError
+from modellab.ai.ranking import rank_candidates
 from modellab.ai.schemas import Candidate, Change, ExperimentProposal, Hypothesis, LLMChoice
 from modellab.ai.validation import validate_changes
 
+TOP = 3
 SYSTEM = (
     "You advise on improving an object detection model. You are given measured results, past experiments "
-    "and a fixed menu of allowed experiments. Pick exactly one menu entry by its candidate_id. "
-    "Base the claim only on the numbers given. Do not invent numbers or options."
+    "and a short ranked list of allowed experiments. Pick exactly one by its candidate_id. Prefer the first "
+    "one unless the numbers argue against it. The claim must name a weak class from the results and may use "
+    "only numbers that appear in them. Do not invent causes."
 )
 
 
@@ -17,7 +20,7 @@ def _trace(state, name):
     return state.get("trace", []) + [name]
 
 
-def _prompt(state):
+def _prompt(state, ranked):
     a = state["analysis"]
     lines = ["Measured results:", a["summary"], "", "Weak classes:"]
     lines += [f"- {w['class_name']} {w['metric']} {w['value']:.3f} ({w['note']})" for w in a["weaknesses"]] or ["- none"]
@@ -27,10 +30,15 @@ def _prompt(state):
         lines.append(f"[{r['title']}]\n{r['content'][:500]}")
     if not state["retrieved"]:
         lines.append("none")
-    lines += ["", "Allowed experiments:"]
-    for c in state["menu"]:
-        lines.append(f"- {c['candidate_id']}: {c['title']} (targets {c['target_metric']}). {c['rationale']}")
-    lines += ["", f"Question: {state['request']}", "Return candidate_id, claim, rationale and confidence from 0 to 1."]
+    by_id = {c["candidate_id"]: c for c in state["menu"]}
+    lines += ["", "Allowed experiments, best first:"]
+    for i, r in enumerate(ranked, 1):
+        c = by_id[r["candidate_id"]]
+        lines.append(
+            f"{i}. {c['candidate_id']}: {c['title']} (targets {c['target_metric']}). "
+            f"Why ranked here: {'; '.join(r['reasons'])}. Mechanism: {c['rationale']}"
+        )
+    lines += ["", f"Question: {state['request']}", "Return candidate_id, claim and rationale."]
     return "\n".join(lines)
 
 
@@ -80,38 +88,46 @@ def make_nodes(root, llm, knowledge):
 
     def generate_hypothesis(state):
         menu = [Candidate.model_validate(c) for c in state["menu"]]
-        ids = [c.candidate_id for c in menu]
+        ranking = [r.model_dump() for r in rank_candidates(menu, state["analysis"], state["experiments"])]
+        top = ranking[:TOP]
+        ids = [r["candidate_id"] for r in top]
+        weak = sorted({w["class_name"] for w in state["analysis"]["weaknesses"]})
         notes = list(state.get("notes", []))
 
         def check(choice):
-            return None if choice.candidate_id in ids else f"candidate_id must be one of {ids}"
+            if choice.candidate_id not in ids:
+                return f"candidate_id must be one of {ids}"
+            if weak and not any(name.lower() in choice.claim.lower() for name in weak):
+                return f"the claim must name a weak class from the results, one of {weak}"
+            return None
 
         try:
-            choice = llm.generate_structured(SYSTEM, _prompt(state), LLMChoice, check=check)
+            choice = llm.generate_structured(SYSTEM, _prompt(state, top), LLMChoice, check=check)
             used = True
         except LLMError as exc:
-            target = state["analysis"]["primary_target"]
-            cand = next((c for c in menu if c.target_metric == target), menu[0])
+            cand = get_candidate(menu, ids[0])
             choice = LLMChoice(
                 candidate_id=cand.candidate_id,
                 claim=f"{cand.title} may improve {cand.target_metric}",
                 rationale=cand.rationale,
-                confidence=0.3,
             )
             used = False
-            notes.append(f"LLM output unusable, picked a menu entry by rule: {exc}")
+            notes.append(f"LLM output unusable, took the top-ranked option by rule: {exc}")
 
         cand = get_candidate(menu, choice.candidate_id)
+        entry = next(r for r in ranking if r["candidate_id"] == cand.candidate_id)
         hypothesis = Hypothesis(
             claim=choice.claim,
             rationale=choice.rationale,
             evidence=_evidence(state["analysis"], state["retrieved"], cand.target_metric),
             target_metric=cand.target_metric,
-            confidence=choice.confidence,
+            evidence_level=entry["level"],
+            evidence_reasons=entry["reasons"],
         )
         return {
             "choice": choice.model_dump(),
             "hypothesis": hypothesis.model_dump(),
+            "ranking": ranking,
             "llm_used": used,
             "notes": notes,
             "trace": _trace(state, "generate_hypothesis"),

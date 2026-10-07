@@ -1,0 +1,86 @@
+{
+  "created_at": "2026-10-07T14:17:46.640674+00:00",
+  "error": null,
+  "finished_at": null,
+  "job_id": "9bd7f5c3a14e",
+  "kind": "experiments",
+  "params": {
+    "alpha": 0.05,
+    "baseline_evaluation_id": null,
+    "dataset_id": "weapons-small",
+    "device": "auto",
+    "family_id": "weapons-final-model",
+    "force": false,
+    "matrices": [],
+    "model_id": "weapons-final-model",
+    "specs": [
+      {
+        "alpha": 0.05,
+        "hypothesis": {
+          "claim": "Default-settings control run",
+          "expected_direction": "no_change"
+        },
+        "intervention": {
+          "changes": [
+            {
+              "path": "epochs",
+              "value": 10
+            }
+          ],
+          "kind": "training"
+        },
+        "metrics": [
+          "accuracy",
+          "macro_f1"
+        ],
+        "n_bootstrap": 1000,
+        "n_permutations": 5000,
+        "name": "advisor_control_default",
+        "population": {
+          "analysis_id": null,
+          "sample_ids": null,
+          "slice_ids": null
+        },
+        "practical_threshold": 0.01,
+        "repetitions": 1,
+        "seed": 42
+      },
+      {
+        "alpha": 0.05,
+        "hypothesis": {
+          "claim": "Train for 30 epochs may improve f1",
+          "expected_direction": "improve"
+        },
+        "intervention": {
+          "changes": [
+            {
+              "path": "epochs",
+              "value": 30
+            }
+          ],
+          "kind": "training"
+        },
+        "metrics": [
+          "accuracy",
+          "macro_f1"
+        ],
+        "n_bootstrap": 1000,
+        "n_permutations": 5000,
+        "name": "advisor_epochs_30",
+        "population": {
+          "analysis_id": null,
+          "sample_ids": null,
+          "slice_ids": null
+        },
+        "practical_threshold": 0.01,
+        "repetitions": 1,
+        "seed": 42
+      }
+    ],
+    "stop_on_failure": true,
+    "subpath": null
+  },
+  "result": null,
+  "started_at": "2026-10-07T14:17:46.642321+00:00",
+  "status": "running"
+}

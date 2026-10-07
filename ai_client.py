@@ -42,8 +42,10 @@ class AiClient:
     def get(self, research_id):
         return self._call("get", f"/ai/research/{research_id}")
 
-    def approve(self, research_id, model_id=None, dataset_id=None, device="auto", force=False):
+    def approve(self, research_id, model_id=None, dataset_id=None, device="auto", force=False, include_control=None):
         body = {"device": device, "force": force}
+        if include_control is not None:
+            body["include_control"] = include_control
         if model_id:
             body["model_id"] = model_id
         if dataset_id:

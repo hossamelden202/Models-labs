@@ -38,11 +38,18 @@ def test_panel_full_flow(app):
     tables = [t.value.to_dict("records") for t in at.table]
     assert any(r.get("path") == "data.input_width" and r.get("value") == 416 for t in tables for r in t)
 
+    assert not any("confidence" in c.value for c in at.caption)
+    assert any(c.value.startswith("Chosen by") and "evidence low" in c.value for c in at.caption)
+    assert any("Why this experiment" in e.label for e in at.expander)
+    assert at.checkbox[0].value is True
+
     button(at, "Approve and run").click().run()
     assert not at.exception, at.exception
     assert env.services.calls and env.services.calls[0]["model_id"] == "weapons-final-model"
+    assert [s["name"] for s in env.services.calls[0]["specs"]][0] == "advisor_control_default"
     text = " ".join(m.value for m in at.markdown)
     assert "improved" in text and "consistent with the hypothesis" in text
+    assert any("Compared against: control" in c.value for c in at.caption)
     assert not [b for b in at.button if b.label == "Approve and run"]
 
 
@@ -65,3 +72,13 @@ def test_panel_shows_backend_errors(tmp_path):
         assert not at.exception
         assert any("422" in e.value and "no-such-family" in e.value for e in at.error)
         assert env.client.list_research() == []
+
+
+def test_panel_can_skip_the_control(app):
+    env, at = app
+    button(at, "Run research").click().run()
+    at.checkbox[0].uncheck().run()
+    button(at, "Approve and run").click().run()
+    assert not at.exception, at.exception
+    assert len(env.services.calls[0]["specs"]) == 1
+    assert any("Compared against: baseline" in c.value for c in at.caption)

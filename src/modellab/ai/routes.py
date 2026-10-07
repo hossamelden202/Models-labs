@@ -18,7 +18,7 @@ from modellab.ai.llm.provider import provider_from_env
 from modellab.ai.research.graph import run_research
 from modellab.ai.schemas import Change
 from modellab.ai.validation import validate_changes
-from modellab.experiments.spec import parse_spec
+from modellab.experiments.spec import experiment_id, parse_spec
 from modellab.server.errors import ApiError
 from modellab.server.workspace import check_id
 
@@ -32,7 +32,15 @@ class ResearchRequest(_Req):
     question: str = Field("Why is my detector weak?", min_length=1, max_length=500)
 
 
+CONTROL_SPEC = {
+    "name": "advisor_control_default",
+    "hypothesis": {"claim": "Default-settings control run", "expected_direction": "no_change"},
+    "intervention": {"kind": "training", "changes": [{"path": "epochs", "value": 10}]},
+}
+
+
 class ApproveRequest(_Req):
+    include_control: bool | None = None
     model_id: str | None = None
     dataset_id: str | None = None
     subpath: str | None = None
@@ -81,6 +89,12 @@ def add_ai_routes(api, ws, jobs, cache, store, services=None, llm_factory=None, 
     def svc():
         return services or importlib.import_module("modellab.server.services")
 
+    def read_json(path):
+        try:
+            return json.loads(path.read_text())
+        except (OSError, json.JSONDecodeError):
+            return None
+
     def save(record):
         folder = base / record["id"]
         folder.mkdir(parents=True, exist_ok=True)
@@ -107,25 +121,26 @@ def add_ai_routes(api, ws, jobs, cache, store, services=None, llm_factory=None, 
         if record["status"] != "approved" or record.get("finding"):
             return record
         approval = record["approval"]
-        exp_id = record["result"]["validation"]["experiment_id"]
-        path = root / "experiments" / record["family_id"] / exp_id / "result.json"
+        family_dir = root / "experiments" / record["family_id"]
+        path = family_dir / record["result"]["validation"]["experiment_id"] / "result.json"
         if not path.is_file():
             return record
         if approval.get("force") and path.stat().st_mtime < approval["at_epoch"]:
             return record
-        try:
-            result = json.loads(path.read_text())
-        except json.JSONDecodeError:
+        result = read_json(path)
+        if not result or result.get("status") not in ("completed", "failed"):
             return record
-        if result.get("status") not in ("completed", "failed"):
-            return record
-        record["finding"] = interpret(record["result"]["hypothesis"], result)
+        control = None
+        if approval.get("control_experiment_id"):
+            control = read_json(family_dir / approval["control_experiment_id"] / "result.json")
+        record["finding"] = interpret(record["result"]["hypothesis"], result, control)
         save(record)
         return record
 
     def view(record):
         out = dict(record)
         out["job"] = job_view(record["approval"]["job_id"]) if record.get("approval") else None
+        out["control_available"] = tools.find_control(root, record["family_id"]) is not None
         return out
 
     @api.post("/ai/research")
@@ -211,9 +226,16 @@ def add_ai_routes(api, ws, jobs, cache, store, services=None, llm_factory=None, 
             ws.get_model(model_id)
             ws.get_dataset(dataset_id)
             parse_spec(fresh.spec)
+            existing = tools.find_control(root, record["family_id"])
+            specs = [fresh.spec]
+            control_id = existing
+            if existing is None and req.include_control is not False:
+                control = parse_spec(CONTROL_SPEC)
+                specs = [control.model_dump(mode="json"), fresh.spec]
+                control_id = experiment_id(control)
             params = {
                 "family_id": record["family_id"], "baseline_evaluation_id": None,
-                "specs": [fresh.spec], "matrices": [], "model_id": model_id, "dataset_id": dataset_id,
+                "specs": specs, "matrices": [], "model_id": model_id, "dataset_id": dataset_id,
                 "subpath": req.subpath, "device": req.device, "force": req.force,
                 "stop_on_failure": True, "alpha": 0.05,
             }
@@ -223,9 +245,12 @@ def add_ai_routes(api, ws, jobs, cache, store, services=None, llm_factory=None, 
             record["approval"] = {
                 "job_id": job["job_id"], "model_id": model_id, "dataset_id": dataset_id,
                 "force": req.force, "at_epoch": time.time(),
+                "control_experiment_id": control_id, "control_runs": existing is None and control_id is not None,
                 "at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
             }
             save(record)
         if wait:
             jobs.wait(job["job_id"], timeout)
-        return JSONResponse({"research_id": rid, "status": "approved", "job": job_view(job["job_id"])}, status_code=202)
+        body = {"research_id": rid, "status": "approved", "job": job_view(job["job_id"]),
+                "control": {"experiment_id": control_id, "runs": len(specs) == 2}}
+        return JSONResponse(body, status_code=202)

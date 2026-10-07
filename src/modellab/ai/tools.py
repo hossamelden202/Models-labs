@@ -25,9 +25,33 @@ def _read(path):
         return None
 
 
+
+def _experiments_root(root):
+    """Return the ModelLab experiment directory.
+
+    Production ModelLab stores experiments under:
+        workspace/artifacts/experiments/
+
+    Older tests/fixtures may use:
+        workspace/experiments/
+
+    Prefer the production location when it exists, while keeping
+    compatibility with the older test layout.
+    """
+    root = Path(root)
+
+    production = root / "artifacts" / "experiments"
+    legacy = root / "experiments"
+
+    if production.exists():
+        return production
+
+    return legacy
+
+
 def get_baseline(root, family_id):
     check_name(family_id, "family_id")
-    doc = _read(Path(root) / "experiments" / family_id / "baseline.json")
+    doc = _read(_experiments_root(root) / family_id / "baseline.json")
     if doc is None:
         raise ToolError(f"no readable baseline for family {family_id!r}")
     task = (
@@ -44,7 +68,7 @@ def get_baseline(root, family_id):
 def list_experiments(root, family_id):
     check_name(family_id, "family_id")
     out = []
-    for path in sorted((Path(root) / "experiments" / family_id).glob("exp_*/result.json")):
+    for path in sorted((_experiments_root(root) / family_id).glob("exp_*/result.json")):
         result = _read(path)
         if result is None:
             continue
@@ -62,7 +86,7 @@ def list_experiments(root, family_id):
 def get_experiment(root, family_id, experiment_id):
     check_name(family_id, "family_id")
     check_name(experiment_id, "experiment_id")
-    doc = _read(Path(root) / "experiments" / family_id / experiment_id / "result.json")
+    doc = _read(_experiments_root(root) / family_id / experiment_id / "result.json")
     if doc is None:
         raise ToolError(f"no readable result for {experiment_id!r}")
     return doc
@@ -83,3 +107,13 @@ def failure_per_class(root, baseline):
     if not per_class:
         raise ToolError("no failure analysis and no per-class baseline metrics")
     return "baseline_metrics", per_class
+
+
+def find_control(root, family_id):
+    check_name(family_id, "family_id")
+    for path in sorted((_experiments_root(root) / family_id).glob("exp_*/result.json")):
+        result = _read(path)
+        if result and result.get("status") == "completed":
+            if not config_changes((result.get("training") or {}).get("config") or {}):
+                return path.parent.name
+    return None

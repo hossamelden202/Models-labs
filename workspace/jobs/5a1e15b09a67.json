@@ -1,7 +1,10 @@
 {
   "created_at": "2026-10-07T13:55:32.246289+00:00",
-  "error": null,
-  "finished_at": null,
+  "error": {
+    "message": "the server stopped before the job finished",
+    "type": "Interrupted"
+  },
+  "finished_at": "2026-10-07T13:59:57.455111+00:00",
   "job_id": "5a1e15b09a67",
   "kind": "experiments",
   "params": {
@@ -131,5 +134,5 @@
   },
   "result": null,
   "started_at": "2026-10-07T13:55:32.248176+00:00",
-  "status": "running"
+  "status": "interrupted"
 }

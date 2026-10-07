@@ -17,6 +17,7 @@ def env(tmp_path):
 def test_research_creates_and_persists_record(env):
     rec = env.client.research(FAMILY, "Why is my weapon detector weak?")
     assert rec["status"] == "proposed" and rec["job"] is None
+    assert rec["control_available"] is False and rec["result"]["ranking"]
     assert rec["defaults"] == {"model_id": "weapons-final-model", "dataset_id": "weapons-small"}
     assert rec["result"]["validation"]["valid"] is True
     assert (env.root / "ai_research" / rec["id"] / "research.json").is_file()
@@ -63,23 +64,59 @@ def test_no_llm_backend_still_returns_a_valid_proposal(tmp_path):
     assert rec["result"]["validation"]["valid"] is True
 
 
-def test_approve_runs_exact_validated_spec_and_produces_finding(env):
+def test_approve_runs_control_first_then_exact_validated_spec(env):
     rec = env.client.research(FAMILY, "q")
     out = env.client.approve(rec["id"])
     assert out["status"] == "approved" and out["job"]["job_id"] == "job1"
+    assert out["control"]["runs"] is True
 
     params = env.services.calls[0]
     assert params["family_id"] == FAMILY
-    assert params["specs"] == [rec["result"]["validation"]["spec"]]
+    assert len(params["specs"]) == 2
+    assert params["specs"][0]["name"] == "advisor_control_default"
+    assert params["specs"][1]["name"] == rec["result"]["proposal"]["name"]
+    assert params["specs"][1] == rec["result"]["validation"]["spec"]
+    assert params["specs"][0]["intervention"]["changes"] == [{"path": "epochs", "value": 10}]
     assert (params["model_id"], params["dataset_id"]) == ("weapons-final-model", "weapons-small")
     assert params["matrices"] == [] and params["baseline_evaluation_id"] is None
 
     done = env.client.get(rec["id"])
-    assert done["status"] == "approved"
-    assert done["job"]["status"] == "completed"
-    assert done["finding"]["verdict"] == "improved"
-    assert "0.155 to 0.400" in done["finding"]["summary"]
+    assert done["status"] == "approved" and done["job"]["status"] == "completed"
+    assert done["control_available"] is True
+    assert done["finding"]["basis"] == "control" and done["finding"]["verdict"] == "improved"
+    assert "0.300 to 0.400" in done["finding"]["summary"]
     assert env.client.list_research()[0]["verdict"] == "improved"
+
+
+def test_approve_without_control_compares_against_baseline(env):
+    rec = env.client.research(FAMILY, "q")
+    out = env.client.approve(rec["id"], include_control=False)
+    assert out["control"] == {"experiment_id": None, "runs": False}
+    assert len(env.services.calls[0]["specs"]) == 1
+    finding = env.client.get(rec["id"])["finding"]
+    assert finding["basis"] == "baseline" and "0.155 to 0.400" in finding["summary"]
+    assert len(finding["caveats"]) == 2
+
+
+def test_existing_control_is_reused_not_rerun(env):
+    first = env.client.research(FAMILY, "q")
+    env.client.approve(first["id"])
+    control_id = env.client.get(first["id"])["approval"]["control_experiment_id"]
+    assert control_id
+
+    second = env.client.research(FAMILY, "q")
+    out = env.client.approve(second["id"])
+    assert out["control"] == {"experiment_id": control_id, "runs": False}
+    assert len(env.services.calls[1]["specs"]) == 1
+    assert env.client.get(second["id"])["finding"]["basis"] == "control"
+
+
+def test_failed_control_falls_back_to_baseline_comparison(env):
+    env.services.control_mode = "fail"
+    rec = env.client.research(FAMILY, "q")
+    env.client.approve(rec["id"])
+    finding = env.client.get(rec["id"])["finding"]
+    assert finding["basis"] == "baseline" and finding["verdict"] == "improved"
 
 
 def test_approve_twice_conflicts_unless_forced(env):

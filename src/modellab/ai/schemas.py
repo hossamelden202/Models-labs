@@ -37,11 +37,20 @@ class Candidate(_S):
     rationale: str
 
 
-class LLMChoice(_S):
+class LLMChoice(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
     candidate_id: str
     claim: str = Field(min_length=1)
     rationale: str = Field(min_length=1)
-    confidence: float = Field(ge=0, le=1)
+
+
+class Ranked(_S):
+    candidate_id: str
+    title: str
+    score: float
+    level: Literal["low", "medium"]
+    reasons: list[str]
 
 
 class Hypothesis(_S):
@@ -50,7 +59,8 @@ class Hypothesis(_S):
     evidence: list[str]
     expected_direction: Literal["improve"] = "improve"
     target_metric: TargetMetric
-    confidence: float = Field(ge=0, le=1)
+    evidence_level: Literal["low", "medium"] = "low"
+    evidence_reasons: list[str] = Field(default_factory=list)
 
 
 class ExperimentProposal(_S):

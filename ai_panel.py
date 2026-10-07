@@ -37,11 +37,16 @@ def show_record(client, rec):
     st.write(hyp["claim"])
     st.caption(
         ("Chosen by the language model" if res["llm_used"] else "Chosen by rule, the language model was unavailable")
-        + f"  |  stated confidence {hyp['confidence']:.0%}  |  target {hyp['target_metric']}"
+        + f"  |  evidence {hyp['evidence_level']}  |  target {hyp['target_metric']}"
     )
     st.write(hyp["rationale"])
     if hyp["evidence"]:
         st.markdown("\n".join(f"- {e}" for e in hyp["evidence"]))
+    with st.expander("Why this experiment"):
+        st.table([
+            {"candidate": r["candidate_id"], "score": r["score"], "why": "; ".join(r["reasons"])}
+            for r in res.get("ranking", [])
+        ])
 
     st.subheader("Proposed experiment")
     st.write(f"{prop['name']}: {prop['expected_effect']}")
@@ -56,10 +61,18 @@ def show_record(client, rec):
         c1, c2 = st.columns(2)
         model_id = c1.text_input("Model id", d.get("model_id") or "", key=f"m_{rec['id']}")
         dataset_id = c2.text_input("Dataset id", d.get("dataset_id") or "", key=f"d_{rec['id']}")
+        if rec.get("control_available"):
+            st.caption("A default-settings control already exists for this family and will be used for comparison.")
+            control = None
+        else:
+            control = st.checkbox(
+                "Also run a default-settings control first (recommended, roughly doubles the time)",
+                value=True, key=f"ct_{rec['id']}",
+            )
         a, b = st.columns(2)
         if a.button("Approve and run", key=f"ap_{rec['id']}"):
             try:
-                out = client.approve(rec["id"], model_id or None, dataset_id or None)
+                out = client.approve(rec["id"], model_id or None, dataset_id or None, include_control=control)
                 st.success(f"Started job {out['job'].get('job_id')}")
                 st.rerun()
             except AiApiError as exc:
@@ -81,6 +94,8 @@ def show_record(client, rec):
         st.subheader("Result")
         st.write(f"{f['verdict']}: {f['hypothesis_status']}")
         st.write(f["summary"])
+        if f.get("basis"):
+            st.caption(f"Compared against: {f['basis']}")
         for caveat in f["caveats"]:
             st.caption(caveat)
 

@@ -8,7 +8,7 @@ from ai_client import AiClient
 from modellab.ai.knowledge.store import HashingEmbedder
 from modellab.ai.routes import add_ai_routes
 from modellab.experiments.spec import experiment_id, parse_spec
-from modellab.experiments.training_config import TrainingConfig
+from modellab.experiments.training_config import TrainingConfig, apply_training_changes
 from modellab.server.errors import ApiError
 
 FAMILY = "weapons-final-model"
@@ -20,7 +20,7 @@ BASE_METRICS = {
     },
 }
 GOOD = json.dumps({"candidate_id": "res_416", "claim": "Higher resolution should raise handgun recall",
-                   "rationale": "small objects", "confidence": 0.7})
+                   "rationale": "small objects"})
 
 
 class FakeWs:
@@ -36,29 +36,39 @@ class FakeWs:
             raise ApiError(404, f"dataset '{dataset_id}' not found")
 
 
+CONTROL_TRAINED = {"f1": 0.25, "precision": 0.20, "recall": 0.30, "mean_iou": 0.85}
+CANDIDATE_TRAINED = {"f1": 0.30, "precision": 0.25, "recall": 0.40, "mean_iou": 0.90}
+BASELINE = {"f1": 0.16, "precision": 0.165, "recall": 0.155, "mean_iou": 0.75}
+
+
 class FakeServices:
     def __init__(self, root):
         self.root = root
         self.calls = []
         self.mode = "ok"
+        self.control_mode = "ok"
 
     def experiments(self, ws, cache, store, params):
         self.calls.append(params)
         if self.mode == "raise":
             raise RuntimeError("boom")
-        exp_id = experiment_id(parse_spec(params["specs"][0]))
-        folder = self.root / "experiments" / params["family_id"] / exp_id
-        folder.mkdir(parents=True, exist_ok=True)
-        if self.mode == "fail":
-            doc = {"status": "failed", "task": "detection", "error": {"type": "OOM", "message": "out of memory"}}
-        else:
-            doc = {"status": "completed", "task": "detection",
-                   "training": {"config": TrainingConfig().model_dump(mode="python"), "total_epochs": 10, "best_epoch": 3},
-                   "comparison": {"available": True,
-                                  "baseline": {"f1": 0.16, "precision": 0.165, "recall": 0.155, "mean_iou": 0.75},
-                                  "trained": {"f1": 0.30, "precision": 0.25, "recall": 0.40, "mean_iou": 0.9},
-                                  "delta": {"f1": 0.14, "precision": 0.085, "recall": 0.245, "mean_iou": 0.15}}}
-        (folder / "result.json").write_text(json.dumps(doc))
+        for raw in params["specs"]:
+            spec = parse_spec(raw)
+            exp_id = experiment_id(spec)
+            folder = self.root / "experiments" / params["family_id"] / exp_id
+            folder.mkdir(parents=True, exist_ok=True)
+            is_control = spec.name == "advisor_control_default"
+            mode = self.control_mode if is_control else self.mode
+            if mode == "fail":
+                doc = {"status": "failed", "task": "detection", "error": {"type": "OOM", "message": "out of memory"}}
+            else:
+                trained = CONTROL_TRAINED if is_control else CANDIDATE_TRAINED
+                config = apply_training_changes(TrainingConfig(), spec.intervention).model_dump(mode="python")
+                doc = {"status": "completed", "task": "detection",
+                       "training": {"config": config, "total_epochs": config["epochs"], "best_epoch": 3},
+                       "comparison": {"available": True, "baseline": BASELINE, "trained": trained,
+                                      "delta": {k: round(trained[k] - BASELINE[k], 6) for k in BASELINE}}}
+            (folder / "result.json").write_text(json.dumps(doc))
         return {"ok": True}
 
 

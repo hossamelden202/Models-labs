@@ -11,6 +11,7 @@ class ResearchState(TypedDict, total=False):
     menu: list[dict[str, Any]]
     analysis: dict[str, Any]
     retrieved: list[dict[str, Any]]
+    ranking: list[dict[str, Any]]
     choice: dict[str, Any]
     llm_used: bool
     hypothesis: dict[str, Any]

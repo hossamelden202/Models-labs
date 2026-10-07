@@ -35,6 +35,7 @@ def run_research(root, family_id, question, llm, knowledge):
         "failure_source": state.get("failure_source"),
         "analysis": state.get("analysis"),
         "retrieved": [{k: r[k] for k in ("id", "title", "score")} for r in state.get("retrieved", [])],
+        "ranking": state.get("ranking", []),
         "hypothesis": state.get("hypothesis"),
         "proposal": state.get("proposal"),
         "validation": state.get("validation"),
