@@ -74,6 +74,19 @@ class ExperimentRequest(_Req):
     alpha: float = Field(0.05, gt=0, lt=1)
 
 
+class CampaignRequest(_Req):
+    family_id: str
+    model_id: str
+    dataset_id: str
+    subpath: str | None = None
+    stages: list[dict] = Field(default_factory=list)
+    budget: dict = Field(default_factory=dict)
+    device: Literal["auto", "cpu", "cuda"] = "auto"
+    force: bool = False
+    stop_on_failure: bool = False
+    alpha: float = Field(0.05, gt=0, lt=1)
+
+
 class RegisterDataset(_Req):
     dataset_id: str | None = None
     path: str
@@ -569,6 +582,125 @@ def create_app(settings: ServerSettings) -> FastAPI:
         params = req.model_dump()
         return enqueue("analysis", params, lambda: services.analyze(ws, store, params), wait, timeout)
 
+    @api.post("/campaigns")
+    def start_campaign(
+        req: CampaignRequest,
+        wait: bool = False,
+        timeout: float = Query(600, gt=0, le=86400),
+    ):
+        from modellab.experiments.campaign import (
+            CampaignBudget,
+            CampaignStage,
+            TrainingSearchSpace,
+            run_campaign,
+        )
+        from modellab.evaluation import build_dataset
+
+        check_id(req.family_id, "family id")
+
+        if not req.stages:
+            raise ApiError(422, "give at least one campaign stage")
+
+        ws.get_model(req.model_id)
+        ws.get_dataset(req.dataset_id)
+
+        model, pre, _ = cache.get(
+            ws,
+            req.model_id,
+            req.device,
+        )
+
+        dataset = build_dataset(
+            ws,
+            req.dataset_id,
+            req.subpath,
+            model.spec.class_names,
+            pre,
+            task=model.spec.task,
+        )
+
+        stages = []
+        for payload in req.stages:
+            search_space = payload.get("search_space") or {}
+            values = search_space.get("values") or {}
+
+            if not values:
+                raise ApiError(
+                    422,
+                    f"campaign stage '{payload.get('name', '<unnamed>')}' "
+                    "has an empty search space",
+                )
+
+            stages.append(
+                CampaignStage(
+                    name=payload["name"],
+                    hypothesis=payload["hypothesis"],
+                    search_space=TrainingSearchSpace(values=values),
+                    expected_direction=payload.get(
+                        "expected_direction",
+                        "improve",
+                    ),
+                    repetitions=payload.get("repetitions", 1),
+                    seed=payload.get("seed", 42),
+                    metrics=tuple(
+                        payload.get(
+                            "metrics",
+                            ["accuracy", "macro_f1"],
+                        )
+                    ),
+                    max_experiments=payload.get("max_experiments"),
+                )
+            )
+
+        budget_payload = req.budget or {}
+        budget = CampaignBudget(
+            max_experiments=budget_payload.get(
+                "max_experiments",
+                24,
+            ),
+            max_stage_experiments=budget_payload.get(
+                "max_stage_experiments",
+                8,
+            ),
+            max_stages=budget_payload.get(
+                "max_stages",
+                3,
+            ),
+        )
+
+        def run():
+            result = run_campaign(
+                store,
+                req.family_id,
+                stages,
+                model=model,
+                dataset=dataset,
+                budget=budget,
+                force=req.force,
+                stop_on_failure=req.stop_on_failure,
+                alpha=req.alpha,
+            )
+            return {
+                "campaign_id": result.campaign_id,
+                "family_id": result.family_id,
+                "stages": result.stages,
+                "findings": result.findings,
+                "best_experiment": result.best_experiment,
+                "final_recommendation": result.final_recommendation,
+                "directory": str(result.directory)
+                if result.directory is not None
+                else None,
+            }
+
+        return enqueue(
+            "campaigns",
+            req.model_dump(),
+            run,
+            wait,
+            timeout,
+        )
+
+
     @api.post("/experiments")
     def start_experiments(req: ExperimentRequest, wait: bool = False, timeout: float = Query(600, gt=0, le=86400)):
         from modellab.experiments import expand_matrix, parse_spec
@@ -714,17 +846,35 @@ def create_app(settings: ServerSettings) -> FastAPI:
         experiments = []
         for path in sorted(base.glob("exp_*/result.json")):
             doc = json.loads(path.read_text())
+            experiment_id = doc.get("experiment_id") or path.parent.name
+            spec = doc.get("spec") or {}
             entry = {
-                "experiment_id": doc["experiment_id"], "name": doc["spec"]["name"], "status": doc["status"],
-                "intervention": doc["spec"]["intervention"],
+                "experiment_id": experiment_id,
+                "name": spec.get("name", experiment_id),
+                "status": doc.get("status"),
+                "intervention": spec.get("intervention"),
             }
-            if doc["status"] == "completed":
-                entry["accuracy_difference"] = doc["statistics"]["affected"]["accuracy_difference"]
-                entry["verdict"] = doc["verdict"]["label"]
+
+            if doc.get("status") == "completed":
+                if "statistics" in doc:
+                    entry["accuracy_difference"] = (
+                        doc["statistics"]["affected"]["accuracy_difference"]
+                    )
+                if "verdict" in doc:
+                    entry["verdict"] = doc["verdict"]["label"]
+                if "comparison" in doc:
+                    entry["comparison"] = doc["comparison"]
+                if "evaluation" in doc:
+                    entry["evaluation"] = doc["evaluation"]
             else:
-                entry["error"] = doc["error"]
+                entry["error"] = doc.get("error")
+
             experiments.append(entry)
         report_path = base / "family_report.json"
+        if not report_path.is_file():
+            detection_report_path = base / "detection_family_report.json"
+            if detection_report_path.is_file():
+                report_path = detection_report_path
 
         campaigns = []
         campaigns_dir = base / "campaigns"
@@ -736,6 +886,7 @@ def create_app(settings: ServerSettings) -> FastAPI:
             "baseline": read(base / "baseline.json"),
             "family_report": json.loads(report_path.read_text()) if report_path.is_file() else None,
             "experiments": experiments,
+            "outcomes": experiments,
             "campaigns": campaigns,
         }
 
