@@ -1,7 +1,7 @@
 import pytest
 from pydantic import BaseModel
 
-from modellab.ai.llm.provider import LLMError, ScriptedLLM, extract_json, merge_system, provider_from_env
+from modellab.ai.llm.provider import LLMError, NoLLM, ScriptedLLM, extract_json, merge_system, provider_from_env
 
 
 class Pick(BaseModel):
@@ -65,3 +65,10 @@ def test_factory_errors():
         provider_from_env({"MODELLAB_LLM_BACKEND": "nope"})
     with pytest.raises(LLMError):
         provider_from_env({"MODELLAB_LLM_BACKEND": "openai_compat"})
+
+
+def test_none_backend_always_raises_llm_error():
+    llm = provider_from_env({"MODELLAB_LLM_BACKEND": "none"})
+    assert isinstance(llm, NoLLM)
+    with pytest.raises(LLMError):
+        llm.generate_structured("s", "u", Pick)

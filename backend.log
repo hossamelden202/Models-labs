@@ -1,492 +1,9 @@
-INFO:     Started server process [1018]
+INFO:     Started server process [816]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
-INFO:     127.0.0.1:37300 - "GET /health HTTP/1.1" 200 OK
-INFO:     127.0.0.1:37304 - "GET /health HTTP/1.1" 200 OK
-INFO:     127.0.0.1:37310 - "GET /architectures HTTP/1.1" 200 OK
-INFO:     127.0.0.1:37326 - "GET /model-artifacts/probe_model.pt HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:37328 - "GET /health HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /health HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /experiments/ep HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /experiments/ep/exp_d377bb24076c HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /experiments/ep/exp_d377bb24076c/paired HTTP/1.1" 404 Not Found
-INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "POST /experiments HTTP/1.1" 404 Not Found
-INFO:     196.128.216.173:0 - "GET /experiments/rt HTTP/1.1" 404 Not Found
-INFO:     196.128.216.173:0 - "POST /experiments HTTP/1.1" 202 Accepted
-03:04:18 WARNING modellab.model: unpickling a full model from /kaggle/working/modellab/workspace/model_artifacts/artifact_596698473ced4190aceeb04bdbfc5698/best.pt, only do this for files you trust
-INFO:     196.128.216.173:0 - "GET /experiments/rt HTTP/1.1" 404 Not Found
-INFO:     196.128.216.173:0 - "GET /jobs HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /jobs HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "POST /experiments HTTP/1.1" 202 Accepted
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_d81e2a018578 HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_d81e2a018578/paired HTTP/1.1" 404 Not Found
-INFO:     196.128.216.173:0 - "POST /experiments HTTP/1.1" 202 Accepted
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_889db44acf73 HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_889db44acf73/paired HTTP/1.1" 404 Not Found
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_d81e2a018578 HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_d81e2a018578/paired HTTP/1.1" 404 Not Found
-INFO:     196.128.216.173:0 - "POST /experiments HTTP/1.1" 202 Accepted
-[DETECTION TRAINING] loading checkpoint: /kaggle/working/modellab/workspace/model_artifacts/artifact_596698473ced4190aceeb04bdbfc5698/best.pt
-[DETECTION TRAINING] starting Ultralytics training
-
-    Arguments received: ['yolo']. Ultralytics 'yolo' commands use the following syntax:
-
-        yolo TASK MODE ARGS
-
-        Where   TASK (optional) is one of ['detect', 'segment', 'semantic', 'depth', 'classify', 'pose', 'obb']
-                MODE (required) is one of ['train', 'val', 'predict', 'export', 'track', 'benchmark']
-                ARGS (optional) are any number of custom 'arg=value' pairs like 'imgsz=320' that override defaults.
-                    See all ARGS at https://docs.ultralytics.com/usage/cfg or with 'yolo cfg'
-
-    1. Train a detection model for 10 epochs with an initial learning_rate of 0.01
-        yolo train data=coco8.yaml model=yolo26n.pt epochs=10 lr0=0.01
-
-    2. Predict a YouTube video using a pretrained segmentation model at image size 320:
-        yolo predict model=yolo26n-seg.pt source='https://youtu.be/LNwODJXcvt4' imgsz=320
-
-    3. Validate a pretrained detection model at batch-size 1 and image size 640:
-        yolo val model=yolo26n.pt data=coco8.yaml batch=1 imgsz=640
-
-    4. Export a YOLO26n classification model to ONNX format at image size 224 by 128 (no TASK required)
-        yolo export model=yolo26n-cls.pt format=onnx imgsz=224,128
-
-    5. Ultralytics solutions usage
-        yolo solutions count or any of ['crop', 'blur', 'workout', 'heatmap', 'isegment', 'visioneye', 'speed', 'queue', 'analytics', 'inference', 'trackzone', 'region', 'security', 'parking'] source="path/to/video.mp4"
-
-    6. Run special commands:
-        yolo help
-        yolo checks
-        yolo version
-        yolo settings
-        yolo login API_KEY
-        yolo logout
-        yolo copy-cfg
-        yolo cfg
-        yolo solutions help
-
-    Docs: https://docs.ultralytics.com
-    Platform: https://platform.ultralytics.com
-    Community: https://community.ultralytics.com
-    GitHub: https://github.com/ultralytics/ultralytics
-    
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_889db44acf73 HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_889db44acf73/paired HTTP/1.1" 404 Not Found
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_d81e2a018578 HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_d81e2a018578/paired HTTP/1.1" 404 Not Found
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_ddb6c3352d81 HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_ddb6c3352d81/paired HTTP/1.1" 404 Not Found
-INFO:     196.128.216.173:0 - "POST /experiments HTTP/1.1" 202 Accepted
-[DETECTION TRAINING] loading checkpoint: /kaggle/working/modellab/workspace/model_artifacts/artifact_596698473ced4190aceeb04bdbfc5698/best.pt
-[DETECTION TRAINING] starting Ultralytics training
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_014e5a49dc0b HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_014e5a49dc0b/paired HTTP/1.1" 404 Not Found
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_889db44acf73 HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_889db44acf73/paired HTTP/1.1" 404 Not Found
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_d81e2a018578 HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_d81e2a018578/paired HTTP/1.1" 404 Not Found
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_ddb6c3352d81 HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_ddb6c3352d81/paired HTTP/1.1" 404 Not Found
-INFO:     196.128.216.173:0 - "POST /experiments HTTP/1.1" 202 Accepted
-[DETECTION TRAINING] loading checkpoint: /kaggle/working/modellab/workspace/model_artifacts/artifact_596698473ced4190aceeb04bdbfc5698/best.pt
-[DETECTION TRAINING] starting Ultralytics training
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_014e5a49dc0b HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_014e5a49dc0b/paired HTTP/1.1" 404 Not Found
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_182a6327a606 HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_182a6327a606/paired HTTP/1.1" 404 Not Found
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_889db44acf73 HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_889db44acf73/paired HTTP/1.1" 404 Not Found
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_d81e2a018578 HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_d81e2a018578/paired HTTP/1.1" 404 Not Found
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_ddb6c3352d81 HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_ddb6c3352d81/paired HTTP/1.1" 404 Not Found
-INFO:     196.128.216.173:0 - "POST /experiments HTTP/1.1" 202 Accepted
-[DETECTION TRAINING] loading checkpoint: /kaggle/working/modellab/workspace/model_artifacts/artifact_596698473ced4190aceeb04bdbfc5698/best.pt
-[DETECTION TRAINING] starting Ultralytics training
-Ultralytics 8.4.174 🚀 Python-3.13.15 torch-2.11.0+cu128 CUDA:0 (Tesla T4, 14912MiB)
-[34m[1mengine/trainer: [0magnostic_nms=False, amp=True, angle=1.0, augment=False, auto_augment=randaugment, batch=32, bgr=0.0, box=7.5, cache=False, cfg=None, channels_last=None, classes=None, close_mosaic=10, cls=0.5, cls_pw=0.0, cls_remap=True, compile=False, conf=None, copy_paste=0.0, copy_paste_mode=flip, cos_lr=False, cutmix=0.0, data=/kaggle/working/modellab/workspace/artifacts/experiments/wonowyqw/exp_00cf096f3983/training/dataset/data.yaml, degrees=10.0, deterministic=True, device=, dfl=1.5, dgrad=0.5, dis=6.0, distill_model=None, dlam=1.0, dlog=1.0, dnn=False, dropout=0.0, dynamic=False, embed=None, epochs=10, erasing=0.4, exist_ok=True, fliplr=0.5, flipud=0.0, format=torchscript, fraction=1.0, freeze=None, hsv_h=0.0, hsv_s=0.0, hsv_v=0.0, imgsz=224, iou=0.7, kobj=1.0, line_width=None, lr0=0.0002, lrf=0.01, mask_ratio=4, max_det=300, mixup=0.0, mode=train, model=/kaggle/working/modellab/workspace/model_artifacts/artifact_596698473ced4190aceeb04bdbfc5698/best.pt, momentum=0.937, mosaic=0.5, multi_scale=0.0, name=training, nbs=64, nms=None, opset=None, optimize=False, optimizer=AdamW, overlap_mask=True, patience=5, perspective=0.0, plots=True, pose=12.0, pretrained=True, profile=False, project=/kaggle/working/modellab/workspace/artifacts/experiments/wonowyqw/exp_00cf096f3983, quantize=None, rect=False, resume=False, retina_masks=False, rle=1.0, save=True, save_conf=False, save_crop=False, save_dir=/kaggle/working/modellab/workspace/artifacts/experiments/wonowyqw/exp_00cf096f3983/training, save_frames=False, save_json=False, save_period=-1, save_txt=False, scale=0.0, seed=42, shear=0.0, show=False, show_boxes=True, show_conf=True, show_labels=True, simplify=True, single_cls=False, source=None, split=val, stream_buffer=False, task=detect, time=None, tracker=tracktrack.yaml, translate=0.0, val=True, verbose=True, vid_stride=1, visualize=False, warmup_bias_lr=0.1, warmup_epochs=3.0, warmup_momentum=0.8, weight_decay=0.0, workers=4, workspace=None
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_014e5a49dc0b HTTP/1.1" 200 OK
-
-                   from  n    params  module                                       arguments                     
-  0                  -1  1       464  ultralytics.nn.modules.conv.Conv             [3, 16, 3, 2]                 
-  1                  -1  1      4672  ultralytics.nn.modules.conv.Conv             [16, 32, 3, 2]                
-  2                  -1  1      6640  ultralytics.nn.modules.block.C3k2            [32, 64, 1, False, 0.25]      
-  3                  -1  1     36992  ultralytics.nn.modules.conv.Conv             [64, 64, 3, 2]                
-  4                  -1  1     26080  ultralytics.nn.modules.block.C3k2            [64, 128, 1, False, 0.25]     
-  5                  -1  1    147712  ultralytics.nn.modules.conv.Conv             [128, 128, 3, 2]              
-  6                  -1  1     87040  ultralytics.nn.modules.block.C3k2            [128, 128, 1, True]           
-  7                  -1  1    295424  ultralytics.nn.modules.conv.Conv             [128, 256, 3, 2]              
-  8                  -1  1    346112  ultralytics.nn.modules.block.C3k2            [256, 256, 1, True]           
-  9                  -1  1    164608  ultralytics.nn.modules.block.SPPF            [256, 256, 5]                 
- 10                  -1  1    249728  ultralytics.nn.modules.block.C2PSA           [256, 256, 1]                 
- 11                  -1  1         0  torch.nn.modules.upsampling.Upsample         [None, 2, 'nearest']          
- 12             [-1, 6]  1         0  ultralytics.nn.modules.conv.Concat           [1]                           
- 13                  -1  1    111296  ultralytics.nn.modules.block.C3k2            [384, 128, 1, False]          
- 14                  -1  1         0  torch.nn.modules.upsampling.Upsample         [None, 2, 'nearest']          
- 15             [-1, 4]  1         0  ultralytics.nn.modules.conv.Concat           [1]                           
- 16                  -1  1     32096  ultralytics.nn.modules.block.C3k2            [256, 64, 1, False]           
- 17                  -1  1     36992  ultralytics.nn.modules.conv.Conv             [64, 64, 3, 2]                
- 18            [-1, 13]  1         0  ultralytics.nn.modules.conv.Concat           [1]                           
- 19                  -1  1     86720  ultralytics.nn.modules.block.C3k2            [192, 128, 1, False]          
- 20                  -1  1    147712  ultralytics.nn.modules.conv.Conv             [128, 128, 3, 2]              
- 21            [-1, 10]  1         0  ultralytics.nn.modules.conv.Concat           [1]                           
- 22                  -1  1    378880  ultralytics.nn.modules.block.C3k2            [384, 256, 1, True]           
- 23        [16, 19, 22]  1    431647  ultralytics.nn.modules.head.Detect           [5, 16, None, [64, 128, 256]] 
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_014e5a49dc0b/paired HTTP/1.1" 404 Not Found
-YOLO11n summary: 181 layers, 2,590,815 parameters, 2,590,799 gradients, 6.5 GFLOPs
-
-Transferred 499/499 items from pretrained weights
-Freezing layer 'model.23.dfl.conv.weight'
-[34m[1mAMP: [0mrunning Automatic Mixed Precision (AMP) checks...
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_182a6327a606 HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_182a6327a606/paired HTTP/1.1" 404 Not Found
-[34m[1mAMP: [0mchecks passed ✅
-[34m[1mtrain: [0mFast image access ✅ (ping: 0.0±0.0 ms, read: 1342.3±430.7 MB/s, size: 193.7 KB)
-[K[34m[1mtrain: [0mScanning /kaggle/working/modellab/workspace/artifacts/detection_training_data/train/labels.cache... 378 images, 133 backgrounds, 0 corrupt: 100% ━━━━━━━━━━━━ 378/378 66.1Mit/s 0.0s
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_889db44acf73 HTTP/1.1" 200 OK
-[34m[1malbumentations: [0mBlur(p=0.01, blur_limit=(3, 7)), MedianBlur(p=0.01, blur_limit=(3, 7)), ToGray(p=0.01, method='weighted_average', num_output_channels=3), CLAHE(p=0.01, clip_limit=(1.0, 4.0), tile_grid_size=(8, 8))
-[34m[1mval: [0mFast image access ✅ (ping: 0.0±0.0 ms, read: 1837.7±902.8 MB/s, size: 230.4 KB)
-[K[34m[1mval: [0mScanning /kaggle/working/modellab/workspace/artifacts/detection_training_data/val/labels.cache... 94 images, 23 backgrounds, 0 corrupt: 100% ━━━━━━━━━━━━ 94/94 17.9Mit/s 0.0s
-[34m[1moptimizer:[0m AdamW(lr=0.0002, momentum=0.937) with parameter groups 81 weight(decay=0.0), 88 weight(decay=0.0), 87 bias(decay=0.0)
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_889db44acf73/paired HTTP/1.1" 404 Not Found
-Plotting labels to /kaggle/working/modellab/workspace/artifacts/experiments/wonowyqw/exp_00cf096f3983/training/labels.jpg... 
-Using 378 train, 94 val images for fraction=1.0 at imgsz=224
-Using 2 dataloader workers
-Logging results to [1m/kaggle/working/modellab/workspace/artifacts/experiments/wonowyqw/exp_00cf096f3983/training[0m
-Starting training for 10 epochs...
-Closing dataloader mosaic
-[34m[1malbumentations: [0mBlur(p=0.01, blur_limit=(3, 7)), MedianBlur(p=0.01, blur_limit=(3, 7)), ToGray(p=0.01, method='weighted_average', num_output_channels=3), CLAHE(p=0.01, clip_limit=(1.0, 4.0), tile_grid_size=(8, 8))
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_d81e2a018578 HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_d81e2a018578/paired HTTP/1.1" 404 Not Found
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_ddb6c3352d81 HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_ddb6c3352d81/paired HTTP/1.1" 404 Not Found
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K       1/10     0.576G      1.626      4.669      1.844         23        224: 0% ──────────── 0/12  9.9s[K       1/10     0.613G       1.72      4.573      1.941         24        224: 8% ━─────────── 1/12 2.2it/s 10.0s<5.1s[K       1/10     0.615G      1.706      4.212      1.937         24        224: 16% ━━────────── 2/12 3.5it/s 10.2s<2.9s[K       1/10     0.615G      1.746      4.285      1.977         22        224: 25% ━━━───────── 3/12 5.2it/s 10.3s<1.7s[K       1/10     0.615G      1.761      4.077       2.02         21        224: 41% ━━━━━─────── 5/12 7.8it/s 10.4s<0.9s[K       1/10     0.615G      1.564      3.685      1.843         21        224: 58% ━━━━━━━───── 7/12 9.5it/s 10.6s<0.5s[K       1/10     0.615G      1.391      3.337      1.704         24        224: 75% ━━━━━━━━━─── 9/12 11.2it/s 10.7s<0.3s[K       1/10     0.615G      1.322      3.178      1.652         17        224: 83% ━━━━━━━━━━── 10/12 8.8it/s 11.0s<0.2s[K       1/10     0.615G      1.253      3.023      1.597         11        224: 91% ━━━━━━━━━━━─ 11/12 6.2it/s 17.9s<0.2s[K       1/10     0.615G      1.253      3.023      1.597         11        224: 100% ━━━━━━━━━━━━ 12/12 1.5s/it 17.9s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 15.2s/it 4.6s<15.2s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 4.1s/it 8.2s
-                   all         94         71      0.781      0.412      0.526      0.368
-/usr/local/lib/python3.13/dist-packages/ray/train/_internal/session.py:683: UserWarning: `get_trial_id` is meant to only be called inside a function that is executed by a Tuner or Trainer. Returning `None`.
-  warnings.warn(
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K       2/10     0.686G     0.4521     0.9073      1.007         23        224: 8% ━─────────── 1/12 1.6it/s 0.2s<6.9s[K       2/10     0.686G     0.4187      0.923      1.011         19        224: 25% ━━━───────── 3/12 4.1it/s 0.4s<2.2s[K       2/10     0.686G     0.3958     0.9083      1.002         20        224: 33% ━━━━──────── 4/12 5.8it/s 0.5s<1.4s[K       2/10     0.686G     0.3863     0.8915      1.001         21        224: 41% ━━━━━─────── 5/12 7.0it/s 0.6s<1.0s[K       2/10     0.691G     0.3745     0.8864     0.9886         16        224: 58% ━━━━━━━───── 7/12 7.7it/s 0.8s<0.6s[K       2/10     0.691G     0.3584     0.8834     0.9824         18        224: 75% ━━━━━━━━━─── 9/12 8.5it/s 1.0s<0.4s[K       2/10     0.691G      0.345     0.8608     0.9782         19        224: 91% ━━━━━━━━━━━─ 11/12 9.8it/s 1.2s<0.1s[K       2/10     0.691G      0.345     0.8608     0.9782         19        224: 100% ━━━━━━━━━━━━ 12/12 10.4it/s 1.2s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 1.5it/s 0.2s<0.7s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 6.3it/s 0.3s
-                   all         94         71      0.803        0.5      0.609      0.427
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K       3/10     0.691G     0.2782     0.6555     0.9973         20        224: 8% ━─────────── 1/12 1.5it/s 0.2s<7.4s[K       3/10     0.691G     0.2757     0.6605     0.9923         20        224: 16% ━━────────── 2/12 3.7it/s 0.3s<2.7s[K       3/10     0.691G     0.2733      0.716     0.9861         17        224: 25% ━━━───────── 3/12 5.4it/s 0.4s<1.7s[K       3/10     0.691G     0.2473      0.684     0.9832         23        224: 41% ━━━━━─────── 5/12 6.8it/s 0.6s<1.0s[K       3/10     0.691G     0.2364     0.6605     0.9656         23        224: 58% ━━━━━━━───── 7/12 7.7it/s 0.8s<0.6s[K       3/10     0.691G     0.2288     0.6606     0.9549         18        224: 75% ━━━━━━━━━─── 9/12 9.0it/s 1.0s<0.3s[K       3/10     0.691G     0.2325     0.6464     0.9596         16        224: 91% ━━━━━━━━━━━─ 11/12 10.4it/s 1.1s<0.1s[K       3/10     0.691G     0.2325     0.6464     0.9596         16        224: 100% ━━━━━━━━━━━━ 12/12 10.6it/s 1.1s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 1.6it/s 0.2s<0.6s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 6.3it/s 0.3s
-                   all         94         71      0.614      0.786      0.748      0.559
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K       4/10     0.691G     0.2372     0.6138     0.9201         20        224: 8% ━─────────── 1/12 1.6it/s 0.2s<7.1s[K       4/10     0.691G     0.2316     0.5702     0.9281         22        224: 25% ━━━───────── 3/12 4.3it/s 0.4s<2.1s[K       4/10     0.691G     0.2267     0.5881     0.9403         20        224: 41% ━━━━━─────── 5/12 5.8it/s 0.6s<1.2s[K       4/10     0.691G     0.2227     0.5944     0.9416         17        224: 50% ━━━━━━────── 6/12 7.0it/s 0.7s<0.9s[K       4/10     0.691G     0.2172     0.5869     0.9427         19        224: 58% ━━━━━━━───── 7/12 7.4it/s 0.8s<0.7s[K       4/10     0.691G     0.2144     0.5677     0.9356         24        224: 75% ━━━━━━━━━─── 9/12 8.3it/s 1.0s<0.4s[K       4/10     0.691G     0.2095     0.5544     0.9342         17        224: 91% ━━━━━━━━━━━─ 11/12 9.2it/s 1.2s<0.1s[K       4/10     0.691G     0.2095     0.5544     0.9342         17        224: 100% ━━━━━━━━━━━━ 12/12 10.1it/s 1.2s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 1.6it/s 0.2s<0.6s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 5.8it/s 0.3s
-                   all         94         71       0.66      0.888      0.794      0.636
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K       5/10     0.691G     0.1991     0.5129       0.96         22        224: 8% ━─────────── 1/12 1.6it/s 0.2s<7.1s[K       5/10     0.691G     0.1895     0.4892     0.9526         21        224: 16% ━━────────── 2/12 3.9it/s 0.3s<2.6s[K       5/10     0.691G     0.1751     0.4752     0.9399         21        224: 33% ━━━━──────── 4/12 7.2it/s 0.4s<1.1s[K       5/10     0.691G     0.1744     0.4734     0.9321         16        224: 50% ━━━━━━────── 6/12 9.6it/s 0.6s<0.6s[K       5/10     0.693G     0.1758     0.4708     0.9205         16        224: 66% ━━━━━━━━──── 8/12 11.1it/s 0.7s<0.4s[K       5/10     0.693G     0.1798     0.4811     0.9189         21        224: 83% ━━━━━━━━━━── 10/12 12.3it/s 0.8s<0.2s[K       5/10     0.693G     0.1794     0.4885     0.9255         13        224: 91% ━━━━━━━━━━━─ 11/12 10.8it/s 1.0s<0.1s[K       5/10     0.693G     0.1794     0.4885     0.9255         13        224: 100% ━━━━━━━━━━━━ 12/12 12.3it/s 1.0s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 1.5it/s 0.2s<0.7s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 6.0it/s 0.3s
-                   all         94         71      0.789       0.92      0.838      0.686
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K       6/10     0.693G     0.1686     0.5121     0.9449         21        224: 8% ━─────────── 1/12 1.5it/s 0.2s<7.5s[K       6/10     0.693G     0.1707      0.487     0.9304         19        224: 25% ━━━───────── 3/12 4.9it/s 0.4s<1.8s[K       6/10     0.693G     0.1613     0.4411      0.933         22        224: 41% ━━━━━─────── 5/12 7.6it/s 0.5s<0.9s[K       6/10     0.693G     0.1554     0.4232     0.9282         23        224: 58% ━━━━━━━───── 7/12 10.1it/s 0.6s<0.5s[K       6/10     0.693G     0.1544     0.4308     0.9256         19        224: 75% ━━━━━━━━━─── 9/12 11.9it/s 0.8s<0.3s[K       6/10     0.693G     0.1547     0.4268     0.9271         21        224: 83% ━━━━━━━━━━── 10/12 10.6it/s 0.9s<0.2s[K       6/10     0.693G     0.1531     0.4272     0.9264         19        224: 91% ━━━━━━━━━━━─ 11/12 10.0it/s 1.0s<0.1s[K       6/10     0.693G     0.1531     0.4272     0.9264         19        224: 100% ━━━━━━━━━━━━ 12/12 12.0it/s 1.0s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 1.4it/s 0.2s<0.7s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 5.4it/s 0.4s
-                   all         94         71      0.785      0.875      0.836      0.692
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K       7/10     0.693G     0.1461     0.4507      0.911         21        224: 8% ━─────────── 1/12 1.6it/s 0.2s<6.8s[K       7/10     0.693G     0.1526     0.4435      0.919         17        224: 25% ━━━───────── 3/12 4.2it/s 0.4s<2.1s[K       7/10     0.693G     0.1511     0.4168     0.9142         20        224: 41% ━━━━━─────── 5/12 6.0it/s 0.6s<1.2s[K       7/10     0.693G     0.1477     0.3957     0.9126         23        224: 58% ━━━━━━━───── 7/12 7.3it/s 0.8s<0.7s[K       7/10     0.693G     0.1463     0.3893     0.9148         25        224: 75% ━━━━━━━━━─── 9/12 8.0it/s 1.0s<0.4s[K       7/10     0.693G     0.1506     0.4028     0.9119         15        224: 91% ━━━━━━━━━━━─ 11/12 8.6it/s 1.2s<0.1s[K       7/10     0.693G     0.1506     0.4028     0.9119         15        224: 100% ━━━━━━━━━━━━ 12/12 10.2it/s 1.2s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 1.4it/s 0.2s<0.7s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 5.3it/s 0.4s
-                   all         94         71      0.744      0.982      0.831      0.694
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K       8/10     0.693G     0.1864     0.3519      0.914         24        224: 8% ━─────────── 1/12 1.5it/s 0.2s<7.3s[K       8/10     0.693G     0.1679      0.394      0.915         17        224: 25% ━━━───────── 3/12 4.0it/s 0.4s<2.3s[K       8/10     0.693G     0.1618     0.3628     0.9261         24        224: 41% ━━━━━─────── 5/12 5.8it/s 0.6s<1.2s[K       8/10     0.693G     0.1571     0.3924     0.9253         20        224: 58% ━━━━━━━───── 7/12 7.2it/s 0.8s<0.7s[K       8/10     0.693G     0.1528     0.3849     0.9221         21        224: 66% ━━━━━━━━──── 8/12 7.9it/s 0.9s<0.5s[K       8/10     0.693G     0.1543     0.3774     0.9257         22        224: 75% ━━━━━━━━━─── 9/12 8.3it/s 1.0s<0.4s[K       8/10     0.693G     0.1529     0.3745     0.9249         18        224: 91% ━━━━━━━━━━━─ 11/12 8.7it/s 1.2s<0.1s[K       8/10     0.693G     0.1529     0.3745     0.9249         18        224: 100% ━━━━━━━━━━━━ 12/12 9.9it/s 1.2s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 1.5it/s 0.2s<0.7s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 6.4it/s 0.3s
-                   all         94         71      0.753      0.982      0.831      0.686
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K       9/10     0.693G     0.1478     0.3607     0.9423         17        224: 8% ━─────────── 1/12 1.5it/s 0.2s<7.1s[K       9/10     0.693G      0.136     0.3341     0.9466         23        224: 25% ━━━───────── 3/12 5.0it/s 0.3s<1.8s[K       9/10     0.693G     0.1371     0.3455     0.9453         19        224: 41% ━━━━━─────── 5/12 6.7it/s 0.5s<1.1s[K       9/10     0.693G     0.1359     0.3493     0.9392         23        224: 58% ━━━━━━━───── 7/12 8.3it/s 0.7s<0.6s[K       9/10     0.693G     0.1379     0.3429     0.9262         19        224: 75% ━━━━━━━━━─── 9/12 10.4it/s 0.8s<0.3s[K       9/10     0.693G     0.1385     0.3475     0.9311         18        224: 83% ━━━━━━━━━━── 10/12 9.2it/s 1.0s<0.2s[K       9/10     0.693G     0.1389     0.3596     0.9252         17        224: 91% ━━━━━━━━━━━─ 11/12 9.2it/s 1.1s<0.1s[K       9/10     0.693G     0.1389     0.3596     0.9252         17        224: 100% ━━━━━━━━━━━━ 12/12 10.9it/s 1.1s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 1.4it/s 0.2s<0.7s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 6.1it/s 0.3s
-                   all         94         71      0.758       0.97      0.853      0.701
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K      10/10     0.693G     0.1472     0.3058     0.9418         21        224: 8% ━─────────── 1/12 1.5it/s 0.2s<7.5s[K      10/10     0.693G     0.1408      0.372     0.9542         20        224: 25% ━━━───────── 3/12 5.1it/s 0.4s<1.8s[K      10/10     0.693G     0.1399     0.3819     0.9386         18        224: 41% ━━━━━─────── 5/12 7.1it/s 0.5s<1.0s[K      10/10     0.693G     0.1421     0.3861     0.9372         26        224: 58% ━━━━━━━───── 7/12 8.1it/s 0.7s<0.6s[K      10/10     0.693G     0.1396     0.3754     0.9376         19        224: 66% ━━━━━━━━──── 8/12 7.7it/s 0.9s<0.5s[K      10/10     0.693G     0.1409     0.3656     0.9322         18        224: 75% ━━━━━━━━━─── 9/12 8.3it/s 1.0s<0.4s[K      10/10     0.693G     0.1374     0.3607     0.9319         25        224: 83% ━━━━━━━━━━── 10/12 7.6it/s 1.1s<0.3s[K      10/10     0.693G     0.1443     0.3596     0.9298         21        224: 91% ━━━━━━━━━━━─ 11/12 8.0it/s 1.2s<0.1s[K      10/10     0.693G     0.1443     0.3596     0.9298         21        224: 100% ━━━━━━━━━━━━ 12/12 9.6it/s 1.2s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 1.1it/s 0.3s<0.9s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 4.6it/s 0.4s
-                   all         94         71      0.758      0.965      0.852      0.703
-
-10 epochs completed in 0.013 hours.
-Optimizer stripped from /kaggle/working/modellab/workspace/artifacts/experiments/wonowyqw/exp_00cf096f3983/training/weights/last.pt, 5.4MB
-Optimizer stripped from /kaggle/working/modellab/workspace/artifacts/experiments/wonowyqw/exp_00cf096f3983/training/weights/best.pt, 5.4MB
-
-Validating /kaggle/working/modellab/workspace/artifacts/experiments/wonowyqw/exp_00cf096f3983/training/weights/best.pt...
-Ultralytics 8.4.174 🚀 Python-3.13.15 torch-2.11.0+cu128 CUDA:0 (Tesla T4, 14912MiB)
-YOLO11n summary (fused): 100 layers, 2,583,127 parameters, 0 gradients, 6.4 GFLOPs
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 8.8s/it 2.7s<8.8s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 2.7s/it 5.3s
-                   all         94         71      0.758      0.965      0.852      0.707
-               handgun         14         14      0.617          1      0.736      0.619
-                 knife         57         57      0.898       0.93      0.968      0.794
-Speed: 0.2ms preprocess, 53.4ms inference, 0.0ms loss, 0.7ms postprocess per image
-Results saved to [1m/kaggle/working/modellab/workspace/artifacts/experiments/wonowyqw/exp_00cf096f3983/training[0m
-INFO:     196.128.216.173:0 - "POST /experiments HTTP/1.1" 202 Accepted
-[DETECTION TRAINING] loading checkpoint: /kaggle/working/modellab/workspace/model_artifacts/artifact_596698473ced4190aceeb04bdbfc5698/best.pt
-[DETECTION TRAINING] starting Ultralytics training
-Ultralytics 8.4.174 🚀 Python-3.13.15 torch-2.11.0+cu128 CUDA:0 (Tesla T4, 14912MiB)
-[34m[1mengine/trainer: [0magnostic_nms=False, amp=True, angle=1.0, augment=False, auto_augment=randaugment, batch=32, bgr=0.0, box=7.5, cache=False, cfg=None, channels_last=None, classes=None, close_mosaic=10, cls=0.5, cls_pw=0.0, cls_remap=True, compile=False, conf=None, copy_paste=0.0, copy_paste_mode=flip, cos_lr=False, cutmix=0.0, data=/kaggle/working/modellab/workspace/artifacts/experiments/wonowyqw/exp_b756ce57550a/training/dataset/data.yaml, degrees=10.0, deterministic=True, device=, dfl=1.5, dgrad=0.5, dis=6.0, distill_model=None, dlam=1.0, dlog=1.0, dnn=False, dropout=0.0, dynamic=False, embed=None, epochs=10, erasing=0.4, exist_ok=True, fliplr=0.5, flipud=0.0, format=torchscript, fraction=1.0, freeze=None, hsv_h=0.0, hsv_s=0.0, hsv_v=0.0, imgsz=224, iou=0.7, kobj=1.0, line_width=None, lr0=0.0002, lrf=0.01, mask_ratio=4, max_det=300, mixup=0.0, mode=train, model=/kaggle/working/modellab/workspace/model_artifacts/artifact_596698473ced4190aceeb04bdbfc5698/best.pt, momentum=0.937, mosaic=0.5, multi_scale=0.0, name=training, nbs=64, nms=None, opset=None, optimize=False, optimizer=AdamW, overlap_mask=True, patience=5, perspective=0.0, plots=True, pose=12.0, pretrained=True, profile=False, project=/kaggle/working/modellab/workspace/artifacts/experiments/wonowyqw/exp_b756ce57550a, quantize=None, rect=False, resume=False, retina_masks=False, rle=1.0, save=True, save_conf=False, save_crop=False, save_dir=/kaggle/working/modellab/workspace/artifacts/experiments/wonowyqw/exp_b756ce57550a/training, save_frames=False, save_json=False, save_period=-1, save_txt=False, scale=0.0, seed=42, shear=0.0, show=False, show_boxes=True, show_conf=True, show_labels=True, simplify=True, single_cls=False, source=None, split=val, stream_buffer=False, task=detect, time=None, tracker=tracktrack.yaml, translate=0.0, val=True, verbose=True, vid_stride=1, visualize=False, warmup_bias_lr=0.1, warmup_epochs=3.0, warmup_momentum=0.8, weight_decay=0.0, workers=4, workspace=None
-
-                   from  n    params  module                                       arguments                     
-  0                  -1  1       464  ultralytics.nn.modules.conv.Conv             [3, 16, 3, 2]                 
-  1                  -1  1      4672  ultralytics.nn.modules.conv.Conv             [16, 32, 3, 2]                
-  2                  -1  1      6640  ultralytics.nn.modules.block.C3k2            [32, 64, 1, False, 0.25]      
-  3                  -1  1     36992  ultralytics.nn.modules.conv.Conv             [64, 64, 3, 2]                
-  4                  -1  1     26080  ultralytics.nn.modules.block.C3k2            [64, 128, 1, False, 0.25]     
-  5                  -1  1    147712  ultralytics.nn.modules.conv.Conv             [128, 128, 3, 2]              
-  6                  -1  1     87040  ultralytics.nn.modules.block.C3k2            [128, 128, 1, True]           
-  7                  -1  1    295424  ultralytics.nn.modules.conv.Conv             [128, 256, 3, 2]              
-  8                  -1  1    346112  ultralytics.nn.modules.block.C3k2            [256, 256, 1, True]           
-  9                  -1  1    164608  ultralytics.nn.modules.block.SPPF            [256, 256, 5]                 
- 10                  -1  1    249728  ultralytics.nn.modules.block.C2PSA           [256, 256, 1]                 
- 11                  -1  1         0  torch.nn.modules.upsampling.Upsample         [None, 2, 'nearest']          
- 12             [-1, 6]  1         0  ultralytics.nn.modules.conv.Concat           [1]                           
- 13                  -1  1    111296  ultralytics.nn.modules.block.C3k2            [384, 128, 1, False]          
- 14                  -1  1         0  torch.nn.modules.upsampling.Upsample         [None, 2, 'nearest']          
- 15             [-1, 4]  1         0  ultralytics.nn.modules.conv.Concat           [1]                           
- 16                  -1  1     32096  ultralytics.nn.modules.block.C3k2            [256, 64, 1, False]           
- 17                  -1  1     36992  ultralytics.nn.modules.conv.Conv             [64, 64, 3, 2]                
- 18            [-1, 13]  1         0  ultralytics.nn.modules.conv.Concat           [1]                           
- 19                  -1  1     86720  ultralytics.nn.modules.block.C3k2            [192, 128, 1, False]          
- 20                  -1  1    147712  ultralytics.nn.modules.conv.Conv             [128, 128, 3, 2]              
- 21            [-1, 10]  1         0  ultralytics.nn.modules.conv.Concat           [1]                           
- 22                  -1  1    378880  ultralytics.nn.modules.block.C3k2            [384, 256, 1, True]           
- 23        [16, 19, 22]  1    431647  ultralytics.nn.modules.head.Detect           [5, 16, None, [64, 128, 256]] 
-YOLO11n summary: 181 layers, 2,590,815 parameters, 2,590,799 gradients, 6.5 GFLOPs
-
-Transferred 499/499 items from pretrained weights
-Freezing layer 'model.23.dfl.conv.weight'
-[34m[1mAMP: [0mrunning Automatic Mixed Precision (AMP) checks...
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_014e5a49dc0b HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_014e5a49dc0b/paired HTTP/1.1" 404 Not Found
-[34m[1mAMP: [0mchecks passed ✅
-[34m[1mtrain: [0mFast image access ✅ (ping: 0.0±0.0 ms, read: 2351.0±1273.0 MB/s, size: 416.2 KB)
-[K[34m[1mtrain: [0mScanning /kaggle/working/modellab/workspace/artifacts/detection_training_data/train/labels.cache... 378 images, 133 backgrounds, 0 corrupt: 100% ━━━━━━━━━━━━ 378/378 122.0Mit/s 0.0s
-[34m[1malbumentations: [0mBlur(p=0.01, blur_limit=(3, 7)), MedianBlur(p=0.01, blur_limit=(3, 7)), ToGray(p=0.01, method='weighted_average', num_output_channels=3), CLAHE(p=0.01, clip_limit=(1.0, 4.0), tile_grid_size=(8, 8))
-[34m[1mval: [0mFast image access ✅ (ping: 0.0±0.0 ms, read: 2611.8±1081.5 MB/s, size: 315.1 KB)
-[K[34m[1mval: [0mScanning /kaggle/working/modellab/workspace/artifacts/detection_training_data/val/labels.cache... 94 images, 23 backgrounds, 0 corrupt: 100% ━━━━━━━━━━━━ 94/94 35.8Mit/s 0.0s
-[34m[1moptimizer:[0m AdamW(lr=0.0002, momentum=0.937) with parameter groups 81 weight(decay=0.0), 88 weight(decay=0.0), 87 bias(decay=0.0)
-Plotting labels to /kaggle/working/modellab/workspace/artifacts/experiments/wonowyqw/exp_b756ce57550a/training/labels.jpg... 
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_182a6327a606 HTTP/1.1" 200 OK
-Using 378 train, 94 val images for fraction=1.0 at imgsz=224
-Using 2 dataloader workers
-Logging results to [1m/kaggle/working/modellab/workspace/artifacts/experiments/wonowyqw/exp_b756ce57550a/training[0m
-Starting training for 10 epochs...
-Closing dataloader mosaic
-[34m[1malbumentations: [0mBlur(p=0.01, blur_limit=(3, 7)), MedianBlur(p=0.01, blur_limit=(3, 7)), ToGray(p=0.01, method='weighted_average', num_output_channels=3), CLAHE(p=0.01, clip_limit=(1.0, 4.0), tile_grid_size=(8, 8))
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_182a6327a606/paired HTTP/1.1" 404 Not Found
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_889db44acf73 HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_889db44acf73/paired HTTP/1.1" 404 Not Found
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_d81e2a018578 HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_d81e2a018578/paired HTTP/1.1" 404 Not Found
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K       1/10     0.646G      1.626      4.669      1.844         23        224: 0% ──────────── 0/12  5.0s[K       1/10     0.684G       1.72      4.573      1.941         24        224: 8% ━─────────── 1/12 2.4it/s 5.1s<4.6s[K       1/10     0.684G      1.706      4.212      1.937         24        224: 16% ━━────────── 2/12 4.5it/s 5.2s<2.2s[K       1/10     0.684G      1.746      4.285      1.977         22        224: 25% ━━━───────── 3/12 5.9it/s 5.3s<1.5s[K       1/10     0.684G      1.761      4.077       2.02         21        224: 41% ━━━━━─────── 5/12 8.7it/s 5.5s<0.8sINFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_ddb6c3352d81 HTTP/1.1" 200 OK
-[K       1/10     0.684G      1.564      3.685      1.843         21        224: 58% ━━━━━━━───── 7/12 10.3it/s 5.6s<0.5s[K       1/10     0.684G      1.391      3.337      1.704         24        224: 75% ━━━━━━━━━─── 9/12 11.8it/s 5.7s<0.3s[K       1/10     0.684G      1.322      3.178      1.652         17        224: 83% ━━━━━━━━━━── 10/12 9.1it/s 6.1s<0.2sINFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_ddb6c3352d81/paired HTTP/1.1" 404 Not Found
-[K       1/10     0.684G      1.253      3.023      1.597         11        224: 91% ━━━━━━━━━━━─ 11/12 6.4it/s 9.7s<0.2s[K       1/10     0.684G      1.253      3.023      1.597         11        224: 100% ━━━━━━━━━━━━ 12/12 1.2it/s 9.7s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 15.5s/it 4.6s<15.5s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 4.1s/it 8.1s
-                   all         94         71      0.781      0.412      0.526      0.368
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K       2/10     0.754G     0.4521     0.9073      1.007         23        224: 8% ━─────────── 1/12 1.7it/s 0.2s<6.6s[K       2/10     0.754G      0.439     0.8885      1.002         17        224: 16% ━━────────── 2/12 4.1it/s 0.3s<2.5s[K       2/10     0.754G     0.4187      0.923      1.011         19        224: 25% ━━━───────── 3/12 5.6it/s 0.4s<1.6s[K       2/10     0.754G     0.3863     0.8915      1.001         21        224: 41% ━━━━━─────── 5/12 7.4it/s 0.6s<0.9s[K       2/10      0.76G     0.3745     0.8864     0.9886         16        224: 58% ━━━━━━━───── 7/12 8.2it/s 0.8s<0.6s[K       2/10      0.76G     0.3584     0.8834     0.9824         18        224: 75% ━━━━━━━━━─── 9/12 8.7it/s 1.0s<0.3s[K       2/10      0.76G     0.3521     0.8635     0.9814         23        224: 83% ━━━━━━━━━━── 10/12 8.9it/s 1.1s<0.2s[K       2/10      0.76G      0.345     0.8608     0.9782         19        224: 91% ━━━━━━━━━━━─ 11/12 9.1it/s 1.2s<0.1s[K       2/10      0.76G      0.345     0.8608     0.9782         19        224: 100% ━━━━━━━━━━━━ 12/12 10.2it/s 1.2s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 1.4it/s 0.2s<0.7s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 5.6it/s 0.4s
-                   all         94         71      0.803        0.5      0.609      0.427
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K       3/10      0.76G     0.2782     0.6555     0.9973         20        224: 8% ━─────────── 1/12 1.8it/s 0.2s<6.2s[K       3/10      0.76G     0.2733      0.716     0.9861         17        224: 25% ━━━───────── 3/12 4.1it/s 0.4s<2.2s[K       3/10      0.76G     0.2473      0.684     0.9832         23        224: 41% ━━━━━─────── 5/12 5.9it/s 0.6s<1.2s[K       3/10      0.76G     0.2364     0.6605     0.9656         23        224: 58% ━━━━━━━───── 7/12 7.1it/s 0.8s<0.7s[K       3/10      0.76G     0.2288     0.6606     0.9549         18        224: 75% ━━━━━━━━━─── 9/12 7.9it/s 1.0s<0.4s[K       3/10      0.76G     0.2301     0.6488     0.9558         25        224: 83% ━━━━━━━━━━── 10/12 8.4it/s 1.1s<0.2s[K       3/10      0.76G     0.2325     0.6464     0.9596         16        224: 91% ━━━━━━━━━━━─ 11/12 8.8it/s 1.2s<0.1s[K       3/10      0.76G     0.2325     0.6464     0.9596         16        224: 100% ━━━━━━━━━━━━ 12/12 10.1it/s 1.2s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 1.4it/s 0.2s<0.7s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 6.1it/s 0.3s
-                   all         94         71      0.614      0.786      0.748      0.559
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K       4/10      0.76G     0.2018     0.6446     0.9088         20        224: 0% ──────────── 0/12  0.1s[K       4/10      0.76G     0.2372     0.6138     0.9201         20        224: 8% ━─────────── 1/12 2.7it/s 0.2s<4.1s[K       4/10      0.76G     0.2316     0.5702     0.9281         22        224: 25% ━━━───────── 3/12 4.9it/s 0.4s<1.8s[K       4/10      0.76G     0.2278      0.605     0.9386         17        224: 33% ━━━━──────── 4/12 6.4it/s 0.5s<1.3s[K       4/10      0.76G     0.2227     0.5944     0.9416         17        224: 50% ━━━━━━────── 6/12 8.0it/s 0.7s<0.7s[K       4/10      0.76G     0.2172     0.5869     0.9427         19        224: 58% ━━━━━━━───── 7/12 7.9it/s 0.8s<0.6s[K       4/10      0.76G     0.2144     0.5677     0.9356         24        224: 75% ━━━━━━━━━─── 9/12 9.8it/s 1.0s<0.3s[K       4/10      0.76G     0.2095     0.5544     0.9342         17        224: 91% ━━━━━━━━━━━─ 11/12 11.3it/s 1.1s<0.1s[K       4/10      0.76G     0.2095     0.5544     0.9342         17        224: 100% ━━━━━━━━━━━━ 12/12 11.0it/s 1.1s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 1.4it/s 0.2s<0.7s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 5.7it/s 0.3s
-                   all         94         71       0.66      0.888      0.794      0.636
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K       5/10      0.76G     0.1991     0.5129       0.96         22        224: 8% ━─────────── 1/12 1.7it/s 0.2s<6.4s[K       5/10      0.76G     0.1895     0.4892     0.9526         21        224: 16% ━━────────── 2/12 4.1it/s 0.3s<2.4s[K       5/10      0.76G     0.1821     0.4847     0.9457         21        224: 25% ━━━───────── 3/12 5.6it/s 0.4s<1.6s[K       5/10      0.76G     0.1727     0.4632     0.9321         24        224: 41% ━━━━━─────── 5/12 6.9it/s 0.6s<1.0s[K       5/10      0.76G     0.1764     0.4696     0.9271         24        224: 58% ━━━━━━━───── 7/12 8.2it/s 0.8s<0.6s[K       5/10      0.76G     0.1801     0.4739     0.9234         24        224: 75% ━━━━━━━━━─── 9/12 9.9it/s 0.9s<0.3s[K       5/10      0.76G     0.1794     0.4885     0.9255         13        224: 91% ━━━━━━━━━━━─ 11/12 11.3it/s 1.0s<0.1s[K       5/10      0.76G     0.1794     0.4885     0.9255         13        224: 100% ━━━━━━━━━━━━ 12/12 11.4it/s 1.0s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 1.5it/s 0.2s<0.7s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 6.2it/s 0.3s
-                   all         94         71      0.789       0.92      0.838      0.686
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K       6/10      0.76G     0.1686     0.5121     0.9449         21        224: 8% ━─────────── 1/12 1.4it/s 0.2s<7.6s[K       6/10      0.76G     0.1707      0.487     0.9304         19        224: 25% ━━━───────── 3/12 3.9it/s 0.4s<2.3s[K       6/10      0.76G     0.1613     0.4411      0.933         22        224: 41% ━━━━━─────── 5/12 6.0it/s 0.6s<1.2s[K       6/10      0.76G     0.1554     0.4232     0.9282         23        224: 58% ━━━━━━━───── 7/12 7.2it/s 0.8s<0.7s[K       6/10      0.76G     0.1544     0.4308     0.9256         19        224: 75% ━━━━━━━━━─── 9/12 8.1it/s 1.0s<0.4s[K       6/10      0.76G     0.1547     0.4268     0.9271         21        224: 83% ━━━━━━━━━━── 10/12 8.5it/s 1.1s<0.2s[K       6/10      0.76G     0.1531     0.4272     0.9264         19        224: 91% ━━━━━━━━━━━─ 11/12 8.7it/s 1.2s<0.1s[K       6/10      0.76G     0.1531     0.4272     0.9264         19        224: 100% ━━━━━━━━━━━━ 12/12 9.9it/s 1.2s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 1.5it/s 0.2s<0.7s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 6.5it/s 0.3s
-                   all         94         71      0.785      0.875      0.836      0.692
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K       7/10      0.76G     0.1461     0.4507      0.911         21        224: 8% ━─────────── 1/12 1.5it/s 0.2s<7.5s[K       7/10      0.76G     0.1526     0.4435      0.919         17        224: 25% ━━━───────── 3/12 4.0it/s 0.4s<2.2s[K       7/10      0.76G     0.1511     0.4168     0.9142         20        224: 41% ━━━━━─────── 5/12 5.8it/s 0.6s<1.2s[K       7/10      0.76G     0.1477     0.3957     0.9126         23        224: 58% ━━━━━━━───── 7/12 6.9it/s 0.8s<0.7s[K       7/10      0.76G     0.1463     0.3893     0.9148         25        224: 75% ━━━━━━━━━─── 9/12 7.7it/s 1.0s<0.4s[K       7/10      0.76G     0.1506     0.4028     0.9119         15        224: 91% ━━━━━━━━━━━─ 11/12 8.1it/s 1.2s<0.1s[K       7/10      0.76G     0.1506     0.4028     0.9119         15        224: 100% ━━━━━━━━━━━━ 12/12 9.6it/s 1.2s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 1.5it/s 0.2s<0.7s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 6.1it/s 0.3s
-                   all         94         71      0.744      0.982      0.831      0.694
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K       8/10      0.76G     0.1864     0.3519      0.914         24        224: 8% ━─────────── 1/12 1.6it/s 0.2s<7.0s[K       8/10      0.76G     0.1679      0.394      0.915         17        224: 25% ━━━───────── 3/12 4.5it/s 0.4s<2.0s[K       8/10      0.76G     0.1603     0.3716     0.9241         22        224: 33% ━━━━──────── 4/12 6.2it/s 0.5s<1.3s[K       8/10      0.76G     0.1618     0.3628     0.9261         24        224: 41% ━━━━━─────── 5/12 7.0it/s 0.6s<1.0s[K       8/10      0.76G     0.1571     0.3924     0.9253         20        224: 58% ━━━━━━━───── 7/12 7.9it/s 0.8s<0.6s[K       8/10      0.76G     0.1528     0.3849     0.9221         21        224: 66% ━━━━━━━━──── 8/12 8.5it/s 0.9s<0.5s[K       8/10      0.76G     0.1546     0.3823     0.9244         16        224: 83% ━━━━━━━━━━── 10/12 9.0it/s 1.1s<0.2s[K       8/10      0.76G     0.1529     0.3745     0.9249         18        224: 91% ━━━━━━━━━━━─ 11/12 8.8it/s 1.2s<0.1s[K       8/10      0.76G     0.1529     0.3745     0.9249         18        224: 100% ━━━━━━━━━━━━ 12/12 10.0it/s 1.2s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 1.5it/s 0.2s<0.7s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 5.6it/s 0.4s
-                   all         94         71      0.753      0.982      0.831      0.686
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K       9/10      0.76G     0.1478     0.3607     0.9423         17        224: 8% ━─────────── 1/12 1.5it/s 0.2s<7.1s[K       9/10      0.76G      0.136     0.3341     0.9466         23        224: 25% ━━━───────── 3/12 4.3it/s 0.4s<2.1s[K       9/10      0.76G     0.1371     0.3455     0.9453         19        224: 41% ━━━━━─────── 5/12 6.1it/s 0.6s<1.2s[K       9/10      0.76G     0.1359     0.3493     0.9392         23        224: 58% ━━━━━━━───── 7/12 8.5it/s 0.7s<0.6s[K       9/10      0.76G     0.1379     0.3429     0.9262         19        224: 75% ━━━━━━━━━─── 9/12 10.4it/s 0.9s<0.3s[K       9/10      0.76G     0.1385     0.3475     0.9311         18        224: 83% ━━━━━━━━━━── 10/12 9.9it/s 1.0s<0.2s[K       9/10      0.76G     0.1389     0.3596     0.9252         17        224: 100% ━━━━━━━━━━━━ 12/12 11.3it/s 1.1s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 1.4it/s 0.2s<0.7s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 5.6it/s 0.4s
-                   all         94         71      0.758       0.97      0.853      0.701
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K      10/10      0.76G     0.1472     0.3058     0.9418         21        224: 8% ━─────────── 1/12 1.7it/s 0.2s<6.4s[K      10/10      0.76G     0.1408      0.372     0.9542         20        224: 25% ━━━───────── 3/12 4.3it/s 0.4s<2.1s[K      10/10      0.76G     0.1399     0.3819     0.9386         18        224: 41% ━━━━━─────── 5/12 7.2it/s 0.5s<1.0s[K      10/10      0.76G     0.1421     0.3861     0.9372         26        224: 58% ━━━━━━━───── 7/12 9.6it/s 0.6s<0.5s[K      10/10      0.76G     0.1396     0.3754     0.9376         19        224: 66% ━━━━━━━━──── 8/12 9.1it/s 0.8s<0.4s[K      10/10      0.76G     0.1409     0.3656     0.9322         18        224: 75% ━━━━━━━━━─── 9/12 9.3it/s 0.9s<0.3s[K      10/10      0.76G     0.1374     0.3607     0.9319         25        224: 83% ━━━━━━━━━━── 10/12 8.5it/s 1.0s<0.2s[K      10/10      0.76G     0.1443     0.3596     0.9298         21        224: 91% ━━━━━━━━━━━─ 11/12 8.8it/s 1.1s<0.1s[K      10/10      0.76G     0.1443     0.3596     0.9298         21        224: 100% ━━━━━━━━━━━━ 12/12 10.6it/s 1.1s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 1.5it/s 0.2s<0.7s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 5.0it/s 0.4s
-                   all         94         71      0.758      0.965      0.852      0.703
-
-10 epochs completed in 0.010 hours.
-Optimizer stripped from /kaggle/working/modellab/workspace/artifacts/experiments/wonowyqw/exp_b756ce57550a/training/weights/last.pt, 5.4MB
-Optimizer stripped from /kaggle/working/modellab/workspace/artifacts/experiments/wonowyqw/exp_b756ce57550a/training/weights/best.pt, 5.4MB
-
-Validating /kaggle/working/modellab/workspace/artifacts/experiments/wonowyqw/exp_b756ce57550a/training/weights/best.pt...
-Ultralytics 8.4.174 🚀 Python-3.13.15 torch-2.11.0+cu128 CUDA:0 (Tesla T4, 14912MiB)
-YOLO11n summary (fused): 100 layers, 2,583,127 parameters, 0 gradients, 6.4 GFLOPs
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 8.8s/it 2.6s<8.8sINFO:     196.128.216.173:0 - "POST /experiments HTTP/1.1" 202 Accepted
-[DETECTION TRAINING] loading checkpoint: /kaggle/working/modellab/workspace/model_artifacts/artifact_596698473ced4190aceeb04bdbfc5698/best.pt
-[DETECTION TRAINING] starting Ultralytics training
-Ultralytics 8.4.174 🚀 Python-3.13.15 torch-2.11.0+cu128 CUDA:0 (Tesla T4, 14912MiB)
-[34m[1mengine/trainer: [0magnostic_nms=False, amp=True, angle=1.0, augment=False, auto_augment=randaugment, batch=32, bgr=0.0, box=7.5, cache=False, cfg=None, channels_last=None, classes=None, close_mosaic=10, cls=0.5, cls_pw=0.0, cls_remap=True, compile=False, conf=None, copy_paste=0.0, copy_paste_mode=flip, cos_lr=False, cutmix=0.0, data=/kaggle/working/modellab/workspace/artifacts/experiments/wonowyqw/exp_e15da2e8822b/training/dataset/data.yaml, degrees=0.0, deterministic=True, device=, dfl=1.5, dgrad=0.5, dis=6.0, distill_model=None, dlam=1.0, dlog=1.0, dnn=False, dropout=0.0, dynamic=False, embed=None, epochs=10, erasing=0.4, exist_ok=True, fliplr=0.0, flipud=0.0, format=torchscript, fraction=1.0, freeze=None, hsv_h=0.0, hsv_s=0.0, hsv_v=0.0, imgsz=224, iou=0.7, kobj=1.0, line_width=None, lr0=0.0002, lrf=0.01, mask_ratio=4, max_det=300, mixup=0.0, mode=train, model=/kaggle/working/modellab/workspace/model_artifacts/artifact_596698473ced4190aceeb04bdbfc5698/best.pt, momentum=0.937, mosaic=0.0, multi_scale=0.0, name=training, nbs=64, nms=None, opset=None, optimize=False, optimizer=AdamW, overlap_mask=True, patience=5, perspective=0.0, plots=True, pose=12.0, pretrained=True, profile=False, project=/kaggle/working/modellab/workspace/artifacts/experiments/wonowyqw/exp_e15da2e8822b, quantize=None, rect=False, resume=False, retina_masks=False, rle=1.0, save=True, save_conf=False, save_crop=False, save_dir=/kaggle/working/modellab/workspace/artifacts/experiments/wonowyqw/exp_e15da2e8822b/training, save_frames=False, save_json=False, save_period=-1, save_txt=False, scale=0.0, seed=42, shear=0.0, show=False, show_boxes=True, show_conf=True, show_labels=True, simplify=True, single_cls=False, source=None, split=val, stream_buffer=False, task=detect, time=None, tracker=tracktrack.yaml, translate=0.0, val=True, verbose=True, vid_stride=1, visualize=False, warmup_bias_lr=0.1, warmup_epochs=3.0, warmup_momentum=0.8, weight_decay=0.0, workers=4, workspace=None
-
-                   from  n    params  module                                       arguments                     
-  0                  -1  1       464  ultralytics.nn.modules.conv.Conv             [3, 16, 3, 2]                 
-  1                  -1  1      4672  ultralytics.nn.modules.conv.Conv             [16, 32, 3, 2]                
-  2                  -1  1      6640  ultralytics.nn.modules.block.C3k2            [32, 64, 1, False, 0.25]      
-  3                  -1  1     36992  ultralytics.nn.modules.conv.Conv             [64, 64, 3, 2]                
-  4                  -1  1     26080  ultralytics.nn.modules.block.C3k2            [64, 128, 1, False, 0.25]     
-  5                  -1  1    147712  ultralytics.nn.modules.conv.Conv             [128, 128, 3, 2]              
-  6                  -1  1     87040  ultralytics.nn.modules.block.C3k2            [128, 128, 1, True]           
-  7                  -1  1    295424  ultralytics.nn.modules.conv.Conv             [128, 256, 3, 2]              
-  8                  -1  1    346112  ultralytics.nn.modules.block.C3k2            [256, 256, 1, True]           
-  9                  -1  1    164608  ultralytics.nn.modules.block.SPPF            [256, 256, 5]                 
- 10                  -1  1    249728  ultralytics.nn.modules.block.C2PSA           [256, 256, 1]                 
- 11                  -1  1         0  torch.nn.modules.upsampling.Upsample         [None, 2, 'nearest']          
- 12             [-1, 6]  1         0  ultralytics.nn.modules.conv.Concat           [1]                           
- 13                  -1  1    111296  ultralytics.nn.modules.block.C3k2            [384, 128, 1, False]          
- 14                  -1  1         0  torch.nn.modules.upsampling.Upsample         [None, 2, 'nearest']          
- 15             [-1, 4]  1         0  ultralytics.nn.modules.conv.Concat           [1]                           
- 16                  -1  1     32096  ultralytics.nn.modules.block.C3k2            [256, 64, 1, False]           
- 17                  -1  1     36992  ultralytics.nn.modules.conv.Conv             [64, 64, 3, 2]                
- 18            [-1, 13]  1         0  ultralytics.nn.modules.conv.Concat           [1]                           
- 19                  -1  1     86720  ultralytics.nn.modules.block.C3k2            [192, 128, 1, False]          
- 20                  -1  1    147712  ultralytics.nn.modules.conv.Conv             [128, 128, 3, 2]              
- 21            [-1, 10]  1         0  ultralytics.nn.modules.conv.Concat           [1]                           
- 22                  -1  1    378880  ultralytics.nn.modules.block.C3k2            [384, 256, 1, True]           
- 23        [16, 19, 22]  1    431647  ultralytics.nn.modules.head.Detect           [5, 16, None, [64, 128, 256]] 
-YOLO11n summary: 181 layers, 2,590,815 parameters, 2,590,799 gradients, 6.5 GFLOPs
-
-Transferred 499/499 items from pretrained weights
-Freezing layer 'model.23.dfl.conv.weight'
-[34m[1mAMP: [0mrunning Automatic Mixed Precision (AMP) checks...
-[34m[1mAMP: [0mchecks passed ✅
-[34m[1mtrain: [0mFast image access ✅ (ping: 0.0±0.0 ms, read: 2247.2±1433.5 MB/s, size: 416.2 KB)
-[K[34m[1mtrain: [0mScanning /kaggle/working/modellab/workspace/artifacts/detection_training_data/train/labels.cache... 378 images, 133 backgrounds, 0 corrupt: 100% ━━━━━━━━━━━━ 378/378 113.2Mit/s 0.0s
-[34m[1malbumentations: [0mBlur(p=0.01, blur_limit=(3, 7)), MedianBlur(p=0.01, blur_limit=(3, 7)), ToGray(p=0.01, method='weighted_average', num_output_channels=3), CLAHE(p=0.01, clip_limit=(1.0, 4.0), tile_grid_size=(8, 8))
-[34m[1mval: [0mFast image access ✅ (ping: 0.0±0.0 ms, read: 2544.0±1032.0 MB/s, size: 315.1 KB)
-[K[34m[1mval: [0mScanning /kaggle/working/modellab/workspace/artifacts/detection_training_data/val/labels.cache... 94 images, 23 backgrounds, 0 corrupt: 100% ━━━━━━━━━━━━ 94/94 32.9Mit/s 0.0s
-[34m[1moptimizer:[0m AdamW(lr=0.0002, momentum=0.937) with parameter groups 81 weight(decay=0.0), 88 weight(decay=0.0), 87 bias(decay=0.0)
-Plotting labels to /kaggle/working/modellab/workspace/artifacts/experiments/wonowyqw/exp_e15da2e8822b/training/labels.jpg... 
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw HTTP/1.1" 200 OK
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 2.9s/it 5.8s
-Using 378 train, 94 val images for fraction=1.0 at imgsz=224
-Using 2 dataloader workers
-Logging results to [1m/kaggle/working/modellab/workspace/artifacts/experiments/wonowyqw/exp_e15da2e8822b/training[0m
-Starting training for 10 epochs...
-Closing dataloader mosaic
-[34m[1malbumentations: [0mBlur(p=0.01, blur_limit=(3, 7)), MedianBlur(p=0.01, blur_limit=(3, 7)), ToGray(p=0.01, method='weighted_average', num_output_channels=3), CLAHE(p=0.01, clip_limit=(1.0, 4.0), tile_grid_size=(8, 8))
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_00cf096f3983 HTTP/1.1" 200 OK
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K       1/10     0.773G       1.89      4.542      2.116         23        224: 0% ──────────── 0/12  1.1s[K       1/10     0.791G       2.05      4.406      2.258         24        224: 8% ━─────────── 1/12 1.3s/it 1.5s<14.4s[K       1/10     0.791G       2.01      4.217      2.233         24        224: 16% ━━────────── 2/12 2.4it/s 1.7s<4.2s[K       1/10     0.791G      2.084      4.285      2.338         22        224: 25% ━━━───────── 3/12 2.4it/s 2.1s<3.7s[K       1/10     0.791G      2.094      4.246      2.364         18        224: 33% ━━━━──────── 4/12 3.3it/s 2.3s<2.4s[K       1/10     0.791G      2.104      4.228      2.376         21        224: 41% ━━━━━─────── 5/12 5.3it/s 2.4s<1.3sINFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_00cf096f3983/paired HTTP/1.1" 404 Not Found
-[K       1/10     0.791G      2.143      4.191      2.427         19        224: 50% ━━━━━━────── 6/12 4.2it/s 3.0s<1.4s[K       1/10     0.791G      2.054      3.948       2.35         21        224: 66% ━━━━━━━━──── 8/12 3.9it/s 3.7s<1.0sINFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_014e5a49dc0b HTTP/1.1" 200 OK
-[K       1/10     0.791G      1.976      3.828      2.265         24        224: 75% ━━━━━━━━━─── 9/12 4.3it/s 3.8s<0.7s                   all         94         71      0.758      0.965      0.852      0.707
-               handgun         14         14      0.617          1      0.736      0.619
-                 knife         57         57      0.898       0.93      0.968      0.794
-Speed: 0.0ms preprocess, 57.8ms inference, 0.0ms loss, 0.7ms postprocess per image
-Results saved to [1m/kaggle/working/modellab/workspace/artifacts/experiments/wonowyqw/exp_b756ce57550a/training[0m
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_014e5a49dc0b/paired HTTP/1.1" 404 Not Found
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_182a6327a606 HTTP/1.1" 200 OK
-[K       1/10     0.791G      1.887      3.694      2.177         17        224: 83% ━━━━━━━━━━── 10/12 3.1it/s 6.3s<0.6s[K       1/10     0.791G      1.823      3.537      2.098         11        224: 91% ━━━━━━━━━━━─ 11/12 5.1it/s 6.4s<0.2s[K       1/10     0.791G      1.823      3.537      2.098         11        224: 100% ━━━━━━━━━━━━ 12/12 1.9it/s 6.4s
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_182a6327a606/paired HTTP/1.1" 404 Not Found
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 5.5s/it 1.6s<5.5sINFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_889db44acf73 HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_889db44acf73/paired HTTP/1.1" 404 Not Found
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_d81e2a018578 HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_d81e2a018578/paired HTTP/1.1" 404 Not Found
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 3.0s/it 5.9s
-                   all         94         71      0.718      0.421      0.366      0.183
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_ddb6c3352d81 HTTP/1.1" 200 OK
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-INFO:     196.128.216.173:0 - "GET /experiments/wonowyqw/exp_ddb6c3352d81/paired HTTP/1.1" 404 Not Found
-[K       2/10     0.686G     0.8109      1.495      1.084         27        224: 0% ──────────── 0/12  8.5s[K       2/10     0.686G     0.6524      1.335      1.029         17        224: 16% ━━────────── 2/12 3.4it/s 8.7s<2.9s[K       2/10     0.686G     0.6078      1.264      1.013         19        224: 25% ━━━───────── 3/12 5.3it/s 8.8s<1.7s[K       2/10     0.686G     0.5956      1.225     0.9996         20        224: 33% ━━━━──────── 4/12 6.3it/s 8.9s<1.3s[K       2/10     0.686G     0.5678      1.131     0.9919         22        224: 50% ━━━━━━────── 6/12 7.6it/s 9.1s<0.8s[K       2/10     0.686G     0.5448       1.13      0.982         16        224: 58% ━━━━━━━───── 7/12 8.2it/s 9.2s<0.6s[K       2/10     0.686G     0.5041      1.089     0.9698         18        224: 75% ━━━━━━━━━─── 9/12 8.8it/s 9.4s<0.3s[K       2/10     0.686G     0.4686       1.03     0.9595         19        224: 91% ━━━━━━━━━━━─ 11/12 6.2it/s 16.5s<0.2s[K       2/10     0.686G     0.4686       1.03     0.9595         19        224: 100% ━━━━━━━━━━━━ 12/12 1.4s/it 16.5s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 12.3s/it 3.7s<12.3s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 1.9s/it 3.8s
-                   all         94         71      0.762      0.474      0.441      0.324
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K       3/10     0.686G     0.2687     0.6647     0.8829         20        224: 8% ━─────────── 1/12 2.0it/s 0.2s<5.5s[K       3/10     0.686G     0.2509     0.6826     0.8779         17        224: 25% ━━━───────── 3/12 5.4it/s 0.3s<1.7s[K       3/10     0.686G     0.2371     0.6255     0.8689         23        224: 41% ━━━━━─────── 5/12 8.0it/s 0.4s<0.9s[K       3/10     0.686G     0.2298     0.5929     0.8706         23        224: 58% ━━━━━━━───── 7/12 10.3it/s 0.6s<0.5s[K       3/10     0.686G     0.2202     0.6004     0.8653         18        224: 75% ━━━━━━━━━─── 9/12 11.4it/s 0.7s<0.3s[K       3/10     0.686G     0.2126     0.5898     0.8659         16        224: 91% ━━━━━━━━━━━─ 11/12 12.0it/s 0.9s<0.1s[K       3/10     0.686G     0.2126     0.5898     0.8659         16        224: 100% ━━━━━━━━━━━━ 12/12 13.9it/s 0.9s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 1.5it/s 0.2s<0.7s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 4.5it/s 0.4s
-                   all         94         71      0.759      0.562       0.58      0.448
-INFO:     196.128.216.173:0 - "GET /jobs HTTP/1.1" 200 OK
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K       4/10     0.686G     0.1522     0.4941     0.8741         20        224: 8% ━─────────── 1/12 1.6it/s 0.2s<6.9s[K       4/10     0.686G     0.1595     0.4668     0.8517         22        224: 25% ━━━───────── 3/12 4.3it/s 0.4s<2.1s[K       4/10     0.686G     0.1508     0.4817     0.8378         20        224: 41% ━━━━━─────── 5/12 6.0it/s 0.6s<1.2s[K       4/10     0.686G     0.1463     0.4809     0.8287         17        224: 50% ━━━━━━────── 6/12 7.0it/s 0.7s<0.9s[K       4/10     0.686G     0.1458     0.4691     0.8324         22        224: 66% ━━━━━━━━──── 8/12 9.0it/s 0.8s<0.4s[K       4/10     0.686G     0.1469      0.463     0.8375         26        224: 83% ━━━━━━━━━━── 10/12 9.2it/s 1.0s<0.2s[K       4/10     0.686G     0.1479      0.462     0.8424         17        224: 91% ━━━━━━━━━━━─ 11/12 9.3it/s 1.1s<0.1s[K       4/10     0.686G     0.1479      0.462     0.8424         17        224: 100% ━━━━━━━━━━━━ 12/12 10.5it/s 1.1s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 1.5it/s 0.2s<0.7s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 6.0it/s 0.3s
-                   all         94         71      0.694      0.812      0.816      0.644
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K       5/10     0.686G     0.1288     0.3988     0.8587         22        224: 8% ━─────────── 1/12 1.5it/s 0.2s<7.4s[K       5/10     0.686G     0.1286     0.3903     0.8604         21        224: 25% ━━━───────── 3/12 4.8it/s 0.4s<1.9s[K       5/10     0.686G     0.1175      0.371     0.8397         24        224: 41% ━━━━━─────── 5/12 7.6it/s 0.5s<0.9s[K       5/10     0.686G     0.1147     0.3689     0.8376         24        224: 58% ━━━━━━━───── 7/12 9.4it/s 0.6s<0.5s[K       5/10     0.686G     0.1202     0.3685     0.8409         24        224: 75% ━━━━━━━━━─── 9/12 11.0it/s 0.8s<0.3s[K       5/10     0.686G     0.1234     0.3804     0.8396         13        224: 91% ━━━━━━━━━━━─ 11/12 11.8it/s 0.9s<0.1s[K       5/10     0.686G     0.1234     0.3804     0.8396         13        224: 100% ━━━━━━━━━━━━ 12/12 12.9it/s 0.9s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 1.5it/s 0.2s<0.7s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 6.2it/s 0.3s
-                   all         94         71      0.714      0.857      0.873      0.718
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K       6/10     0.686G     0.1022     0.3333     0.8148         21        224: 8% ━─────────── 1/12 1.5it/s 0.2s<7.2s[K       6/10     0.686G     0.1128     0.3343     0.8232         19        224: 25% ━━━───────── 3/12 3.8it/s 0.4s<2.3s[K       6/10     0.686G     0.1051     0.3121     0.8206         22        224: 41% ━━━━━─────── 5/12 5.8it/s 0.6s<1.2s[K       6/10     0.686G     0.1021     0.3015     0.8313         23        224: 58% ━━━━━━━───── 7/12 7.8it/s 0.8s<0.6s[K       6/10     0.686G     0.1133     0.3133     0.8384         19        224: 75% ━━━━━━━━━─── 9/12 9.8it/s 0.9s<0.3s[K       6/10     0.686G     0.1083     0.3074     0.8335         19        224: 91% ━━━━━━━━━━━─ 11/12 9.2it/s 1.2s<0.1s[K       6/10     0.686G     0.1083     0.3074     0.8335         19        224: 100% ━━━━━━━━━━━━ 12/12 10.3it/s 1.2s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 1.3it/s 0.2s<0.8s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 5.4it/s 0.4s
-                   all         94         71      0.817      0.884      0.916       0.77
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K       7/10     0.686G    0.08716     0.2818     0.8456         21        224: 8% ━─────────── 1/12 1.4it/s 0.2s<7.8s[K       7/10     0.686G    0.09162      0.284     0.8298         17        224: 25% ━━━───────── 3/12 3.9it/s 0.4s<2.3s[K       7/10     0.686G    0.08989     0.2758     0.8244         20        224: 41% ━━━━━─────── 5/12 5.5it/s 0.6s<1.3s[K       7/10     0.686G    0.09115     0.2723     0.8194         23        224: 58% ━━━━━━━───── 7/12 6.8it/s 0.8s<0.7s[K       7/10     0.686G    0.09106     0.2679     0.8296         25        224: 75% ━━━━━━━━━─── 9/12 7.6it/s 1.1s<0.4s[K       7/10     0.686G    0.08871     0.2715     0.8285         15        224: 91% ━━━━━━━━━━━─ 11/12 8.3it/s 1.3s<0.1s[K       7/10     0.686G    0.08871     0.2715     0.8285         15        224: 100% ━━━━━━━━━━━━ 12/12 9.6it/s 1.3s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 1.3it/s 0.2s<0.8s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 5.4it/s 0.4s
-                   all         94         71       0.84       0.92      0.921      0.779
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K       8/10     0.686G    0.09593     0.2355     0.8781         24        224: 8% ━─────────── 1/12 1.6it/s 0.2s<6.9s[K       8/10     0.686G     0.1055      0.287     0.8833         17        224: 25% ━━━───────── 3/12 5.4it/s 0.3s<1.7s[K       8/10     0.686G    0.09948     0.2621      0.851         24        224: 41% ━━━━━─────── 5/12 6.8it/s 0.5s<1.0s[K       8/10     0.686G    0.09751      0.266     0.8506         20        224: 58% ━━━━━━━───── 7/12 7.8it/s 0.7s<0.6s[K       8/10     0.686G    0.09494     0.2548     0.8384         22        224: 75% ━━━━━━━━━─── 9/12 8.4it/s 0.9s<0.4s[K       8/10     0.686G     0.0934     0.2558     0.8274         16        224: 83% ━━━━━━━━━━── 10/12 8.8it/s 1.0s<0.2s[K       8/10     0.686G    0.09324      0.252     0.8304         18        224: 91% ━━━━━━━━━━━─ 11/12 9.1it/s 1.1s<0.1s[K       8/10     0.686G    0.09324      0.252     0.8304         18        224: 100% ━━━━━━━━━━━━ 12/12 10.6it/s 1.1s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 1.4it/s 0.2s<0.7s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 5.6it/s 0.4s
-                   all         94         71      0.847      0.954      0.927      0.796
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K       9/10     0.686G    0.07203     0.2403     0.8558         17        224: 8% ━─────────── 1/12 1.7it/s 0.2s<6.6s[K       9/10     0.686G    0.07761     0.2227     0.8066         23        224: 25% ━━━───────── 3/12 4.1it/s 0.4s<2.2s[K       9/10     0.686G    0.08108     0.2284     0.8343         19        224: 41% ━━━━━─────── 5/12 5.5it/s 0.6s<1.3s[K       9/10     0.686G    0.08104     0.2211     0.8322         23        224: 58% ━━━━━━━───── 7/12 6.9it/s 0.8s<0.7s[K       9/10     0.686G    0.07786     0.2204     0.8274         19        224: 75% ━━━━━━━━━─── 9/12 8.0it/s 1.0s<0.4s[K       9/10     0.686G    0.08082     0.2256     0.8323         17        224: 91% ━━━━━━━━━━━─ 11/12 9.6it/s 1.2s<0.1s[K       9/10     0.686G    0.08082     0.2256     0.8323         17        224: 100% ━━━━━━━━━━━━ 12/12 10.4it/s 1.2s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 1.5it/s 0.2s<0.7s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 4.6it/s 0.4s
-                   all         94         71      0.855       0.95      0.919      0.786
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K      10/10     0.686G    0.06936     0.2063     0.8612         21        224: 8% ━─────────── 1/12 1.5it/s 0.2s<7.4s[K      10/10     0.686G    0.07017     0.2133     0.8432         20        224: 25% ━━━───────── 3/12 4.1it/s 0.4s<2.2s[K      10/10     0.686G    0.07597     0.2296     0.8316         18        224: 41% ━━━━━─────── 5/12 5.8it/s 0.6s<1.2s[K      10/10     0.686G    0.08085     0.2262     0.8246         26        224: 58% ━━━━━━━───── 7/12 7.8it/s 0.8s<0.6s[K      10/10     0.686G    0.07761     0.2193     0.8215         18        224: 75% ━━━━━━━━━─── 9/12 10.2it/s 0.9s<0.3s[K      10/10     0.686G    0.07663     0.2212      0.828         21        224: 91% ━━━━━━━━━━━─ 11/12 11.5it/s 1.0s<0.1s[K      10/10     0.686G    0.07663     0.2212      0.828         21        224: 100% ━━━━━━━━━━━━ 12/12 11.7it/s 1.0s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 1.5it/s 0.2s<0.7s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 4.6it/s 0.4s
-                   all         94         71      0.868      0.937      0.922      0.784
-
-10 epochs completed in 0.014 hours.
-Optimizer stripped from /kaggle/working/modellab/workspace/artifacts/experiments/wonowyqw/exp_e15da2e8822b/training/weights/last.pt, 5.4MB
-Optimizer stripped from /kaggle/working/modellab/workspace/artifacts/experiments/wonowyqw/exp_e15da2e8822b/training/weights/best.pt, 5.4MB
-
-Validating /kaggle/working/modellab/workspace/artifacts/experiments/wonowyqw/exp_e15da2e8822b/training/weights/best.pt...
-Ultralytics 8.4.174 🚀 Python-3.13.15 torch-2.11.0+cu128 CUDA:0 (Tesla T4, 14912MiB)
-YOLO11n summary (fused): 100 layers, 2,583,127 parameters, 0 gradients, 6.4 GFLOPs
-INFO:     196.128.216.173:0 - "GET /jobs HTTP/1.1" 200 OK
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 9.1s/it 2.7s<9.1s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 2.7s/it 5.4s
-                   all         94         71      0.833      0.984      0.928      0.797
-               handgun         14         14      0.731      0.974      0.864      0.739
-                 knife         57         57      0.934      0.994      0.992      0.856
-Speed: 0.0ms preprocess, 55.0ms inference, 0.0ms loss, 0.7ms postprocess per image
-Results saved to [1m/kaggle/working/modellab/workspace/artifacts/experiments/wonowyqw/exp_e15da2e8822b/training[0m
+INFO:     127.0.0.1:40824 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40832 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40838 - "GET /architectures HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40850 - "GET /model-artifacts/probe_model.pt HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:47590 - "GET /health HTTP/1.1" 200 OK

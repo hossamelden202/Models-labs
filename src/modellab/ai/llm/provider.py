@@ -55,6 +55,11 @@ class StructuredLLM:
         raise LLMError(f"no valid reply after {self.max_retries + 1} attempts: {str(last)[:200]}")
 
 
+class NoLLM(StructuredLLM):
+    def _complete(self, messages, schema):
+        raise LLMError("no LLM backend configured (MODELLAB_LLM_BACKEND=none)")
+
+
 class ScriptedLLM(StructuredLLM):
     def __init__(self, replies, max_retries=2):
         super().__init__(max_retries)
@@ -111,6 +116,8 @@ class OpenAICompatLLM(StructuredLLM):
 def provider_from_env(env=None):
     env = os.environ if env is None else env
     backend = env.get("MODELLAB_LLM_BACKEND", "llama_cpp")
+    if backend == "none":
+        return NoLLM()
     if backend == "llama_cpp":
         return LlamaCppLLM(
             model_path=env.get("MODELLAB_LLM_PATH"),
