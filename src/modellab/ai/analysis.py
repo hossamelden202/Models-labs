@@ -49,7 +49,7 @@ def analyze_detection(metrics, per_class, recall_floor=0.5, rare_share=0.05):
         if r["fp"] > r["tp"]:
             weaknesses.append(Weakness(
                 class_name=r["class_name"], metric="precision", value=r["precision"],
-                support=r["support"], note=f"{r['fp']} false positives against {r['tp']} true positives",
+                support=r["support"], note=f"{r['fp']} false positives vs {r['tp']} correct detections",
             ))
     weaknesses.sort(key=lambda w: w.value)
 
