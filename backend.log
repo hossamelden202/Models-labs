@@ -1,134 +1,140 @@
-INFO:     Started server process [1486]
+INFO:     Started server process [1766]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
-INFO:     127.0.0.1:47940 - "GET /health HTTP/1.1" 200 OK
-INFO:     127.0.0.1:47950 - "GET /health HTTP/1.1" 200 OK
-/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_validators.py:205: UserWarning: The `local_dir_use_symlinks` argument is deprecated and ignored in `hf_hub_download`. Downloading to a local directory does not use symlinks anymore.
-  warnings.warn(
-Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
-Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|██████████| 103/103 [00:00<00:00, 2371.16it/s]
-INFO:     196.128.216.173:0 - "POST /ai/research HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /ai/research HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /ai/research/res_20261007T071906_c256df HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /ai/research HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /ai/research/res_20261007T071906_c256df HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "POST /ai/research/res_20261007T071906_c256df/approve HTTP/1.1" 202 Accepted
-07:21:05 WARNING modellab.model: unpickling a full model from /kaggle/working/modellab/workspace/model_artifacts/artifact_5f1f605ef4f748838f126e34851c5031/best.pt, only do this for files you trust
-[DETECTION TRAINING] loading checkpoint: /kaggle/working/modellab/workspace/model_artifacts/artifact_5f1f605ef4f748838f126e34851c5031/best.pt
-[DETECTION TRAINING] starting Ultralytics training
-Ultralytics 8.4.174 🚀 Python-3.13.15 torch-2.11.0+cu128 CUDA:0 (Tesla T4, 14912MiB)
-[34m[1mengine/trainer: [0magnostic_nms=False, amp=True, angle=1.0, augment=False, auto_augment=randaugment, batch=32, bgr=0.0, box=7.5, cache=False, cfg=None, channels_last=None, classes=None, close_mosaic=10, cls=0.5, cls_pw=0.0, cls_remap=True, compile=False, conf=None, copy_paste=0.0, copy_paste_mode=flip, cos_lr=False, cutmix=0.0, data=/kaggle/working/modellab/workspace/artifacts/experiments/wow/exp_6807c67f48cb/training/dataset/data.yaml, degrees=0.0, deterministic=True, device=, dfl=1.5, dgrad=0.5, dis=6.0, distill_model=None, dlam=1.0, dlog=1.0, dnn=False, dropout=0.0, dynamic=False, embed=None, epochs=10, erasing=0.4, exist_ok=True, fliplr=0.0, flipud=0.0, format=torchscript, fraction=1.0, freeze=None, hsv_h=0.0, hsv_s=0.5, hsv_v=0.4, imgsz=224, iou=0.7, kobj=1.0, line_width=None, lr0=0.001, lrf=0.01, mask_ratio=4, max_det=300, mixup=0.0, mode=train, model=/kaggle/working/modellab/workspace/model_artifacts/artifact_5f1f605ef4f748838f126e34851c5031/best.pt, momentum=0.937, mosaic=0.5, multi_scale=0.0, name=training, nbs=64, nms=None, opset=None, optimize=False, optimizer=AdamW, overlap_mask=True, patience=100, perspective=0.0, plots=True, pose=12.0, pretrained=True, profile=False, project=/kaggle/working/modellab/workspace/artifacts/experiments/wow/exp_6807c67f48cb, quantize=None, rect=False, resume=False, retina_masks=False, rle=1.0, save=True, save_conf=False, save_crop=False, save_dir=/kaggle/working/modellab/workspace/artifacts/experiments/wow/exp_6807c67f48cb/training, save_frames=False, save_json=False, save_period=-1, save_txt=False, scale=0.0, seed=42, shear=0.0, show=False, show_boxes=True, show_conf=True, show_labels=True, simplify=True, single_cls=False, source=None, split=val, stream_buffer=False, task=detect, time=None, tracker=tracktrack.yaml, translate=0.0, val=True, verbose=True, vid_stride=1, visualize=False, warmup_bias_lr=0.1, warmup_epochs=3.0, warmup_momentum=0.8, weight_decay=0.0, workers=2, workspace=None
-INFO:     196.128.216.173:0 - "GET /ai/research HTTP/1.1" 200 OK
-INFO:     196.128.216.173:0 - "GET /ai/research/res_20261007T071906_c256df HTTP/1.1" 200 OK
-
-                   from  n    params  module                                       arguments                     
-  0                  -1  1       464  ultralytics.nn.modules.conv.Conv             [3, 16, 3, 2]                 
-  1                  -1  1      4672  ultralytics.nn.modules.conv.Conv             [16, 32, 3, 2]                
-  2                  -1  1      6640  ultralytics.nn.modules.block.C3k2            [32, 64, 1, False, 0.25]      
-  3                  -1  1     36992  ultralytics.nn.modules.conv.Conv             [64, 64, 3, 2]                
-  4                  -1  1     26080  ultralytics.nn.modules.block.C3k2            [64, 128, 1, False, 0.25]     
-  5                  -1  1    147712  ultralytics.nn.modules.conv.Conv             [128, 128, 3, 2]              
-  6                  -1  1     87040  ultralytics.nn.modules.block.C3k2            [128, 128, 1, True]           
-  7                  -1  1    295424  ultralytics.nn.modules.conv.Conv             [128, 256, 3, 2]              
-  8                  -1  1    346112  ultralytics.nn.modules.block.C3k2            [256, 256, 1, True]           
-  9                  -1  1    164608  ultralytics.nn.modules.block.SPPF            [256, 256, 5]                 
- 10                  -1  1    249728  ultralytics.nn.modules.block.C2PSA           [256, 256, 1]                 
- 11                  -1  1         0  torch.nn.modules.upsampling.Upsample         [None, 2, 'nearest']          
- 12             [-1, 6]  1         0  ultralytics.nn.modules.conv.Concat           [1]                           
- 13                  -1  1    111296  ultralytics.nn.modules.block.C3k2            [384, 128, 1, False]          
- 14                  -1  1         0  torch.nn.modules.upsampling.Upsample         [None, 2, 'nearest']          
- 15             [-1, 4]  1         0  ultralytics.nn.modules.conv.Concat           [1]                           
- 16                  -1  1     32096  ultralytics.nn.modules.block.C3k2            [256, 64, 1, False]           
- 17                  -1  1     36992  ultralytics.nn.modules.conv.Conv             [64, 64, 3, 2]                
- 18            [-1, 13]  1         0  ultralytics.nn.modules.conv.Concat           [1]                           
- 19                  -1  1     86720  ultralytics.nn.modules.block.C3k2            [192, 128, 1, False]          
- 20                  -1  1    147712  ultralytics.nn.modules.conv.Conv             [128, 128, 3, 2]              
- 21            [-1, 10]  1         0  ultralytics.nn.modules.conv.Concat           [1]                           
- 22                  -1  1    378880  ultralytics.nn.modules.block.C3k2            [384, 256, 1, True]           
- 23        [16, 19, 22]  1    431647  ultralytics.nn.modules.head.Detect           [5, 16, None, [64, 128, 256]] 
-YOLO11n summary: 181 layers, 2,590,815 parameters, 2,590,799 gradients, 6.5 GFLOPs
-
-Transferred 499/499 items from pretrained weights
-Freezing layer 'model.23.dfl.conv.weight'
-[34m[1mAMP: [0mrunning Automatic Mixed Precision (AMP) checks...
-[34m[1mAMP: [0mchecks passed ✅
-[34m[1mtrain: [0mFast image access ✅ (ping: 0.0±0.0 ms, read: 1330.7±514.1 MB/s, size: 193.7 KB)
-[K[34m[1mtrain: [0mScanning /kaggle/working/modellab/workspace/artifacts/detection_training_data/train/labels.cache... 378 images, 133 backgrounds, 0 corrupt: 100% ━━━━━━━━━━━━ 378/378 61.0Mit/s 0.0s
-[34m[1malbumentations: [0mBlur(p=0.01, blur_limit=(3, 7)), MedianBlur(p=0.01, blur_limit=(3, 7)), ToGray(p=0.01, method='weighted_average', num_output_channels=3), CLAHE(p=0.01, clip_limit=(1.0, 4.0), tile_grid_size=(8, 8))
-[34m[1mval: [0mFast image access ✅ (ping: 0.0±0.0 ms, read: 2119.0±957.1 MB/s, size: 230.4 KB)
-[K[34m[1mval: [0mScanning /kaggle/working/modellab/workspace/artifacts/detection_training_data/val/labels.cache... 94 images, 23 backgrounds, 0 corrupt: 100% ━━━━━━━━━━━━ 94/94 21.9Mit/s 0.0s
-[34m[1moptimizer:[0m AdamW(lr=0.001, momentum=0.937) with parameter groups 81 weight(decay=0.0), 88 weight(decay=0.0), 87 bias(decay=0.0)
-Plotting labels to /kaggle/working/modellab/workspace/artifacts/experiments/wow/exp_6807c67f48cb/training/labels.jpg... 
-Using 378 train, 94 val images for fraction=1.0 at imgsz=224
-Using 2 dataloader workers
-Logging results to [1m/kaggle/working/modellab/workspace/artifacts/experiments/wow/exp_6807c67f48cb/training[0m
-Starting training for 10 epochs...
-Closing dataloader mosaic
-[34m[1malbumentations: [0mBlur(p=0.01, blur_limit=(3, 7)), MedianBlur(p=0.01, blur_limit=(3, 7)), ToGray(p=0.01, method='weighted_average', num_output_channels=3), CLAHE(p=0.01, clip_limit=(1.0, 4.0), tile_grid_size=(8, 8))
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K       1/10     0.576G      1.897      4.443      2.137         23        224: 0% ──────────── 0/12  9.8s[K       1/10     0.613G      2.077      4.266      2.326         24        224: 8% ━─────────── 1/12 2.2it/s 10.0s<5.0s[K       1/10     0.615G      2.035      4.168      2.284         24        224: 16% ━━────────── 2/12 3.4it/s 10.1s<2.9s[K       1/10     0.615G      2.097      4.253      2.362         22        224: 25% ━━━───────── 3/12 4.8it/s 10.3s<1.9s[K       1/10     0.615G      2.106      4.263      2.348         21        224: 41% ━━━━━─────── 5/12 6.4it/s 10.5s<1.1s[K       1/10     0.615G      1.945      3.924       2.17         21        224: 58% ━━━━━━━───── 7/12 7.9it/s 10.6s<0.6s[K       1/10     0.615G      1.861      3.715      2.069         21        224: 66% ━━━━━━━━──── 8/12 7.9it/s 10.8s<0.5s[K       1/10     0.615G      1.752      3.512      1.968         24        224: 75% ━━━━━━━━━─── 9/12 8.2it/s 10.9s<0.4s[K       1/10     0.615G      1.642      3.325      1.881         17        224: 83% ━━━━━━━━━━── 10/12 8.2it/s 11.0s<0.2s[K       1/10     0.615G      1.551       3.14      1.801         11        224: 91% ━━━━━━━━━━━─ 11/12 5.8it/s 18.0s<0.2s[K       1/10     0.615G      1.551       3.14      1.801         11        224: 100% ━━━━━━━━━━━━ 12/12 1.5s/it 18.0s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 15.8s/it 4.7s<15.8s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 4.2s/it 8.4s
-                   all         94         71      0.828      0.395      0.505      0.286
-/usr/local/lib/python3.13/dist-packages/ray/train/_internal/session.py:683: UserWarning: `get_trial_id` is meant to only be called inside a function that is executed by a Tuner or Trainer. Returning `None`.
-  warnings.warn(
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K       2/10     0.686G     0.3239     0.7109      0.857         23        224: 8% ━─────────── 1/12 1.6it/s 0.2s<7.1s[K       2/10     0.686G     0.3323      0.699     0.8752         17        224: 16% ━━────────── 2/12 3.7it/s 0.3s<2.7s[K       2/10     0.686G     0.3191     0.7176     0.8786         19        224: 25% ━━━───────── 3/12 5.3it/s 0.4s<1.7s[K       2/10     0.686G     0.3017     0.7183     0.8635         20        224: 33% ━━━━──────── 4/12 6.5it/s 0.5s<1.2s[K       2/10     0.686G     0.2907     0.7007     0.8635         21        224: 41% ━━━━━─────── 5/12 7.3it/s 0.6s<1.0s[K       2/10     0.686G     0.2819     0.6647     0.8669         22        224: 50% ━━━━━━────── 6/12 8.0it/s 0.7s<0.8s[K       2/10     0.691G     0.2851     0.6866     0.8657         16        224: 58% ━━━━━━━───── 7/12 8.3it/s 0.8s<0.6s[K       2/10     0.691G      0.271     0.6654     0.8636         18        224: 75% ━━━━━━━━━─── 9/12 8.7it/s 1.1s<0.3s[K       2/10     0.691G     0.2564     0.6492      0.863         19        224: 91% ━━━━━━━━━━━─ 11/12 9.1it/s 1.3s<0.1s[K       2/10     0.691G     0.2564     0.6492      0.863         19        224: 100% ━━━━━━━━━━━━ 12/12 9.5it/s 1.3s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 1.5it/s 0.2s<0.7s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 6.1it/s 0.3s
-                   all         94         71       0.54      0.714      0.789      0.544
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K       3/10     0.691G     0.1828     0.4284     0.8381         20        224: 8% ━─────────── 1/12 1.6it/s 0.2s<6.7s[K       3/10     0.691G     0.1825      0.461     0.8377         17        224: 25% ━━━───────── 3/12 3.8it/s 0.4s<2.4s[K       3/10     0.691G     0.1805     0.4705     0.8419         20        224: 33% ━━━━──────── 4/12 5.6it/s 0.5s<1.4s[K       3/10     0.691G     0.1674      0.456     0.8305         23        224: 41% ━━━━━─────── 5/12 6.5it/s 0.6s<1.1s[K       3/10     0.691G     0.1612     0.4394     0.8322         23        224: 58% ━━━━━━━───── 7/12 7.5it/s 0.8s<0.7s[K       3/10     0.691G     0.1567     0.4437     0.8298         17        224: 66% ━━━━━━━━──── 8/12 8.2it/s 0.9s<0.5s[K       3/10     0.691G     0.1507     0.4355     0.8274         18        224: 75% ━━━━━━━━━─── 9/12 8.6it/s 1.0s<0.4s[K       3/10     0.691G     0.1497     0.4262     0.8288         25        224: 83% ━━━━━━━━━━── 10/12 8.9it/s 1.1s<0.2s[K       3/10     0.691G     0.1505      0.419     0.8311         16        224: 91% ━━━━━━━━━━━─ 11/12 8.9it/s 1.3s<0.1s[K       3/10     0.691G     0.1505      0.419     0.8311         16        224: 100% ━━━━━━━━━━━━ 12/12 9.6it/s 1.3s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 1.5it/s 0.2s<0.7s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 6.1it/s 0.3s
-                   all         94         71      0.657      0.964       0.88      0.619
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K       4/10     0.691G     0.1364     0.2771     0.8584         20        224: 8% ━─────────── 1/12 1.7it/s 0.2s<6.5s[K       4/10     0.691G     0.1404     0.2823     0.8352         22        224: 25% ━━━───────── 3/12 4.4it/s 0.4s<2.1s[K       4/10     0.691G     0.1303     0.3169     0.8219         20        224: 41% ━━━━━─────── 5/12 6.7it/s 0.5s<1.0s[K       4/10     0.691G     0.1243      0.312      0.812         19        224: 58% ━━━━━━━───── 7/12 8.0it/s 0.7s<0.6s[K       4/10     0.691G     0.1225     0.2931     0.8188         24        224: 75% ━━━━━━━━━─── 9/12 9.5it/s 0.9s<0.3s[K       4/10     0.691G     0.1218     0.2905      0.828         17        224: 91% ━━━━━━━━━━━─ 11/12 10.4it/s 1.0s<0.1s[K       4/10     0.691G     0.1218     0.2905      0.828         17        224: 100% ━━━━━━━━━━━━ 12/12 11.7it/s 1.0s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 1.6it/s 0.2s<0.6s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 5.9it/s 0.3s
-                   all         94         71      0.808      0.964      0.928      0.703
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K       5/10     0.691G    0.08966     0.2233     0.8444         22        224: 8% ━─────────── 1/12 1.5it/s 0.2s<7.3s[K       5/10     0.691G    0.09714     0.2008     0.8479         21        224: 25% ━━━───────── 3/12 4.8it/s 0.4s<1.9s[K       5/10     0.691G    0.09371      0.192     0.8283         24        224: 41% ━━━━━─────── 5/12 6.7it/s 0.5s<1.0s[K       5/10     0.691G    0.09349     0.1964     0.8264         24        224: 58% ━━━━━━━───── 7/12 8.1it/s 0.7s<0.6s[K       5/10     0.693G    0.09615     0.2012     0.8299         24        224: 75% ━━━━━━━━━─── 9/12 8.6it/s 0.9s<0.3s[K       5/10     0.693G     0.1047     0.2153     0.8299         13        224: 91% ━━━━━━━━━━━─ 11/12 8.3it/s 1.2s<0.1s[K       5/10     0.693G     0.1047     0.2153     0.8299         13        224: 100% ━━━━━━━━━━━━ 12/12 10.1it/s 1.2s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 1.4it/s 0.2s<0.7s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 6.0it/s 0.3s
-                   all         94         71      0.816      0.964       0.94      0.746
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K       6/10     0.693G    0.07556     0.1872     0.8056         21        224: 8% ━─────────── 1/12 1.7it/s 0.2s<6.5s[K       6/10     0.693G    0.08208     0.1977      0.814         19        224: 25% ━━━───────── 3/12 4.6it/s 0.4s<1.9s[K       6/10     0.693G    0.07868      0.178     0.8115         22        224: 41% ━━━━━─────── 5/12 6.5it/s 0.5s<1.1s[K       6/10     0.693G    0.07922     0.1777     0.8221         23        224: 58% ━━━━━━━───── 7/12 7.9it/s 0.7s<0.6s[K       6/10     0.693G     0.0923     0.1808     0.8298         19        224: 75% ━━━━━━━━━─── 9/12 8.8it/s 0.9s<0.3s[K       6/10     0.693G    0.08915     0.1729     0.8251         19        224: 91% ━━━━━━━━━━━─ 11/12 8.8it/s 1.1s<0.1s[K       6/10     0.693G    0.08915     0.1729     0.8251         19        224: 100% ━━━━━━━━━━━━ 12/12 10.6it/s 1.1s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 1.4it/s 0.2s<0.7s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 5.3it/s 0.4s
-                   all         94         71      0.844      0.957       0.95      0.765
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K       7/10     0.693G    0.07603     0.1342     0.8391         21        224: 8% ━─────────── 1/12 1.8it/s 0.2s<6.1s[K       7/10     0.693G    0.08626     0.1319     0.8248         17        224: 25% ━━━───────── 3/12 4.5it/s 0.4s<2.0s[K       7/10     0.693G    0.07838     0.1341     0.8187         20        224: 41% ━━━━━─────── 5/12 6.2it/s 0.5s<1.1s[K       7/10     0.693G    0.07611     0.1335     0.8131         23        224: 58% ━━━━━━━───── 7/12 7.5it/s 0.7s<0.7s[K       7/10     0.693G    0.07598     0.1356     0.8234         25        224: 75% ━━━━━━━━━─── 9/12 8.5it/s 0.9s<0.4s[K       7/10     0.693G    0.07492     0.1403     0.8224         15        224: 91% ━━━━━━━━━━━─ 11/12 8.9it/s 1.1s<0.1s[K       7/10     0.693G    0.07492     0.1403     0.8224         15        224: 100% ━━━━━━━━━━━━ 12/12 10.7it/s 1.1s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 1.3it/s 0.2s<0.8s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 5.7it/s 0.4s
-                   all         94         71      0.863      0.886      0.959      0.791
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K       8/10     0.693G     0.0778     0.1132     0.8723         24        224: 8% ━─────────── 1/12 1.6it/s 0.2s<7.1s[K       8/10     0.693G    0.09436     0.1445     0.8777         17        224: 25% ━━━───────── 3/12 4.1it/s 0.4s<2.2s[K       8/10     0.693G    0.08578     0.1371     0.8452         24        224: 41% ━━━━━─────── 5/12 7.4it/s 0.5s<0.9s[K       8/10     0.693G    0.08085     0.1417     0.8448         20        224: 58% ━━━━━━━───── 7/12 9.6it/s 0.7s<0.5s[K       8/10     0.693G    0.07824      0.133     0.8329         22        224: 75% ━━━━━━━━━─── 9/12 10.7it/s 0.8s<0.3s[K       8/10     0.693G    0.07613     0.1312     0.8253         18        224: 91% ━━━━━━━━━━━─ 11/12 11.6it/s 1.0s<0.1s[K       8/10     0.693G    0.07613     0.1312     0.8253         18        224: 100% ━━━━━━━━━━━━ 12/12 12.6it/s 1.0s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 1.5it/s 0.2s<0.7s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 5.2it/s 0.4s
-                   all         94         71      0.899      0.867      0.955      0.802
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K       9/10     0.693G    0.05703     0.1233     0.8533         17        224: 8% ━─────────── 1/12 1.7it/s 0.2s<6.5s[K       9/10     0.693G    0.06917     0.1199     0.8031         23        224: 25% ━━━───────── 3/12 4.2it/s 0.4s<2.1s[K       9/10     0.693G     0.0665     0.1181     0.8299         19        224: 41% ━━━━━─────── 5/12 6.0it/s 0.6s<1.2s[K       9/10     0.693G    0.06511     0.1149     0.8274         23        224: 58% ━━━━━━━───── 7/12 7.3it/s 0.8s<0.7s[K       9/10     0.693G    0.06219       0.11     0.8229         19        224: 75% ━━━━━━━━━─── 9/12 9.2it/s 0.9s<0.3s[K       9/10     0.693G    0.06444      0.117     0.8276         17        224: 91% ━━━━━━━━━━━─ 11/12 11.0it/s 1.0s<0.1s[K       9/10     0.693G    0.06444      0.117     0.8276         17        224: 100% ━━━━━━━━━━━━ 12/12 11.5it/s 1.0s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 1.5it/s 0.2s<0.7s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 6.5it/s 0.3s
-                   all         94         71      0.926      0.886      0.951      0.817
-
-      Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
-[K      10/10     0.693G    0.05254     0.1067     0.8579         21        224: 8% ━─────────── 1/12 1.4it/s 0.2s<7.7s[K      10/10     0.693G    0.05231     0.1005     0.8395         20        224: 25% ━━━───────── 3/12 4.8it/s 0.4s<1.9s[K      10/10     0.693G    0.05394     0.1227     0.8272         18        224: 41% ━━━━━─────── 5/12 6.8it/s 0.5s<1.0s[K      10/10     0.693G    0.05604     0.1232     0.8248         19        224: 50% ━━━━━━────── 6/12 6.1it/s 0.8s<1.0s[K      10/10     0.693G    0.05843     0.1254     0.8199         26        224: 58% ━━━━━━━───── 7/12 7.2it/s 0.9s<0.7s[K      10/10     0.693G    0.05862     0.1216       0.82         19        224: 66% ━━━━━━━━──── 8/12 6.5it/s 1.1s<0.6s[K      10/10     0.693G    0.05636     0.1217      0.817         18        224: 75% ━━━━━━━━━─── 9/12 7.4it/s 1.2s<0.4s[K      10/10     0.693G    0.05455     0.1195     0.8166         25        224: 83% ━━━━━━━━━━── 10/12 7.1it/s 1.3s<0.3s[K      10/10     0.693G    0.05625     0.1213     0.8233         21        224: 91% ━━━━━━━━━━━─ 11/12 7.7it/s 1.5s<0.1s[K      10/10     0.693G    0.05625     0.1213     0.8233         21        224: 100% ━━━━━━━━━━━━ 12/12 8.2it/s 1.5s
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 1.4it/s 0.2s<0.7s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 6.0it/s 0.3s
-                   all         94         71      0.869      0.858      0.948      0.818
-
-10 epochs completed in 0.013 hours.
-Optimizer stripped from /kaggle/working/modellab/workspace/artifacts/experiments/wow/exp_6807c67f48cb/training/weights/last.pt, 5.4MB
-Optimizer stripped from /kaggle/working/modellab/workspace/artifacts/experiments/wow/exp_6807c67f48cb/training/weights/best.pt, 5.4MB
-
-Validating /kaggle/working/modellab/workspace/artifacts/experiments/wow/exp_6807c67f48cb/training/weights/best.pt...
-Ultralytics 8.4.174 🚀 Python-3.13.15 torch-2.11.0+cu128 CUDA:0 (Tesla T4, 14912MiB)
-YOLO11n summary (fused): 100 layers, 2,583,127 parameters, 0 gradients, 6.4 GFLOPs
-[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 1/2 9.1s/it 2.7s<9.1s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 2.7s/it 5.4s
-                   all         94         71      0.872      0.858      0.948      0.811
-               handgun         14         14       0.79      0.857      0.925      0.791
-                 knife         57         57      0.953       0.86      0.972       0.83
-Speed: 0.2ms preprocess, 54.7ms inference, 0.0ms loss, 0.7ms postprocess per image
-Results saved to [1m/kaggle/working/modellab/workspace/artifacts/experiments/wow/exp_6807c67f48cb/training[0m
+INFO:     127.0.0.1:40226 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40234 - "GET /health HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /health HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "POST /config/import HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "POST /config/import HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "POST /model-artifacts HTTP/1.1" 422 Unprocessable Content
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "POST /config/import HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "POST /model-artifacts HTTP/1.1" 201 Created
+INFO:     196.128.216.173:0 - "POST /models/resolve HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "POST /config/import HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.13/dist-packages/uvicorn/protocols/http/httptools_impl.py", line 422, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self.scope, self.receive, self.send
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/usr/local/lib/python3.13/dist-packages/uvicorn/middleware/proxy_headers.py", line 63, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/fastapi/applications.py", line 1163, in __call__
+    await super().__call__(scope, receive, send)
+  File "/usr/local/lib/python3.13/dist-packages/starlette/applications.py", line 96, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.13/dist-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/usr/local/lib/python3.13/dist-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/usr/local/lib/python3.13/dist-packages/starlette/middleware/cors.py", line 88, in __call__
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.13/dist-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.13/dist-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.13/dist-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.13/dist-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.13/dist-packages/starlette/routing.py", line 670, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.13/dist-packages/fastapi/routing.py", line 2734, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.13/dist-packages/fastapi/routing.py", line 1780, in handle
+    await self.original_router.handle(scope, receive, send)
+  File "/usr/local/lib/python3.13/dist-packages/fastapi/routing.py", line 2789, in handle
+    await included_router._handle_selected(scope, receive, send)
+  File "/usr/local/lib/python3.13/dist-packages/fastapi/routing.py", line 1800, in _handle_selected
+    await original_route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.13/dist-packages/fastapi/routing.py", line 1279, in handle
+    await app(scope, receive, send)
+  File "/usr/local/lib/python3.13/dist-packages/fastapi/routing.py", line 158, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.13/dist-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.13/dist-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.13/dist-packages/fastapi/routing.py", line 144, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/fastapi/routing.py", line 706, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/usr/local/lib/python3.13/dist-packages/fastapi/routing.py", line 354, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/starlette/concurrency.py", line 34, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/anyio/to_thread.py", line 65, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/usr/local/lib/python3.13/dist-packages/anyio/_backends/_asyncio.py", line 2641, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/anyio/_backends/_asyncio.py", line 1033, in run
+    result = context.run(func, *args)
+  File "/kaggle/working/modellab/src/modellab/server/app.py", line 343, in import_config
+    raise HTTPException(
+          ^^^^^^^^^^^^^
+NameError: name 'HTTPException' is not defined. Did you mean: 'BaseException'?
+INFO:     196.128.216.173:0 - "GET /health HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /health HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /system HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /jobs HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "POST /config/import HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "POST /config/import HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "POST /model-artifacts HTTP/1.1" 422 Unprocessable Content
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "POST /config/import HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "POST /model-artifacts HTTP/1.1" 201 Created
+08:20:31 WARNING modellab.model: unpickling a full model from /kaggle/working/modellab/workspace/model_artifacts/artifact_5f803233e7bb4bc3aa6cfa37b6b7ca33/best.pt, only do this for files you trust
+INFO:     196.128.216.173:0 - "POST /models/resolve HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "POST /models/register HTTP/1.1" 409 Conflict
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "POST /config/import HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "POST /model-artifacts HTTP/1.1" 201 Created
+08:20:53 WARNING modellab.model: unpickling a full model from /kaggle/working/modellab/workspace/model_artifacts/artifact_5e78f91927c14782a8a507ed340c2e3e/best.pt, only do this for files you trust
+INFO:     196.128.216.173:0 - "POST /models/resolve HTTP/1.1" 200 OK
+08:20:54 WARNING modellab.model: unpickling a full model from /kaggle/working/modellab/workspace/model_artifacts/artifact_5e78f91927c14782a8a507ed340c2e3e/best.pt, only do this for files you trust
+INFO:     196.128.216.173:0 - "POST /models/register HTTP/1.1" 201 Created
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /datasets HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "POST /config/import HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "POST /config/import HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "POST /model-artifacts HTTP/1.1" 422 Unprocessable Content
+INFO:     196.128.216.173:0 - "GET /models HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "POST /config/import HTTP/1.1" 200 OK
+INFO:     196.128.216.173:0 - "POST /model-artifacts HTTP/1.1" 201 Created
+INFO:     196.128.216.173:0 - "POST /models/resolve HTTP/1.1" 200 OK

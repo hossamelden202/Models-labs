@@ -9,6 +9,8 @@ from pathlib import Path
 from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends, FastAPI, File, Form, Query, Request, UploadFile
+
+from modellab.config_import import ConfigImportError, import_model_config
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
@@ -301,6 +303,58 @@ def create_app(settings: ServerSettings) -> FastAPI:
         except BaseException:
             shutil.rmtree(folder, ignore_errors=True)
             raise
+
+    
+    # Config files that may be imported through the backend.
+    ALLOWED_CONFIG_ROOTS = (Path("/kaggle").resolve(),)
+
+
+    @api.post("/config/import")
+    def import_config(body: dict):
+        raw_path = str(body.get("path", "")).strip()
+
+        if not raw_path:
+            raise HTTPException(400, "Config path is required")
+
+        path = Path(raw_path).expanduser()
+
+        try:
+            resolved_path = path.resolve()
+        except OSError as exc:
+            raise HTTPException(400, f"Invalid config path: {raw_path}") from exc
+
+        # Restrict backend filesystem access to /kaggle.
+        if not any(
+            resolved_path == root or root in resolved_path.parents
+            for root in ALLOWED_CONFIG_ROOTS
+        ):
+            raise HTTPException(
+                400,
+                "Config path must be under /kaggle",
+            )
+
+        if resolved_path.suffix.lower() not in {".json", ".yaml", ".yml"}:
+            raise HTTPException(
+                400,
+                "Config file must be .json, .yaml or .yml",
+            )
+
+        if not resolved_path.is_file():
+            raise HTTPException(
+                404,
+                f"File not found on backend: {resolved_path}",
+            )
+
+        try:
+            result = import_model_config(resolved_path)
+        except ConfigImportError as exc:
+            raise HTTPException(422, str(exc)) from exc
+
+        return {
+            "ok": True,
+            "spec_fields": result.to_spec_fields(),
+        }
+
 
     @api.post("/models/register", status_code=201)
     def register_model(req: RegisterModel):
