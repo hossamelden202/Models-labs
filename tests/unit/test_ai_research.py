@@ -135,7 +135,7 @@ def test_empty_menu_stops_early(root, monkeypatch):
     out, llm = run(root, [GOOD])
     assert out["trace"] == ["collect_context"]
     assert out["proposal"] is None and llm.calls == []
-    assert any("already been run" in n for n in out["notes"])
+    assert any("already proposed in this chat" in n for n in out["notes"])
 
 
 def test_missing_and_non_detection_baselines(root, tmp_path):

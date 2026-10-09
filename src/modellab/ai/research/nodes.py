@@ -25,6 +25,8 @@ def _prompt(state, ranked):
     lines = ["Measured results:", a["summary"], "", "Weak classes:"]
     lines += [f"- {w['class_name']} {w['metric']} {w['value']:.3f} ({w['note']})" for w in a["weaknesses"]] or ["- none"]
     lines += ["", "Data issues:"] + ([f"- {i}" for i in a["data_issues"]] or ["- none"])
+    if state.get("audit_digest"):
+        lines += ["", "Dataset audit (raw digest):", state["audit_digest"]]
     lines += ["", "Past experiments:"]
     for r in state["retrieved"]:
         lines.append(f"[{r['title']}]\n{r['content'][:500]}")
@@ -55,13 +57,16 @@ def make_nodes(root, llm, knowledge):
     def collect_context(state):
         family = state["family_id"]
         baseline = tools.get_baseline(root, family)
-        source, per_class = tools.failure_per_class(root, baseline)
-        menu = build_menu(tried_changes(root, family))
+        source, per_class = tools.failure_per_class(root, baseline, state.get("analysis_id"))
+        exclude = set(state.get("exclude") or [])
+        menu = [c for c in build_menu(tried_changes(root, family)) if c.candidate_id not in exclude]
+        audit = tools.audit_digest(root, state["audit_id"])[1] if state.get("audit_id") else None
         ingest_all(root, knowledge)
         notes = list(state.get("notes", []))
         if not menu:
-            notes.append("every experiment in the advisor's menu has already been run for this family")
+            notes.append("every option in the advisor's menu was already run for this family or already proposed in this chat")
         return {
+            "audit_digest": audit,
             "baseline": baseline,
             "experiments": tools.list_experiments(root, family),
             "failure_source": source,

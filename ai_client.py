@@ -27,11 +27,11 @@ class AiClient:
         self.session.headers.update({"ngrok-skip-browser-warning": "true"})
         self.timeout = timeout
 
-    def _call(self, method, path, **kwargs):
+    def _call(self, method, path, raw=False, **kwargs):
         resp = getattr(self.session, method)(self.base + path, timeout=self.timeout, **kwargs)
         if resp.status_code >= 400:
             raise AiApiError(resp.status_code, _message(resp))
-        return resp.json()
+        return resp.text if raw else resp.json()
 
     def research(self, family_id, question):
         return self._call("post", "/ai/research", json={"family_id": family_id, "question": question})
@@ -54,3 +54,24 @@ class AiClient:
 
     def reject(self, research_id):
         return self._call("post", f"/ai/research/{research_id}/reject")
+
+    def options(self, family_id=None):
+        return self._call("get", "/ai/context-options", params={"family_id": family_id} if family_id else None)
+
+    def create_chat(self, family_id, audit_id=None, analysis_id=None):
+        return self._call("post", "/ai/chats", json={"family_id": family_id, "audit_id": audit_id, "analysis_id": analysis_id})
+
+    def list_chats(self):
+        return self._call("get", "/ai/chats")
+
+    def get_chat(self, chat_id):
+        return self._call("get", f"/ai/chats/{chat_id}")
+
+    def send(self, chat_id, text):
+        return self._call("post", f"/ai/chats/{chat_id}/messages", json={"text": text})
+
+    def set_context(self, chat_id, audit_id=None, analysis_id=None):
+        return self._call("post", f"/ai/chats/{chat_id}/context", json={"audit_id": audit_id, "analysis_id": analysis_id})
+
+    def report(self, research_id):
+        return self._call("get", f"/ai/research/{research_id}/report", raw=True)

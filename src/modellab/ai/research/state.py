@@ -3,6 +3,10 @@ from typing import Any, TypedDict
 
 class ResearchState(TypedDict, total=False):
     request: str
+    analysis_id: str | None
+    audit_id: str | None
+    exclude: list[str]
+    audit_digest: str | None
     family_id: str
     baseline: dict[str, Any]
     experiments: list[dict[str, Any]]

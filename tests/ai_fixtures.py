@@ -131,4 +131,23 @@ def make_env(tmp_path, replies=6):
         "family_id": FAMILY, "task": "detection", "evaluation_id": "ev1", "metrics": BASE_METRICS,
         "metadata": {"model_id": "weapons-final-model", "dataset_id": "weapons-small"},
     })
-    return Env(tmp_path, ScriptedLLM([GOOD] * replies))
+    script = replies if isinstance(replies, list) else [GOOD] * replies
+    return Env(tmp_path, ScriptedLLM(script))
+
+
+def add_context(root):
+    put(root, "audits/aud1/metadata.json", {"dataset_id": "weapons-small", "timestamp": "2026-10-05T10:00:00Z"})
+    put(root, "audits/aud1/report.json", {
+        "summary": {"duplicates": 12, "near_duplicates": 30, "corrupt": 0},
+        "flags": [{"id": "dup_pairs", "severity": "high"}, {"id": "small_images", "severity": "low"}],
+        "rows": [{"sample": i, "hash": f"h{i}"} for i in range(500)],
+    })
+    put(root, "failure_analyses/fa1/metadata.json", {"evaluation_id": "ev1", "task": "detection"})
+    put(root, "failure_analyses/fa1/per_class.json", {
+        "0": {"class": "handgun", "class_id": 0, "support": 78, "true_positives": 1, "false_positives": 81,
+              "false_negatives": 77, "precision": 0.012, "recall": 0.013, "f1": 0.012},
+        "2": {"class": "knife", "class_id": 2, "support": 238, "true_positives": 48, "false_positives": 145,
+              "false_negatives": 190, "precision": 0.249, "recall": 0.202, "f1": 0.223}})
+    put(root, "failure_analyses/fa1/report.json", {"clusters": [{"id": 1, "size": 40}], "warnings": ["small sample"]})
+    put(root, "failure_analyses/other/metadata.json", {"evaluation_id": "different", "task": "detection"})
+    put(root, "failure_analyses/other/per_class.json", {})

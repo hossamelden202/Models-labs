@@ -26,13 +26,23 @@ def build_graph(root, llm, knowledge):
     return graph.compile()
 
 
-def run_research(root, family_id, question, llm, knowledge):
-    state = build_graph(root, llm, knowledge).invoke({"request": question, "family_id": family_id})
+def run_research(root, family_id, question, llm, knowledge, context=None):
+    context = context or {}
+    state = build_graph(root, llm, knowledge).invoke({
+        "request": question,
+        "family_id": family_id,
+        "analysis_id": context.get("analysis_id"),
+        "audit_id": context.get("audit_id"),
+        "exclude": list(context.get("exclude") or []),
+    })
+    metrics = (state.get("baseline") or {}).get("metrics") or {}
     return {
         "family_id": family_id,
         "question": question,
         "llm_used": state.get("llm_used", False),
         "failure_source": state.get("failure_source"),
+        "context": {"analysis_id": context.get("analysis_id"), "audit_id": context.get("audit_id")},
+        "baseline_metrics": {k: metrics.get(k) for k in ("precision", "recall", "f1", "num_samples")},
         "analysis": state.get("analysis"),
         "retrieved": [{k: r[k] for k in ("id", "title", "score")} for r in state.get("retrieved", [])],
         "ranking": state.get("ranking", []),

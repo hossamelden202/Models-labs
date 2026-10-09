@@ -30,6 +30,13 @@ class StructuredLLM:
     def _complete(self, messages, schema):
         raise NotImplementedError
 
+    def generate_text(self, system, user, history=()):
+        messages = [{"role": "system", "content": system}, *history, {"role": "user", "content": user}]
+        text = (self._complete(messages, None) or "").strip()
+        if not text:
+            raise LLMError("empty reply")
+        return text
+
     def generate_structured(self, system, user, schema, check=None):
         schema_json = schema.model_json_schema()
         messages = [
@@ -89,11 +96,12 @@ class LlamaCppLLM(StructuredLLM):
             raise LLMError("set MODELLAB_LLM_PATH or both MODELLAB_LLM_REPO and MODELLAB_LLM_FILE")
 
     def _complete(self, messages, schema):
+        extra = {"response_format": {"type": "json_object", "schema": schema}} if schema else {}
         out = self.llm.create_chat_completion(
             messages=merge_system(messages),
-            response_format={"type": "json_object", "schema": schema},
             temperature=self.temperature,
             max_tokens=self.max_tokens,
+            **extra,
         )
         return out["choices"][0]["message"]["content"] or ""
 
