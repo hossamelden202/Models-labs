@@ -1,5 +1,10 @@
-[README.md](https://github.com/user-attachments/files/33268068/README.md)
 # Model Lab
+
+**Copyright (c) 2026 Hossam. All rights reserved.**
+
+This repository is provided for viewing and evaluation purposes only. No permission is granted to copy, modify, distribute, sublicense, or use this software, in whole or in part, for commercial or other purposes without prior written permission from the copyright holder.
+
+Access to this public repository does not grant any license or other rights to the software, except as required by applicable law.
 
 **Register image models. Register datasets. Evaluate, audit, and experiment, all from one place.**
 
@@ -26,10 +31,11 @@ All long-running work (evaluation, audit, experiments) runs as a **job** with a 
 ## Quick overview
 
 ### 1. Model Registry
-- Two ways in: **upload** the model file, or give a **backend path** (for example, if the backend runs on Kaggle, provide the model's Kaggle path).
+
+- Two ways in: **upload** the model file, or provide a **backend path** (for example, if the backend runs on Kaggle, provide the model's Kaggle path).
 - Model Lab **inspects and reconstructs** the model, then registers it.
 - **Models must be image models.**
-- Every model needs metadata: a `.yml` / `.yaml` / `.json` file with class names, number of classes, and input size, **or** you enter the same information manually in the UI.
+- Every model needs metadata: a `.yml`, `.yaml`, or `.json` file with class names, number of classes, and input size, **or** you can enter the same information manually in the UI.
 
 **Confirmed working**
 
@@ -40,31 +46,36 @@ All long-running work (evaluation, audit, experiments) runs as a **job** with a 
 | Transformer image models | Working, unless the model relies on `AutoModel` or refers to another model that must be present (see below) |
 
 **Not handled yet**
+
 - Models that use `AutoModel`, or that reference another model which must also be present.
 - Any other model type fails to register automatically. Workaround: **upload a builder for that model in the Factory upload**.
 
 ### 2. Dataset Registry
+
 Register any dataset that contains `images/` and `labels/`.
 
 ### 3. Model Evaluation
+
 Pick a model and a dataset, run the evaluation, and get a metrics report (accuracy, macro F1, weighted F1, sample count, and more). Details in [docs/EVALUATION.md](docs/EVALUATION.md).
 
 ### 4. Dataset Audit
+
 Give it a dataset and nothing else. You get a full report on integrity, exact duplicates, class distribution, support per class, per-class precision / recall / F1, and general dataset statistics. Details in [docs/DATASET_AUDIT.md](docs/DATASET_AUDIT.md).
 
 ### 5. Experiments
+
 Run experiments on a model and track them as jobs. Details in [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md).
 
 ---
 
 ## Typical workflow
 
-```
+```text
 Register model  ─┐
-                 ├─►  Evaluate  ─►  metrics report
+                 ├─► Evaluate   ─► Metrics report
 Register dataset ┤
-                 ├─►  Audit     ─►  dataset health report
-                 └─►  Experiment ─► experiment results
+                 ├─► Audit      ─► Dataset health report
+                 └─► Experiment ─► Experiment results
 ```
 
 1. Register a model (upload or backend path, plus metadata).
@@ -77,7 +88,7 @@ Register dataset ┤
 
 ## Documentation index
 
-- [Full Tools and Behavior of Model Lab](docs/FULL_TOOLS_AND_BEHAVIOR.md): the complete reference
+- [Full Tools and Behavior of Model Lab](docs/FULL_TOOLS_AND_BEHAVIOR.md): The complete reference
 - [Model Registry](docs/MODEL_REGISTRY.md)
 - [Datasets](docs/DATASETS.md)
 - [Evaluation](docs/EVALUATION.md)
@@ -85,9 +96,21 @@ Register dataset ┤
 - [Experiments](docs/EXPERIMENTS.md)
 - [Jobs](docs/JOBS.md)
 
+---
+
 ## Known limitations
 
 - Image models only.
 - Models depending on `AutoModel` or on another model being present are not handled yet.
 - Unsupported model types fail registration; use a Factory-upload builder.
 - Metadata (classes, class count, input size) must be supplied via file or UI.
+
+---
+
+## Copyright and Permissions
+
+Copyright © 2026 Hossam. All rights reserved.
+
+You may view this repository for informational and evaluation purposes. You may not copy, modify, redistribute, sublicense, or commercially exploit this software without prior written permission from the copyright holder, except where applicable law provides otherwise.
+
+For permission requests, contact the copyright holder through the contact information provided on the GitHub profile.
